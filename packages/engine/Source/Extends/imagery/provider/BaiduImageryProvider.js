@@ -10,13 +10,18 @@ const TILE_URL = {
   cia: "//maponline{s}.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=sl", // 影像标注
   vec: "//maponline{s}.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=pl", // 电子
   custom:
-    "//api{s}.map.bdimg.com/customimage/tile?&x={x}&y={y}&z={z}&scale=1&customid={style}", // 个性图
+    "//api{s}.map.bdimg.com/customimage/tile?&x={x}&y={y}&z={z}&scale=1&customid={id}", // 个性图
   traffic:
     "//its.map.baidu.com:8002/traffic/TrafficTileService?time={time}&level={z}&x={x}&y={y}&scaler=2",
 };
 
 /**
- * BaiduImageryProvider
+ * 百度地图ImageryProvider
+ * @param {string} options.url 自定义链接
+ * @param {string} options.crs WGS84
+ * @param {string} options.style 地图类型 img:影像地图  vec:电子地图 cia:电子注记 custom:自定义 traffic:交通
+ * @param {string} options.id 自定义类型的customid
+ * @param {string} options.crs WGS84
  */
 class BaiduImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
@@ -47,8 +52,8 @@ class BaiduImageryProvider extends UrlTemplateImageryProvider {
     super(options);
     this._rectangle = this._tilingScheme.rectangle;
     this._url = options.url;
-    this._crs = options.crs || "BD09";
-    this._style = options.style || "normal";
+    this._crs = options.crs || "";
+    this._id = options.id || "normal";
     this._time = options.time || new Date().getTime();
     this._subdomains = options.subdomains || ["0", "1", "2", "3"];
   }
@@ -63,7 +68,7 @@ class BaiduImageryProvider extends UrlTemplateImageryProvider {
         this._subdomains[Math.floor(CesiumMath.randomBetween(0, 4))],
       )
       .replace("{time}", this._time)
-      .replace("{style}", this._style);
+      .replace("{id}", this._id);
     if (this._crs === "WGS84") {
       url = url.replace("{x}", String(x)).replace("{y}", String(-y));
     } else {
