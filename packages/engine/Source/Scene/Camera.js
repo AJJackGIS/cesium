@@ -37,6 +37,7 @@ import SceneMode from "./SceneMode.js";
  * @property {Cartesian3} direction The unit "direction" vector
  * @property {Cartesian3} up The unit "up" vector
  **/
+
 /**
  * @typedef {object} HeadingPitchRollValues
  *
@@ -287,12 +288,14 @@ Camera.TRANSFORM_2D_INVERSE = Matrix4.inverseTransformation(
  * The default rectangle the camera will view on creation.
  * @type Rectangle
  */
-Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(
-  -95.0,
-  -20.0,
-  -70.0,
-  90.0,
-);
+// Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(
+//   -95.0,
+//   -20.0,
+//   -70.0,
+//   90.0,
+// );
+
+Camera.DEFAULT_VIEW_RECTANGLE = Rectangle.fromDegrees(75.0, 0.0, 140.0, 60.0);
 
 /**
  * A scalar to multiply to the camera position and add it back after setting the camera to view the rectangle.
@@ -2081,6 +2084,7 @@ const rotateVertScratchP = new Cartesian3();
 const rotateVertScratchA = new Cartesian3();
 const rotateVertScratchTan = new Cartesian3();
 const rotateVertScratchNegate = new Cartesian3();
+
 function rotateVertical(camera, angle) {
   const position = camera.position;
   if (
@@ -2716,6 +2720,7 @@ function rectangleCameraPosition3D(camera, rectangle, result, updateCamera) {
 const viewRectangleCVCartographic = new Cartographic();
 const viewRectangleCVNorthEast = new Cartesian3();
 const viewRectangleCVSouthWest = new Cartesian3();
+
 function rectangleCameraPositionColumbusView(camera, rectangle, result) {
   const projection = camera._projection;
   if (rectangle.west > rectangle.east) {
@@ -2760,6 +2765,7 @@ function rectangleCameraPositionColumbusView(camera, rectangle, result) {
 const viewRectangle2DCartographic = new Cartographic();
 const viewRectangle2DNorthEast = new Cartesian3();
 const viewRectangle2DSouthWest = new Cartesian3();
+
 function rectangleCameraPosition2D(camera, rectangle, result) {
   const projection = camera._projection;
 
@@ -2839,6 +2845,7 @@ Camera.prototype.getRectangleCameraCoordinates = function (rectangle, result) {
 };
 
 const pickEllipsoid3DRay = new Ray();
+
 function pickEllipsoid3D(camera, windowPosition, ellipsoid, result) {
   ellipsoid = defaultValue(ellipsoid, Ellipsoid.default);
   const ray = camera.getPickRay(windowPosition, pickEllipsoid3DRay);
@@ -2852,6 +2859,7 @@ function pickEllipsoid3D(camera, windowPosition, ellipsoid, result) {
 }
 
 const pickEllipsoid2DRay = new Ray();
+
 function pickMap2D(camera, windowPosition, projection, result) {
   const ray = camera.getPickRay(windowPosition, pickEllipsoid2DRay);
   let position = ray.origin;
@@ -2869,6 +2877,7 @@ function pickMap2D(camera, windowPosition, projection, result) {
 }
 
 const pickEllipsoidCVRay = new Ray();
+
 function pickMapColumbusView(camera, windowPosition, projection, result) {
   const ray = camera.getPickRay(windowPosition, pickEllipsoidCVRay);
   const scalar = -ray.origin.x / ray.direction.x;
@@ -2943,6 +2952,7 @@ Camera.prototype.pickEllipsoid = function (windowPosition, ellipsoid, result) {
 const pickPerspCenter = new Cartesian3();
 const pickPerspXDir = new Cartesian3();
 const pickPerspYDir = new Cartesian3();
+
 function getPickRayPerspective(camera, windowPosition, result) {
   const canvas = camera._scene.canvas;
   const width = canvas.clientWidth;
@@ -3158,6 +3168,7 @@ function createAnimationTemplateCV(
     );
     camera.worldToCameraCoordinatesPoint(interp, camera.position);
   }
+
   return {
     easingFunction: EasingFunction.EXPONENTIAL_OUT,
     startObject: {
@@ -3796,6 +3807,7 @@ const cartoArray = [
   new Cartographic(),
   new Cartographic(),
 ];
+
 function addToResult(x, y, index, camera, ellipsoid, computedHorizonQuad) {
   scratchPickCartesian2.x = x;
   scratchPickCartesian2.y = y;
@@ -3814,6 +3826,7 @@ function addToResult(x, y, index, camera, ellipsoid, computedHorizonQuad) {
   );
   return 0;
 }
+
 /**
  * Computes the approximate visible rectangle on the ellipsoid.
  *
