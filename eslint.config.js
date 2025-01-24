@@ -49,6 +49,7 @@ export default [
         "error",
         { vars: "all", args: "none", caughtErrors: "none" },
       ],
+      "no-loss-of-precision": "off",
     },
   },
   {
