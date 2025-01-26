@@ -83,10 +83,11 @@ class CoordTransformUtils {
   }
 
   /**
-   * @private
    * @param lng
    * @param lat
    * @returns {number[]}
+   *
+   * @private
    */
   static delta(lng, lat) {
     let dLng = this.transformLng(lng - 105, lat - 35);
@@ -101,10 +102,11 @@ class CoordTransformUtils {
   }
 
   /**
-   * @private
    * @param lng
    * @param lat
    * @returns {number}
+   *
+   * @private
    */
   static transformLng(lng, lat) {
     lat = +lat;
@@ -132,10 +134,11 @@ class CoordTransformUtils {
   }
 
   /**
-   * @private
    * @param lng
    * @param lat
    * @returns {number}
+   *
+   * @private
    */
   static transformLat(lng, lat) {
     lat = +lat;
@@ -163,10 +166,11 @@ class CoordTransformUtils {
   }
 
   /**
-   * @private
    * @param lng
    * @param lat
    * @returns {boolean}
+   *
+   * @private
    */
   static out_of_china(lng, lat) {
     lat = +lat;

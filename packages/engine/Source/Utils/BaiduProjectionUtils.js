@@ -75,10 +75,11 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * @param point1
    * @param point2
    * @returns {number}
+   *
+   * @private
    */
   getDistanceByMC(point1, point2) {
     if (!point1 || !point2) {
@@ -100,11 +101,12 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * Calculate the distance between two points according to the latitude and longitude coordinates
    * @param point1
    * @param point2
    * @returns {number|*}
+   *
+   * @private
    */
   getDistanceByLL(point1, point2) {
     if (!point1 || !point2) {
@@ -122,10 +124,11 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * The plane cartesian coordinates are converted to latitude and longitude coordinates
    * @param point
    * @returns {{lng: number, lat: number}}
+   *
+   * @private
    */
   convertMC2LL(point) {
     if (!point) {
@@ -164,10 +167,11 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * The latitude and longitude coordinates are converted to plane cartesian coordinates
    * @param point
    * @returns {{lng: number, lat: number}|*}
+   *
+   * @private
    */
   convertLL2MC(point) {
     if (!point) {
@@ -222,10 +226,11 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * @param fromPoint
    * @param factor
    * @returns {{lng: *, lat: *}}
+   *
+   * @private
    */
   convertor(fromPoint, factor) {
     if (!fromPoint || !factor) {
@@ -250,12 +255,13 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * @param x1
    * @param x2
    * @param y1
    * @param y2
    * @returns {number}
+   *
+   * @private
    */
   getDistance(x1, x2, y1, y2) {
     return (
@@ -268,29 +274,32 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * @param deg
    * @returns {number}
+   *
+   * @private
    */
   toRadians(deg) {
     return (Math.PI * deg) / 180;
   }
 
   /**
-   * @private
    * @param rad
    * @returns {number}
+   *
+   * @private
    */
   toDegrees(rad) {
     return (180 * rad) / Math.PI;
   }
 
   /**
-   * @private
    * @param v
    * @param a
    * @param b
    * @returns {number}
+   *
+   * @private
    */
   getRange(v, a, b) {
     if (a !== null) {
@@ -303,11 +312,12 @@ class BaiduProjectionUtils {
   }
 
   /**
-   * @private
    * @param v
    * @param a
    * @param b
    * @returns {*}
+   *
+   * @private
    */
   getLoop(v, a, b) {
     while (v > b) {
@@ -367,6 +377,7 @@ class BaiduProjectionUtils {
    * @param mapCenter
    * @param mapSize
    * @returns {{x: number, y: number}}
+   *
    * @private
    */
   pointToPixel(point, zoom, mapCenter, mapSize) {
@@ -391,6 +402,7 @@ class BaiduProjectionUtils {
    * @param mapCenter
    * @param mapSize
    * @returns {{lng: number, lat: number}}
+   *
    * @private
    */
   pixelToPoint(pixel, zoom, mapCenter, mapSize) {
@@ -408,6 +420,7 @@ class BaiduProjectionUtils {
    * @private
    * @param zoom
    * @returns {number}
+   *
    * @private
    */
   getZoomUnits(zoom) {

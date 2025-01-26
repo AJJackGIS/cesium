@@ -7,7 +7,7 @@ const TILE_URL = {
 };
 
 /**
- * 腾讯地图
+ * 腾讯地图ImageryProvider
  * @param {string} url 自定义链接
  * @param {string} style 地图类型 img:影像地图  vec:电子地图
  * @param {string} id 地图风格 1 电子地图 2 影像标注 3 影像注记+河流 4 暗色系

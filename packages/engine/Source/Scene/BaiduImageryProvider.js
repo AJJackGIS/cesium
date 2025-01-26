@@ -21,7 +21,6 @@ const TILE_URL = {
  * @param {string} crs WGS84
  * @param {string} style 地图类型 img:影像地图  vec:电子地图 cia:电子注记 custom:自定义 traffic:交通
  * @param {string} id 自定义类型的customid
- * @param {string} crs WGS84
  */
 class BaiduImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
