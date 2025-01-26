@@ -1,8 +1,10 @@
 import buildModuleUrl from "../Core/buildModuleUrl.js";
+import Cartesian4 from "../Core/Cartesian4.js";
 import Color from "../Core/Color.js";
 import createGuid from "../Core/createGuid.js";
 import defined from "../Core/defined.js";
 import Ellipsoid from "../Core/Ellipsoid.js";
+import FXAA3_11 from "../Shaders/FXAA3_11.js";
 import AcesTonemapping from "../Shaders/PostProcessStages/AcesTonemappingStage.js";
 import AmbientOcclusionGenerate from "../Shaders/PostProcessStages/AmbientOcclusionGenerate.js";
 import AmbientOcclusionModulate from "../Shaders/PostProcessStages/AmbientOcclusionModulate.js";
@@ -14,15 +16,16 @@ import DepthOfField from "../Shaders/PostProcessStages/DepthOfField.js";
 import DepthView from "../Shaders/PostProcessStages/DepthView.js";
 import EdgeDetection from "../Shaders/PostProcessStages/EdgeDetection.js";
 import FilmicTonemapping from "../Shaders/PostProcessStages/FilmicTonemapping.js";
-import PbrNeutralTonemapping from "../Shaders/PostProcessStages/PbrNeutralTonemapping.js";
 import FXAA from "../Shaders/PostProcessStages/FXAA.js";
 import GaussianBlur1D from "../Shaders/PostProcessStages/GaussianBlur1D.js";
+import GroundFog from "../Shaders/PostProcessStages/GroundFog.js";
 import LensFlare from "../Shaders/PostProcessStages/LensFlare.js";
 import ModifiedReinhardTonemapping from "../Shaders/PostProcessStages/ModifiedReinhardTonemapping.js";
 import NightVision from "../Shaders/PostProcessStages/NightVision.js";
+import PbrNeutralTonemapping from "../Shaders/PostProcessStages/PbrNeutralTonemapping.js";
 import ReinhardTonemapping from "../Shaders/PostProcessStages/ReinhardTonemapping.js";
 import Silhouette from "../Shaders/PostProcessStages/Silhouette.js";
-import FXAA3_11 from "../Shaders/FXAA3_11.js";
+import Snow from "../Shaders/PostProcessStages/Snow.js";
 import AutoExposure from "./AutoExposure.js";
 import PostProcessStage from "./PostProcessStage.js";
 import PostProcessStageComposite from "./PostProcessStageComposite.js";
@@ -744,6 +747,42 @@ PostProcessStageLibrary.createBlackAndWhiteStage = function () {
     fragmentShader: BlackAndWhite,
     uniforms: {
       gradations: 5.0,
+    },
+  });
+};
+
+/**
+ * Creates a 近地雾 post-process stage.
+ * <p>
+ * This stage has two uniform value, <code>fogByDistance</code> is a <code>Cartesian4</code>, and <code>fogColor</code>.
+ * </p>
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createGroundFogStage = function () {
+  return new PostProcessStage({
+    name: "czm_ground_fog",
+    fragmentShader: GroundFog,
+    uniforms: {
+      fogColor: Color.WHITE,
+      fogByDistance: new Cartesian4(10.0, 0.0, 200.0, 1.0),
+    },
+  });
+};
+
+/**
+ * Creates a 雪 post-process stage.
+ * <p>
+ * This stage has two uniform value, <code>speed</code>. <code>size</code> suggest: `0.01、0.02、0.03` default is 0.01
+ * </p>
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createSnowStage = function () {
+  return new PostProcessStage({
+    name: "czm_snow",
+    fragmentShader: Snow,
+    uniforms: {
+      speed: 1.0,
+      size: 0.01,
     },
   });
 };
