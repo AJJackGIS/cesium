@@ -13,7 +13,10 @@ import Matrix3 from "../Core/Matrix3.js";
 import Matrix4 from "../Core/Matrix4.js";
 import Resource from "../Core/Resource.js";
 import CubeMap from "../Renderer/CubeMap.js";
+import Sampler from "../Renderer/Sampler.js";
 import Texture from "../Renderer/Texture.js";
+import TextureMagnificationFilter from "../Renderer/TextureMagnificationFilter.js";
+import TextureMinificationFilter from "../Renderer/TextureMinificationFilter.js";
 import AspectRampMaterial from "../Shaders/Materials/AspectRampMaterial.js";
 import BumpMapMaterial from "../Shaders/Materials/BumpMapMaterial.js";
 import CheckerboardMaterial from "../Shaders/Materials/CheckerboardMaterial.js";
@@ -26,16 +29,15 @@ import GridMaterial from "../Shaders/Materials/GridMaterial.js";
 import NormalMapMaterial from "../Shaders/Materials/NormalMapMaterial.js";
 import PolylineArrowMaterial from "../Shaders/Materials/PolylineArrowMaterial.js";
 import PolylineDashMaterial from "../Shaders/Materials/PolylineDashMaterial.js";
+import PolylineFlowMaterial from "../Shaders/Materials/PolylineFlowMaterial.js";
 import PolylineGlowMaterial from "../Shaders/Materials/PolylineGlowMaterial.js";
 import PolylineOutlineMaterial from "../Shaders/Materials/PolylineOutlineMaterial.js";
+import PolylineTrailMaterial from "../Shaders/Materials/PolylineTrailMaterial.js";
 import RimLightingMaterial from "../Shaders/Materials/RimLightingMaterial.js";
-import Sampler from "../Renderer/Sampler.js";
 import SlopeRampMaterial from "../Shaders/Materials/SlopeRampMaterial.js";
 import StripeMaterial from "../Shaders/Materials/StripeMaterial.js";
-import TextureMagnificationFilter from "../Renderer/TextureMagnificationFilter.js";
-import TextureMinificationFilter from "../Renderer/TextureMinificationFilter.js";
-import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
 import WaterMaterial from "../Shaders/Materials/Water.js";
+import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
 
 /**
  * A Material defines surface appearance through a combination of diffuse, specular,
@@ -1650,6 +1652,44 @@ Material._materialCache.addMaterial(Material.PolylineOutlineType, {
     const uniforms = material.uniforms;
     return uniforms.color.alpha < 1.0 || uniforms.outlineColor.alpha < 1.0;
   },
+});
+
+/**
+ * Gets the name of the polyline trail material.
+ * @type {string}
+ * @readonly
+ */
+Material.PolylineTrailType = "PolylineTrail";
+Material._materialCache.addMaterial(Material.PolylineTrailType, {
+  fabric: {
+    type: Material.PolylineTrailType,
+    uniforms: {
+      color: new Color(1.0, 1.0, 1.0, 1.0),
+      speed: 1.0,
+    },
+    source: PolylineTrailMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the polyline flow material.
+ * @type {string}
+ * @readonly
+ */
+Material.PolylineFlowType = "PolylineFlow";
+Material._materialCache.addMaterial(Material.PolylineFlowType, {
+  fabric: {
+    type: Material.PolylineFlowType,
+    uniforms: {
+      color: new Color(1.0, 1.0, 1.0, 1.0),
+      speed: 1.0,
+      percent: 0.05,
+      gradient: 0,
+    },
+    source: PolylineFlowMaterial,
+  },
+  translucent: true,
 });
 
 /**
