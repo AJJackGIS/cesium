@@ -799,11 +799,12 @@ PostProcessStageLibrary.createSnowStage = function () {
 
 /**
  * 大雨特效.
- * This stage has the following uniforms: <code>speed</code> and <code>size</code>,
+ * <p>
+ * This stage has the following uniforms: <code>speed</code>,<code>size</code> and <code>angle</code>,
  * <ul>
  * <li><code>speed</code> 速率 default: 1.0 </li>
  * <li><code>size</code> 雨粒大小 大: 4.0 中: 2.0 小: 1.0 </li>
- * <li><code>angle</code> 角度 </li>
+ * <li><code>angle</code> 角度(弧度) </li>
  * </p>
  * @return {PostProcessStage} A post-process stage.
  */
