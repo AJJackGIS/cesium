@@ -4,6 +4,7 @@ import Color from "../Core/Color.js";
 import createGuid from "../Core/createGuid.js";
 import defined from "../Core/defined.js";
 import Ellipsoid from "../Core/Ellipsoid.js";
+import CesiumMath from "../Core/Math.js";
 import FXAA3_11 from "../Shaders/FXAA3_11.js";
 import AcesTonemapping from "../Shaders/PostProcessStages/AcesTonemappingStage.js";
 import AmbientOcclusionGenerate from "../Shaders/PostProcessStages/AmbientOcclusionGenerate.js";
@@ -23,6 +24,7 @@ import LensFlare from "../Shaders/PostProcessStages/LensFlare.js";
 import ModifiedReinhardTonemapping from "../Shaders/PostProcessStages/ModifiedReinhardTonemapping.js";
 import NightVision from "../Shaders/PostProcessStages/NightVision.js";
 import PbrNeutralTonemapping from "../Shaders/PostProcessStages/PbrNeutralTonemapping.js";
+import Rain from "../Shaders/PostProcessStages/Rain.js";
 import ReinhardTonemapping from "../Shaders/PostProcessStages/ReinhardTonemapping.js";
 import Silhouette from "../Shaders/PostProcessStages/Silhouette.js";
 import Snow from "../Shaders/PostProcessStages/Snow.js";
@@ -752,9 +754,13 @@ PostProcessStageLibrary.createBlackAndWhiteStage = function () {
 };
 
 /**
- * Creates a 近地雾 post-process stage.
+ * 近地雾特效.
  * <p>
- * This stage has two uniform value, <code>fogByDistance</code> is a <code>Cartesian4</code>, and <code>fogColor</code>.
+ * This stage has the following uniforms: <code>fogColor</code> and <code>fogByDistance</code>,
+ * <ul>
+ * <li><code>fogColor</code> 雾颜色 default is WHITE.</li>
+ * <li><code>fogByDistance</code> 远近效果 是一个Cartesian4类型的数值 default is (10.0, 0.0, 200.0, 1.0).</li>
+ * </ur>
  * </p>
  * @return {PostProcessStage} A post-process stage.
  */
@@ -770,9 +776,13 @@ PostProcessStageLibrary.createGroundFogStage = function () {
 };
 
 /**
- * Creates a 雪 post-process stage.
+ * 雪特效.
  * <p>
- * This stage has two uniform value, <code>speed</code>. <code>size</code> suggest: `0.01、0.02、0.03` default is 0.01
+ * This stage has the following uniforms: <code>speed</code> and <code>size</code>,
+ * <ul>
+ * <li><code>speed</code> 速率 default is 1.0.</li>
+ * <li><code>size</code> 大小 小雪：0.01 中雪：0.02 大雪：0.03 default is 0.01.</li>
+ * </ur>
  * </p>
  * @return {PostProcessStage} A post-process stage.
  */
@@ -783,6 +793,28 @@ PostProcessStageLibrary.createSnowStage = function () {
     uniforms: {
       speed: 1.0,
       size: 0.01,
+    },
+  });
+};
+
+/**
+ * 大雨特效.
+ * This stage has the following uniforms: <code>speed</code> and <code>size</code>,
+ * <ul>
+ * <li><code>speed</code> 速率 default: 1.0 </li>
+ * <li><code>size</code> 雨粒大小 大: 4.0 中: 2.0 小: 1.0 </li>
+ * <li><code>angle</code> 角度 </li>
+ * </p>
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createHeavyRainStage = function () {
+  return new PostProcessStage({
+    name: "czm_heavy_rain",
+    fragmentShader: Rain,
+    uniforms: {
+      speed: 1.0,
+      size: 2.0,
+      angle: CesiumMath.toRadians(-20),
     },
   });
 };
