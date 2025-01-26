@@ -1,12 +1,12 @@
-import UrlTemplateImageryProvider from "../../../Scene/UrlTemplateImageryProvider.js";
+import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
 
 const MAP_URL =
   "//t{s}.tianditu.com/DataServer?T={style}_w&x={x}&y={y}&l={z}&tk={key}";
 
 /**
  * 天地图ImageryProvider
- * @param {string} options.url 自定义链接
- * @param {string} options.style 地图类型 img:影像 cia:影像注记 vec:电子 cva:电子注记 ter:地形 cta:地形注记
+ * @param {string} url 自定义链接
+ * @param {string} style 地图类型 img:影像 cia:影像注记 vec:电子 cva:电子注记 ter:地形 cta:地形注记
  */
 class TdtImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {

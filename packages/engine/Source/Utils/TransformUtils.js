@@ -1,19 +1,19 @@
-import Cartesian3 from "../../Core/Cartesian3.js";
-import Cartographic from "../../Core/Cartographic.js";
-import Ellipsoid from "../../Core/Ellipsoid.js";
-import CesiumMath from "../../Core/Math.js";
-import SceneMode from "../../Scene/SceneMode.js";
-import SceneTransforms from "../../Scene/SceneTransforms.js";
-import WebMercatorProjection from "../../Core/WebMercatorProjection.js";
+import Cartesian3 from "../Core/Cartesian3.js";
+import Cartographic from "../Core/Cartographic.js";
+import Ellipsoid from "../Core/Ellipsoid.js";
+import CesiumMath from "../Core/Math.js";
+import SceneMode from "../Scene/SceneMode.js";
+import SceneTransforms from "../Scene/SceneTransforms.js";
+import WebMercatorProjection from "../Core/WebMercatorProjection.js";
 
-import Position from "../position/Position.js";
+import Position from "../Core/Position.js";
 
 const WMP = new WebMercatorProjection();
 
 /**
  * Cartesian、Cartographic、Position、Window坐标转换
  */
-class Transform {
+class TransformUtils {
   /**
    * Transforms Cartesian To WGS84
    * @param cartesian {Cartesian3}
@@ -156,4 +156,4 @@ class Transform {
   }
 }
 
-export default Transform;
+export default TransformUtils;

@@ -1,5 +1,5 @@
-import UrlTemplateImageryProvider from "../../../Scene/UrlTemplateImageryProvider.js";
-import GCJ02TilingScheme from "../tiling-scheme/GCJ02TilingScheme.js";
+import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
+import GCJ02WebMercatorTilingScheme from "../Core/GCJ02WebMercatorTilingScheme.js";
 
 const TILE_URL = {
   img: "//p{s}.map.gtimg.com/sateTiles/{z}/{sx}/{sy}/{x}_{reverseY}.jpg",
@@ -8,9 +8,9 @@ const TILE_URL = {
 
 /**
  * 腾讯地图
- * @param {string} options.url 自定义链接
- * @param {string} options.style 地图类型 img:影像地图  vec:电子地图
- * @param {string} options.id 地图风格 1 电子地图 2 影像标注 3 影像注记+河流 4 暗色系
+ * @param {string} url 自定义链接
+ * @param {string} style 地图类型 img:影像地图  vec:电子地图
+ * @param {string} id 地图风格 1 电子地图 2 影像标注 3 影像注记+河流 4 暗色系
  */
 class TencentImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
@@ -32,7 +32,7 @@ class TencentImageryProvider extends UrlTemplateImageryProvider {
       };
     }
     if (options.crs === "WGS84") {
-      options["tilingScheme"] = new GCJ02TilingScheme();
+      options["tilingScheme"] = new GCJ02WebMercatorTilingScheme();
     }
     super(options);
   }

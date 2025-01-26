@@ -4,9 +4,9 @@ const RADIUS = 6378245.0;
 const EE = 0.00669342162296594323;
 
 /**
- * BD-09、GCJ-02、WGS-84坐标系数据转换
+ * BD-09、GCJ-02、WGS-84坐标系数据转换工具类
  */
-class CoordTransform {
+class CoordTransformUtils {
   /**
    * BD-09 To GCJ-02
    * @param lng
@@ -175,4 +175,4 @@ class CoordTransform {
   }
 }
 
-export default CoordTransform;
+export default CoordTransformUtils;

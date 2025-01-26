@@ -1,9 +1,9 @@
-import BD09TilingScheme from "../tiling-scheme/BD09TilingScheme.js";
-import UrlTemplateImageryProvider from "../../../Scene/UrlTemplateImageryProvider.js";
-import Cartesian2 from "../../../Core/Cartesian2.js";
-import WebMercatorTilingScheme from "../../../Core/WebMercatorTilingScheme.js";
-import ImageryProvider from "../../../Scene/ImageryProvider.js";
-import CesiumMath from "../../../Core/Math.js";
+import BaiduWebMercatorTilingScheme from "../Core/BaiduWebMercatorTilingScheme.js";
+import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
+import Cartesian2 from "../Core/Cartesian2.js";
+import WebMercatorTilingScheme from "../Core/WebMercatorTilingScheme.js";
+import ImageryProvider from "./ImageryProvider.js";
+import CesiumMath from "../Core/Math.js";
 
 const TILE_URL = {
   img: "//maponline{s}.bdimg.com/it/u=x={x};y={y};z={z};v=009;type=sate&fm=46", // 影像
@@ -17,11 +17,11 @@ const TILE_URL = {
 
 /**
  * 百度地图ImageryProvider
- * @param {string} options.url 自定义链接
- * @param {string} options.crs WGS84
- * @param {string} options.style 地图类型 img:影像地图  vec:电子地图 cia:电子注记 custom:自定义 traffic:交通
- * @param {string} options.id 自定义类型的customid
- * @param {string} options.crs WGS84
+ * @param {string} url 自定义链接
+ * @param {string} crs WGS84
+ * @param {string} style 地图类型 img:影像地图  vec:电子地图 cia:电子注记 custom:自定义 traffic:交通
+ * @param {string} id 自定义类型的customid
+ * @param {string} crs WGS84
  */
 class BaiduImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
@@ -37,7 +37,7 @@ class BaiduImageryProvider extends UrlTemplateImageryProvider {
       for (let i = 0; i < 19; i++) {
         resolutions[i] = 256 * Math.pow(2, 18 - i);
       }
-      options["tilingScheme"] = new BD09TilingScheme({
+      options["tilingScheme"] = new BaiduWebMercatorTilingScheme({
         resolutions,
         rectangleSouthwestInMeters: new Cartesian2(-20037726.37, -12474104.17),
         rectangleNortheastInMeters: new Cartesian2(20037726.37, 12474104.17),

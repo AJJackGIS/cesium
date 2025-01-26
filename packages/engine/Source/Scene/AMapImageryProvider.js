@@ -1,5 +1,5 @@
-import GCJ02TilingScheme from "../tiling-scheme/GCJ02TilingScheme.js";
-import UrlTemplateImageryProvider from "../../../Scene/UrlTemplateImageryProvider.js";
+import GCJ02WebMercatorTilingScheme from "../Core/GCJ02WebMercatorTilingScheme.js";
+import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
 
 const TILE_URL = {
   img: "//webst{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
@@ -9,9 +9,9 @@ const TILE_URL = {
 
 /**
  * 高德地图ImageryProvider
- * @param {string} options.url 自定义链接
- * @param {string} options.crs WGS84
- * @param {string} options.style 地图类型 img:影像地图  vec:电子地图 cia:电子注记
+ * @param {string} url 自定义链接
+ * @param {string} crs WGS84
+ * @param {string} style 地图类型 img:影像地图  vec:电子地图 cia:电子注记
  */
 class AMapImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
@@ -22,7 +22,7 @@ class AMapImageryProvider extends UrlTemplateImageryProvider {
       );
     options["subdomains"] = options.subdomains || ["01", "02", "03", "04"];
     if (options.crs === "WGS84") {
-      options["tilingScheme"] = new GCJ02TilingScheme();
+      options["tilingScheme"] = new GCJ02WebMercatorTilingScheme();
     }
     super(options);
   }

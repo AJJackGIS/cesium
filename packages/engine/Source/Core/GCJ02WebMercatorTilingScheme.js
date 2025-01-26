@@ -1,19 +1,19 @@
-import CoordTransform from "../../transform/CoordTransform.js";
-import WebMercatorTilingScheme from "../../../Core/WebMercatorTilingScheme.js";
-import WebMercatorProjection from "../../../Core/WebMercatorProjection.js";
-import CesiumMath from "../../../Core/Math.js";
-import Cartographic from "../../../Core/Cartographic.js";
-import Cartesian2 from "../../../Core/Cartesian2.js";
+import CoordTransformUtils from "../Utils/CoordTransformUtils.js";
+import WebMercatorTilingScheme from "./WebMercatorTilingScheme.js";
+import WebMercatorProjection from "./WebMercatorProjection.js";
+import CesiumMath from "./Math.js";
+import Cartographic from "./Cartographic.js";
+import Cartesian2 from "./Cartesian2.js";
 
 /**
- * GCJ02火星坐标系TilingScheme
+ * GCJ02火星坐标系WebMercatorTilingScheme
  */
-class GCJ02TilingScheme extends WebMercatorTilingScheme {
+class GCJ02WebMercatorTilingScheme extends WebMercatorTilingScheme {
   constructor(options) {
     super(options);
     const projection = new WebMercatorProjection();
     this._projection.project = function (cartographic, result) {
-      result = CoordTransform.WGS84ToGCJ02(
+      result = CoordTransformUtils.WGS84ToGCJ02(
         CesiumMath.toDegrees(cartographic.longitude),
         CesiumMath.toDegrees(cartographic.latitude),
       );
@@ -27,7 +27,7 @@ class GCJ02TilingScheme extends WebMercatorTilingScheme {
     };
     this._projection.unproject = function (cartesian, result) {
       const cartographic = projection.unproject(cartesian);
-      result = CoordTransform.GCJ02ToWGS84(
+      result = CoordTransformUtils.GCJ02ToWGS84(
         CesiumMath.toDegrees(cartographic.longitude),
         CesiumMath.toDegrees(cartographic.latitude),
       );
@@ -39,4 +39,4 @@ class GCJ02TilingScheme extends WebMercatorTilingScheme {
   }
 }
 
-export default GCJ02TilingScheme;
+export default GCJ02WebMercatorTilingScheme;

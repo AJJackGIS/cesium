@@ -67,15 +67,15 @@ const LL2MC = [
 ];
 
 /**
- * 百度坐标经纬度墨卡托转换
+ * 百度坐标经纬度墨卡托转换工具类
  */
-class BD09Projection {
+class BaiduProjectionUtils {
   constructor() {
     this.isWgs84 = false;
   }
 
   /**
-   *
+   * @private
    * @param point1
    * @param point2
    * @returns {number}
@@ -100,6 +100,7 @@ class BD09Projection {
   }
 
   /**
+   * @private
    * Calculate the distance between two points according to the latitude and longitude coordinates
    * @param point1
    * @param point2
@@ -121,6 +122,7 @@ class BD09Projection {
   }
 
   /**
+   * @private
    * The plane cartesian coordinates are converted to latitude and longitude coordinates
    * @param point
    * @returns {{lng: number, lat: number}}
@@ -162,6 +164,7 @@ class BD09Projection {
   }
 
   /**
+   * @private
    * The latitude and longitude coordinates are converted to plane cartesian coordinates
    * @param point
    * @returns {{lng: number, lat: number}|*}
@@ -219,7 +222,7 @@ class BD09Projection {
   }
 
   /**
-   *
+   * @private
    * @param fromPoint
    * @param factor
    * @returns {{lng: *, lat: *}}
@@ -247,7 +250,7 @@ class BD09Projection {
   }
 
   /**
-   *
+   * @private
    * @param x1
    * @param x2
    * @param y1
@@ -265,7 +268,7 @@ class BD09Projection {
   }
 
   /**
-   *
+   * @private
    * @param deg
    * @returns {number}
    */
@@ -274,7 +277,7 @@ class BD09Projection {
   }
 
   /**
-   *
+   * @private
    * @param rad
    * @returns {number}
    */
@@ -283,7 +286,7 @@ class BD09Projection {
   }
 
   /**
-   *
+   * @private
    * @param v
    * @param a
    * @param b
@@ -300,7 +303,7 @@ class BD09Projection {
   }
 
   /**
-   *
+   * @private
    * @param v
    * @param a
    * @param b
@@ -317,18 +320,18 @@ class BD09Projection {
   }
 
   /**
-   *
-   * @param point
-   * @returns {{lng: number, lat: number}|*}
+   * 经纬度转墨卡托
+   * @param point {{lng: number, lat: number}}
+   * @returns {{lng: number, lat: number}}
    */
   lngLatToMercator(point) {
     return this.convertLL2MC(point);
   }
 
   /**
-   *
-   * @param point
-   * @returns {{x: (number|*), y: (number|*)}}
+   * 经纬度转墨卡托
+   * @param point {{lng: number, lat: number}}
+   * @returns {{x:number, y:number}}
    */
   lngLatToPoint(point) {
     const mercator = this.convertLL2MC(point);
@@ -339,8 +342,8 @@ class BD09Projection {
   }
 
   /**
-   * WebMercator transforms to latitude and longitude
-   * @param point
+   * 墨卡托转经纬度
+   * @param point {{lng: number, lat: number}}
    * @returns {{lng: number, lat: number}}
    */
   mercatorToLngLat(point) {
@@ -348,8 +351,8 @@ class BD09Projection {
   }
 
   /**
-   *
-   * @param point
+   * 墨卡托转经纬度
+   * @param point {{x:number, y:number}}
    * @returns {{lng: number, lat: number}}
    */
   pointToLngLat(point) {
@@ -364,6 +367,7 @@ class BD09Projection {
    * @param mapCenter
    * @param mapSize
    * @returns {{x: number, y: number}}
+   * @private
    */
   pointToPixel(point, zoom, mapCenter, mapSize) {
     if (!point) {
@@ -387,6 +391,7 @@ class BD09Projection {
    * @param mapCenter
    * @param mapSize
    * @returns {{lng: number, lat: number}}
+   * @private
    */
   pixelToPoint(pixel, zoom, mapCenter, mapSize) {
     if (!pixel) {
@@ -400,13 +405,14 @@ class BD09Projection {
   }
 
   /**
-   *
+   * @private
    * @param zoom
    * @returns {number}
+   * @private
    */
   getZoomUnits(zoom) {
     return Math.pow(2, 18 - zoom);
   }
 }
 
-export default BD09Projection;
+export default BaiduProjectionUtils;

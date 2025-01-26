@@ -1,5 +1,5 @@
-import Transform from "../transform/Transform.js";
-import Cartesian3 from "../../Core/Cartesian3.js";
+import TransformUtils from "../Utils/TransformUtils.js";
+import Cartesian3 from "./Cartesian3.js";
 
 /**
  * Position 类型
@@ -162,8 +162,8 @@ class Position {
       return 0;
     }
     return Cartesian3.distance(
-      Transform.transformWGS84ToCartesian(this),
-      Transform.transformWGS84ToCartesian(target),
+      TransformUtils.transformWGS84ToCartesian(this),
+      TransformUtils.transformWGS84ToCartesian(target),
     );
   }
 

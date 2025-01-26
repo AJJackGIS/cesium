@@ -1,25 +1,25 @@
-import Cartesian2 from "../../../Core/Cartesian2.js";
-import defined from "../../../Core/defined.js";
-import Rectangle from "../../../Core/Rectangle.js";
-import WebMercatorTilingScheme from "../../../Core/WebMercatorTilingScheme.js";
-import BD09Projection from "../projection/BD09Projection.js";
-import CoordTransform from "../../transform/CoordTransform.js";
-import CesiumMath from "../../../Core/Math.js";
-import Cartographic from "../../../Core/Cartographic.js";
+import Cartesian2 from "./Cartesian2.js";
+import defined from "./defined.js";
+import Rectangle from "./Rectangle.js";
+import WebMercatorTilingScheme from "./WebMercatorTilingScheme.js";
+import BaiduProjectionUtils from "../Utils/BaiduProjectionUtils.js";
+import CoordTransformUtils from "../Utils/CoordTransformUtils.js";
+import CesiumMath from "./Math.js";
+import Cartographic from "./Cartographic.js";
 
 /**
- * 百度坐标系TilingScheme
+ * 百度WebMercatorTilingScheme
  */
-class BD09TilingScheme extends WebMercatorTilingScheme {
+class BaiduWebMercatorTilingScheme extends WebMercatorTilingScheme {
   constructor(options) {
     super(options);
-    const projection = new BD09Projection();
+    const projection = new BaiduProjectionUtils();
     this._projection.project = function (cartographic, result) {
-      result = CoordTransform.WGS84ToGCJ02(
+      result = CoordTransformUtils.WGS84ToGCJ02(
         CesiumMath.toDegrees(cartographic.longitude),
         CesiumMath.toDegrees(cartographic.latitude),
       );
-      result = CoordTransform.GCJ02ToBD09(result[0], result[1]);
+      result = CoordTransformUtils.GCJ02ToBD09(result[0], result[1]);
       result[0] = Math.min(result[0], 180);
       result[0] = Math.max(result[0], -180);
       result[1] = Math.min(result[1], 74.000022);
@@ -35,8 +35,8 @@ class BD09TilingScheme extends WebMercatorTilingScheme {
         lng: cartesian.x,
         lat: cartesian.y,
       });
-      result = CoordTransform.BD09ToGCJ02(result.lng, result.lat);
-      result = CoordTransform.GCJ02ToWGS84(result[0], result[1]);
+      result = CoordTransformUtils.BD09ToGCJ02(result.lng, result.lat);
+      result = CoordTransformUtils.GCJ02ToWGS84(result[0], result[1]);
       return new Cartographic(
         CesiumMath.toRadians(result[0]),
         CesiumMath.toRadians(result[1]),
@@ -85,4 +85,4 @@ class BD09TilingScheme extends WebMercatorTilingScheme {
   }
 }
 
-export default BD09TilingScheme;
+export default BaiduWebMercatorTilingScheme;
