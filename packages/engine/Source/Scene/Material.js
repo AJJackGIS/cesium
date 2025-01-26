@@ -197,6 +197,18 @@ import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
  *      <li><code>outlineColor</code>: diffuse color and alpha for the outline.</li>
  *      <li><code>outlineWidth</code>: width of the outline in pixels.</li>
  *  </ul>
+ *  <li>PolylineTrail</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>PolylineFlow</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *      <li><code>percent</code>: 流动部分占比.</li>
+ *      <li><code>gradient</code>: 打底线颜色透明度.</li>
+ *  </ul>
  *  <li>ElevationContour</li>
  *  <ul>
  *      <li><code>color</code>: color and alpha for the contour line.</li>
