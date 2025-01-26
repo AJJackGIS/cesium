@@ -24,6 +24,7 @@ import DotMaterial from "../Shaders/Materials/DotMaterial.js";
 import ElevationBandMaterial from "../Shaders/Materials/ElevationBandMaterial.js";
 import ElevationContourMaterial from "../Shaders/Materials/ElevationContourMaterial.js";
 import ElevationRampMaterial from "../Shaders/Materials/ElevationRampMaterial.js";
+import EllipseFadeMaterial from "../Shaders/Materials/EllipseFadeMaterial.js";
 import FadeMaterial from "../Shaders/Materials/FadeMaterial.js";
 import GridMaterial from "../Shaders/Materials/GridMaterial.js";
 import NormalMapMaterial from "../Shaders/Materials/NormalMapMaterial.js";
@@ -1700,6 +1701,24 @@ Material._materialCache.addMaterial(Material.PolylineFlowType, {
       gradient: 0,
     },
     source: PolylineFlowMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the ellipse fade material.
+ * @type {string}
+ * @readonly
+ */
+Material.EllipseFade = "EllipseFade";
+Material._materialCache.addMaterial(Material.EllipseFade, {
+  fabric: {
+    type: Material.EllipseFade,
+    uniforms: {
+      color: new Color(1.0, 1.0, 1.0, 1.0),
+      speed: 1.0,
+    },
+    source: EllipseFadeMaterial,
   },
   translucent: true,
 });
