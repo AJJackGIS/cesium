@@ -12,6 +12,7 @@ import AmbientOcclusionModulate from "../Shaders/PostProcessStages/AmbientOcclus
 import BlackAndWhite from "../Shaders/PostProcessStages/BlackAndWhite.js";
 import BloomComposite from "../Shaders/PostProcessStages/BloomComposite.js";
 import Brightness from "../Shaders/PostProcessStages/Brightness.js";
+import Cloud from "../Shaders/PostProcessStages/Cloud.js";
 import ContrastBias from "../Shaders/PostProcessStages/ContrastBias.js";
 import DepthOfField from "../Shaders/PostProcessStages/DepthOfField.js";
 import DepthView from "../Shaders/PostProcessStages/DepthView.js";
@@ -28,6 +29,7 @@ import Rain from "../Shaders/PostProcessStages/Rain.js";
 import ReinhardTonemapping from "../Shaders/PostProcessStages/ReinhardTonemapping.js";
 import Silhouette from "../Shaders/PostProcessStages/Silhouette.js";
 import Snow from "../Shaders/PostProcessStages/Snow.js";
+import Thunder from "../Shaders/PostProcessStages/Thunder.js";
 import AutoExposure from "./AutoExposure.js";
 import PostProcessStage from "./PostProcessStage.js";
 import PostProcessStageComposite from "./PostProcessStageComposite.js";
@@ -816,6 +818,44 @@ PostProcessStageLibrary.createHeavyRainStage = function () {
       speed: 1.0,
       size: 2.0,
       angle: CesiumMath.toRadians(-20),
+    },
+  });
+};
+
+/**
+ * 云特效.
+ * <p>
+ * This stage has the following uniforms: <code>speed</code>.
+ * <ul>
+ * <li><code>speed</code> 速率 default: 1.0 </li>
+ * </p>
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createCloudStage = function () {
+  return new PostProcessStage({
+    name: "czm_cloud",
+    fragmentShader: Cloud,
+    uniforms: {
+      speed: 1.0,
+    },
+  });
+};
+
+/**
+ * 雷电特效.
+ * <p>
+ * This stage has the following uniforms: <code>speed</code>.
+ * <ul>
+ * <li><code>speed</code> 速率 default: 1.0 </li>
+ * </p>
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createThunderStage = function () {
+  return new PostProcessStage({
+    name: "czm_thunder",
+    fragmentShader: Thunder,
+    uniforms: {
+      speed: 1.0,
     },
   });
 };
