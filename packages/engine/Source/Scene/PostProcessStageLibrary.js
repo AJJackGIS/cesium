@@ -781,7 +781,7 @@ PostProcessStageLibrary.createGroundFogStage = function () {
  * This stage has the following uniforms: <code>speed</code> and <code>size</code>,
  * <ul>
  * <li><code>speed</code> 速率 default is 1.0.</li>
- * <li><code>size</code> 大小 小雪：0.01 中雪：0.02 大雪：0.03 default is 0.01.</li>
+ * <li><code>size</code> 大小 小雪：1.0 中雪：2.0 大雪：3.0 default is 1.0.</li>
  * </ur>
  * </p>
  * @return {PostProcessStage} A post-process stage.
@@ -792,7 +792,7 @@ PostProcessStageLibrary.createSnowStage = function () {
     fragmentShader: Snow,
     uniforms: {
       speed: 1.0,
-      size: 0.01,
+      size: 1.0,
     },
   });
 };

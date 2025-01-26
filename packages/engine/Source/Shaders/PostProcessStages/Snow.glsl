@@ -16,7 +16,7 @@ float snow(vec2 uv, float scale) {
     p = 0.5 + 0.35 * sin(11.0 * fract(sin((s + p + scale) * mat2(7, 3, 6, 5)) * 5.0)) - f;
     d = length(p);
     k = min(d, k);
-    k = smoothstep(0.0, k, sin(f.x + f.y) * size);
+    k = smoothstep(0.0, k, sin(f.x + f.y) * size / 100.0);
     return k * w;
 }
 
