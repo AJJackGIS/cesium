@@ -210,6 +210,11 @@ import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
  *      <li><code>percent</code>: 流动部分占比.</li>
  *      <li><code>gradient</code>: 打底线颜色透明度.</li>
  *  </ul>
+ *  <li>EllipseFade</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
  *  <li>ElevationContour</li>
  *  <ul>
  *      <li><code>color</code>: color and alpha for the contour line.</li>
@@ -1710,10 +1715,10 @@ Material._materialCache.addMaterial(Material.PolylineFlowType, {
  * @type {string}
  * @readonly
  */
-Material.EllipseFade = "EllipseFade";
-Material._materialCache.addMaterial(Material.EllipseFade, {
+Material.EllipseFadeType = "EllipseFade";
+Material._materialCache.addMaterial(Material.EllipseFadeType, {
   fabric: {
-    type: Material.EllipseFade,
+    type: Material.EllipseFadeType,
     uniforms: {
       color: new Color(1.0, 1.0, 1.0, 1.0),
       speed: 1.0,
