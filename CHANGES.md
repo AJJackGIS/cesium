@@ -6,14 +6,22 @@
 
 #### Breaking Changes :mega:
 
+- `createGooglePhotorealistic3DTileset(key)` has been removed. Use `createGooglePhotorealistic3DTileset({key})` instead.
 - Changed behavior of `DataSourceDisplay.ready` to always stay `true` once it is initially set to `true`. [#12429](https://github.com/CesiumGS/cesium/pull/12429)
+
+#### Additions :tada:
+
+- Add `ITwinData.loadGeospatialFeatures(iTwinId, collectionId)` function to load data from the [Geospatial Features API](https://developer.bentley.com/apis/geospatial-features/operations/get-features/) [#12449](https://github.com/CesiumGS/cesium/pull/12449)
 
 #### Fixes :wrench:
 
 - Fixed error when resetting `Cesium3DTileset.modelMatrix` to its initial value. [#12409](https://github.com/CesiumGS/cesium/pull/12409)
 - Fixed the parameter types of the `ClippingPolygon.equals` function, and fixed cases where parameters to `equals` functions had erroneously not been marked as 'optional'. [#12394](https://github.com/CesiumGS/cesium/pull/12394)
-- Fixed type of `ImageryLayer.fromProviderAsync`, to correctly show that the param `options` is optional. [#12400](https://github.com/CesiumGS/cesium/pull/12400)
 - Fixed Draco decoding for vertex colors that are normalized `UNSIGNED_BYTE` or `UNSIGNED_SHORT`. [#12417](https://github.com/CesiumGS/cesium/pull/12417)
+- Fixed urls with https in the documentation `basemap.nationalmap.gov` [#12375](https://github.com/CesiumGS/cesium/issues/12375)
+- Fixed error in polyline when sinAngle is < 1. the value of expandWidth was too much. [#12434](https://github.com/CesiumGS/cesium/pull/12434)
+- Allow external tilesets in multiple contents. [#12440](https://github.com/CesiumGS/cesium/pull/12440)
+- Fixed type of `ImageryLayer.fromProviderAsync`, to correctly show that the param `options` is optional. [#12400](https://github.com/CesiumGS/cesium/pull/12400)
 - Fixed type error when setting `Viewer.selectedEntity` [#12303](https://github.com/CesiumGS/cesium/issues/12303)
 
 ## 1.125 - 2025-01-02
@@ -24,6 +32,7 @@
 
 - Expanded integration with the [iTwin Platform](https://developer.bentley.com/) to load GeoJSON and KML data from the Reality Management API. Use `ITwinData.createDataSourceForRealityDataId` to load data as either GeoJSON or KML`. [#12344](https://github.com/CesiumGS/cesium/pull/12344)
 - Added `environmentMapOptions` to `ModelGraphics`. For performance reasons by default, the environment map will not update if the entity position change. If environment map updates based on entity position are desired, provide an appropriate `environmentMapOptions.maximumPositionEpsilon` value. [#12358](https://github.com/CesiumGS/cesium/pull/12358)
+- Added events to `VoxelPrimitive` to match `Cesium3DTileset`, including `allTilesLoaded`, `initialTilesLoaded`, `loadProgress`, `tileFailed`, `tileLoad`, `tileVisible`, `tileUnload`.
 
 #### Fixes :wrench:
 
