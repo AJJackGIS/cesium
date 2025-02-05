@@ -5,6 +5,12 @@ import GeographicProjection from "./GeographicProjection.js";
 import CesiumMath from "./Math.js";
 import Rectangle from "./Rectangle.js";
 
+/**
+ * An Ellipsoid instance initialized to the CGCS2000 standard.
+ *
+ * @type {Ellipsoid}
+ * @constant
+ */
 Ellipsoid.CGCS2000 = Object.freeze(
   new Ellipsoid(6378137.0, 6378137.0, 6356752.31414035585),
 );
