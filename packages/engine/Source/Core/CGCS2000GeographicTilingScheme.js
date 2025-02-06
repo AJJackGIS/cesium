@@ -6,16 +6,6 @@ import CesiumMath from "./Math.js";
 import Rectangle from "./Rectangle.js";
 
 /**
- * An Ellipsoid instance initialized to the CGCS2000 standard.
- *
- * @type {Ellipsoid}
- * @constant
- */
-Ellipsoid.CGCS2000 = Object.freeze(
-  new Ellipsoid(6378137.0, 6378137.0, 6356752.31414035585),
-);
-
-/**
  * CGCS2000 专用的 GeographicTilingScheme
  * @param options
  * @constructor
@@ -24,7 +14,7 @@ function CGCS2000GeographicTilingScheme(options) {
   options = defaultValue(options, defaultValue.EMPTY_OBJECT);
   this._tileInfo = options.tileInfo;
   this._ellipsoid = Ellipsoid.CGCS2000;
-  this._rectangle = Rectangle.MAX_VALUE; // -180 90 180 -90
+  this._rectangle = Rectangle.MAX_VALUE;
   this._projection = new GeographicProjection(this._ellipsoid);
   // 这个没用
   this._numberOfLevelZeroTilesX = defaultValue(

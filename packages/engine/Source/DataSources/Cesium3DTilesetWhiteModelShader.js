@@ -8,6 +8,9 @@ import TextureUniform from "../Scene/Model/TextureUniform.js";
 import UniformType from "../Scene/Model/UniformType.js";
 import VaryingType from "../Scene/Model/VaryingType.js";
 
+/**
+ * Cesium3DTileset 白膜特效
+ */
 class Cesium3DTilesetWhiteModelShader {
   /**
    * 根据高度实现渐变色(高度越高颜色越不透明)

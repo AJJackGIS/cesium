@@ -134,7 +134,7 @@ async function requestMetadata(resource, imageryProviderBuilder) {
  * @alias CGCS2000ArcGisMapServerImageryProvider
  * @constructor
  *
- * @param {CGCS2000ArcGisMapServerImageryProvider.ConstructorOptions} [options] Object describing initialization options
+ * @param {ArcGisMapServerImageryProvider.ConstructorOptions} [options] Object describing initialization options
  *
  * @see CGCS2000ArcGisMapServerImageryProvider.fromUrl
  *
@@ -281,7 +281,7 @@ Object.defineProperties(CGCS2000ArcGisMapServerImageryProvider.prototype, {
  * used, if available.
  *
  * @param {Resource|String} url The URL of the ArcGIS MapServer service.
- * @param {CGCS2000ArcGisMapServerImageryProvider.ConstructorOptions} [options] Object describing initialization options.
+ * @param {ArcGisMapServerImageryProvider.ConstructorOptions} [options] Object describing initialization options.
  * @returns {Promise<CGCS2000ArcGisMapServerImageryProvider>} A promise that resolves to the created CGCS2000ArcGisMapServerImageryProvider.
  *
  * @example
