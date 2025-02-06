@@ -1,4 +1,5 @@
 import Color from "../Core/Color.js";
+import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import Event from "../Core/Event.js";
 import JulianDate from "../Core/JulianDate.js";
@@ -17,6 +18,7 @@ const defaultSpeed = 1.0;
  * @param {Property|number} [options.speed=1.0] 速率
  */
 function EllipseFadeMaterialProperty(options) {
+  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
   this._definitionChanged = new Event();
 
   this._color = undefined;

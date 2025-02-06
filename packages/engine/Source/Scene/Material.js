@@ -21,6 +21,7 @@ import AspectRampMaterial from "../Shaders/Materials/AspectRampMaterial.js";
 import BumpMapMaterial from "../Shaders/Materials/BumpMapMaterial.js";
 import CheckerboardMaterial from "../Shaders/Materials/CheckerboardMaterial.js";
 import CircleWaveMaterial from "../Shaders/Materials/CircleWaveMaterial.js";
+import CylinderWaveMaterial from "../Shaders/Materials/CylinderWaveMaterial.js";
 import DotMaterial from "../Shaders/Materials/DotMaterial.js";
 import ElevationBandMaterial from "../Shaders/Materials/ElevationBandMaterial.js";
 import ElevationContourMaterial from "../Shaders/Materials/ElevationContourMaterial.js";
@@ -210,6 +211,21 @@ import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
  *      <li><code>speed</code>: 流动速率.</li>
  *      <li><code>percent</code>: 流动部分占比.</li>
  *      <li><code>gradient</code>: 打底线颜色透明度.</li>
+ *  </ul>
+ *  <li>CircleWave</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *      <li><code>percent</code>: 流动部分占比.</li>
+ *      <li><code>gradient</code>: 打底线颜色透明度.</li>
+ *  </ul>
+ *  <li>CylinderWave</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *      <li><code>repeat</code>: 圈圈个数.</li>
+ *      <li><code>thickness</code>: 圈圈的厚度.</li>
+ *      <li><code>reverse</code>: 反向动画.</li>
  *  </ul>
  *  <li>EllipseFade</li>
  *  <ul>
@@ -1745,6 +1761,27 @@ Material._materialCache.addMaterial(Material.CircleWaveType, {
       gradient: 0.1,
     },
     source: CircleWaveMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the cylinder wave material.
+ * @type {string}
+ * @readonly
+ */
+Material.CylinderWaveType = "CylinderWave";
+Material._materialCache.addMaterial(Material.CylinderWaveType, {
+  fabric: {
+    type: Material.CylinderWaveType,
+    uniforms: {
+      color: Color.YELLOW,
+      speed: 1.0,
+      repeat: 20.0,
+      thickness: 0.3,
+      reverse: false,
+    },
+    source: CylinderWaveMaterial,
   },
   translucent: true,
 });

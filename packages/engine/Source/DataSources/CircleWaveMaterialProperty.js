@@ -21,7 +21,7 @@ const defaultGradient = 0.1;
  * @param {Property|Color} [options.color=Color.WHITE] The {@link Color} Property to be used.
  * @param {Property|number} [options.speed=1.0] 速度
  * @param {Property|number} [options.count=2.0] 波纹个数
- * @param {Property|number} [options.gradient=0.1] 渐变力度
+ * @param {Property|number} [options.gradient=0.1] 打底线颜色透明度
  *
  */
 function CircleWaveMaterialProperty(options) {
