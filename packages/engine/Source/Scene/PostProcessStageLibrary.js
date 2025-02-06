@@ -1,4 +1,5 @@
 import buildModuleUrl from "../Core/buildModuleUrl.js";
+import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
 import Color from "../Core/Color.js";
 import createGuid from "../Core/createGuid.js";
@@ -21,6 +22,7 @@ import FilmicTonemapping from "../Shaders/PostProcessStages/FilmicTonemapping.js
 import FXAA from "../Shaders/PostProcessStages/FXAA.js";
 import GaussianBlur1D from "../Shaders/PostProcessStages/GaussianBlur1D.js";
 import GroundFog from "../Shaders/PostProcessStages/GroundFog.js";
+import HeightFog from "../Shaders/PostProcessStages/HeightFog.js";
 import LensFlare from "../Shaders/PostProcessStages/LensFlare.js";
 import ModifiedReinhardTonemapping from "../Shaders/PostProcessStages/ModifiedReinhardTonemapping.js";
 import NightVision from "../Shaders/PostProcessStages/NightVision.js";
@@ -773,6 +775,35 @@ PostProcessStageLibrary.createGroundFogStage = function () {
     uniforms: {
       fogColor: Color.WHITE,
       fogByDistance: new Cartesian4(10.0, 0.0, 200.0, 1.0),
+    },
+  });
+};
+
+/**
+ * 高度雾特效.
+ * <p>
+ * This stage has the following uniforms: <code>fogColor</code> and <code>fogByDistance</code>,
+ * <ul>
+ * <li><code>u_fogColor</code> 雾颜色 default is Color(0.8, 0.82, 0.84).</li>
+ * <li><code>u_fogHeight</code> 雾最大高度 1000.</li>
+ * <li><code>u_globalDensity</code> 雾密度 0.6.</li>
+ * </ur>
+ * </p>
+ * @param {Camera} camera The camera.
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createHeightFogStage = function (camera) {
+  return new PostProcessStage({
+    name: "czm_height_fog",
+    fragmentShader: HeightFog,
+    uniforms: {
+      u_earthRadiusOnCamera: () =>
+        Cartesian3.magnitude(camera.positionWC) -
+        camera.positionCartographic.height,
+      u_cameraHeight: () => camera.positionCartographic.height,
+      u_fogColor: new Color(0.8, 0.82, 0.84),
+      u_fogHeight: 1000,
+      u_globalDensity: 0.6,
     },
   });
 };
