@@ -20,6 +20,7 @@ import TextureMinificationFilter from "../Renderer/TextureMinificationFilter.js"
 import AspectRampMaterial from "../Shaders/Materials/AspectRampMaterial.js";
 import BumpMapMaterial from "../Shaders/Materials/BumpMapMaterial.js";
 import CheckerboardMaterial from "../Shaders/Materials/CheckerboardMaterial.js";
+import CircleWaveMaterial from "../Shaders/Materials/CircleWaveMaterial.js";
 import DotMaterial from "../Shaders/Materials/DotMaterial.js";
 import ElevationBandMaterial from "../Shaders/Materials/ElevationBandMaterial.js";
 import ElevationContourMaterial from "../Shaders/Materials/ElevationContourMaterial.js";
@@ -1724,6 +1725,26 @@ Material._materialCache.addMaterial(Material.EllipseFadeType, {
       speed: 1.0,
     },
     source: EllipseFadeMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the circle wave material.
+ * @type {string}
+ * @readonly
+ */
+Material.CircleWaveType = "CircleWave";
+Material._materialCache.addMaterial(Material.CircleWaveType, {
+  fabric: {
+    type: Material.CircleWaveType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 1.0),
+      speed: 1.0,
+      count: 2.0,
+      gradient: 0.1,
+    },
+    source: CircleWaveMaterial,
   },
   translucent: true,
 });
