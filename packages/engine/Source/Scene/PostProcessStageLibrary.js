@@ -3,9 +3,12 @@ import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
 import Color from "../Core/Color.js";
 import createGuid from "../Core/createGuid.js";
+import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import Ellipsoid from "../Core/Ellipsoid.js";
 import CesiumMath from "../Core/Math.js";
+import Matrix3 from "../Core/Matrix3.js";
+import Quaternion from "../Core/Quaternion.js";
 import FXAA3_11 from "../Shaders/FXAA3_11.js";
 import AcesTonemapping from "../Shaders/PostProcessStages/AcesTonemappingStage.js";
 import AmbientOcclusionGenerate from "../Shaders/PostProcessStages/AmbientOcclusionGenerate.js";
@@ -13,6 +16,7 @@ import AmbientOcclusionModulate from "../Shaders/PostProcessStages/AmbientOcclus
 import BlackAndWhite from "../Shaders/PostProcessStages/BlackAndWhite.js";
 import BloomComposite from "../Shaders/PostProcessStages/BloomComposite.js";
 import Brightness from "../Shaders/PostProcessStages/Brightness.js";
+import CircleScan from "../Shaders/PostProcessStages/CircleScan.js";
 import Cloud from "../Shaders/PostProcessStages/Cloud.js";
 import ContrastBias from "../Shaders/PostProcessStages/ContrastBias.js";
 import DepthOfField from "../Shaders/PostProcessStages/DepthOfField.js";
@@ -27,6 +31,7 @@ import LensFlare from "../Shaders/PostProcessStages/LensFlare.js";
 import ModifiedReinhardTonemapping from "../Shaders/PostProcessStages/ModifiedReinhardTonemapping.js";
 import NightVision from "../Shaders/PostProcessStages/NightVision.js";
 import PbrNeutralTonemapping from "../Shaders/PostProcessStages/PbrNeutralTonemapping.js";
+import RadarScan from "../Shaders/PostProcessStages/RadarScan.js";
 import Rain from "../Shaders/PostProcessStages/Rain.js";
 import ReinhardTonemapping from "../Shaders/PostProcessStages/ReinhardTonemapping.js";
 import Silhouette from "../Shaders/PostProcessStages/Silhouette.js";
@@ -781,18 +786,16 @@ PostProcessStageLibrary.createGroundFogStage = function () {
 
 /**
  * 高度雾特效.
- * <p>
- * This stage has the following uniforms: <code>fogColor</code> and <code>fogByDistance</code>,
- * <ul>
- * <li><code>u_fogColor</code> 雾颜色 default is Color(0.8, 0.82, 0.84).</li>
- * <li><code>u_fogHeight</code> 雾最大高度 1000.</li>
- * <li><code>u_globalDensity</code> 雾密度 0.6.</li>
- * </ur>
- * </p>
+ *
  * @param {Camera} camera The camera.
+ * @param {object} [options] Object with the following properties:
+ * @param {Color} [options.color=new Color(0.8, 0.82, 0.84)] 颜色.
+ * @param {number} [options.height=1000] 最大高度.
+ * @param {number} [options.density=0.6] 密度.
  * @return {PostProcessStage} A post-process stage.
  */
-PostProcessStageLibrary.createHeightFogStage = function (camera) {
+PostProcessStageLibrary.createHeightFogStage = function (camera, options) {
+  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
   return new PostProcessStage({
     name: "czm_height_fog",
     fragmentShader: HeightFog,
@@ -801,9 +804,81 @@ PostProcessStageLibrary.createHeightFogStage = function (camera) {
         Cartesian3.magnitude(camera.positionWC) -
         camera.positionCartographic.height,
       u_cameraHeight: () => camera.positionCartographic.height,
-      u_fogColor: new Color(0.8, 0.82, 0.84),
-      u_fogHeight: 1000,
-      u_globalDensity: 0.6,
+      u_fogColor: options.color || new Color(0.8, 0.82, 0.84),
+      u_fogHeight: options.height || 1000,
+      u_globalDensity: options.density || 0.6,
+    },
+  });
+};
+
+/**
+ * 圆形扫描.
+ * @param {object} [options] Object with the following properties:
+ * @param {Cartesian3} [options.center] 位置.
+ * @param {Color} [options.color=Color.RED] 颜色.
+ * @param {number} [options.radius=1000] 扫描半径.
+ * @param {number} [options.speed=1] 扫描速度.
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createCircleScanStage = function (options) {
+  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  const center = options.center || new Cartesian3(110, 30);
+  const color = options.color || Color.RED;
+  const radius = options.radius || 1000;
+  const speed = options.speed || 1;
+
+  return new PostProcessStage({
+    name: "czm_circle_scan",
+    fragmentShader: CircleScan,
+    uniforms: {
+      color: color,
+      speed: speed,
+      radius: radius,
+      centerWC: center,
+      normalWC: Ellipsoid.WGS84.geodeticSurfaceNormal(center),
+    },
+  });
+};
+
+/**
+ * 雷达扫描.
+ * @param {object} [options] Object with the following properties:
+ * @param {Cartesian3} [options.center] 位置.
+ * @param {Color} [options.color=Color.RED] 颜色.
+ * @param {number} [options.radius=1000] 扫描半径.
+ * @param {number} [options.speed=1] 扫描速度.
+ * @return {PostProcessStage} A post-process stage.
+ */
+PostProcessStageLibrary.createRadarScanStage = function (options) {
+  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  const center = options.center || new Cartesian3(110, 30);
+  const color = options.color || Color.RED;
+  const radius = options.radius || 1000;
+  const speed = options.speed || 1;
+  const up = Ellipsoid.WGS84.geodeticSurfaceNormal(center);
+  const time = new Date().getTime();
+
+  return new PostProcessStage({
+    name: "czm_radar_scan",
+    fragmentShader: RadarScan,
+    uniforms: {
+      color: color,
+      speed: speed,
+      radius: radius,
+      centerWC: center,
+      planeNormalWC: up,
+      lineNormalWC: () => {
+        const rotateQ = new Quaternion();
+        const rotateM = new Matrix3();
+        const east = Cartesian3.cross(Cartesian3.UNIT_Z, up, new Cartesian3());
+        const now = new Date().getTime();
+        const angle = Math.PI * 2 * ((now - time) / 1e4) * speed;
+        Quaternion.fromAxisAngle(up, angle, rotateQ);
+        Matrix3.fromQuaternion(rotateQ, rotateM);
+        Matrix3.multiplyByVector(rotateM, east, east);
+        Cartesian3.normalize(east, east);
+        return east;
+      },
     },
   });
 };
