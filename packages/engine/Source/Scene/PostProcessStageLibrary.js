@@ -1,4 +1,5 @@
 import buildModuleUrl from "../Core/buildModuleUrl.js";
+import Cartesian2 from "../Core/Cartesian2.js";
 import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
 import Color from "../Core/Color.js";
@@ -9,6 +10,8 @@ import Ellipsoid from "../Core/Ellipsoid.js";
 import CesiumMath from "../Core/Math.js";
 import Matrix3 from "../Core/Matrix3.js";
 import Quaternion from "../Core/Quaternion.js";
+import Simon1994PlanetaryPositions from "../Core/Simon1994PlanetaryPositions.js";
+import Transforms from "../Core/Transforms.js";
 import FXAA3_11 from "../Shaders/FXAA3_11.js";
 import AcesTonemapping from "../Shaders/PostProcessStages/AcesTonemappingStage.js";
 import AmbientOcclusionGenerate from "../Shaders/PostProcessStages/AmbientOcclusionGenerate.js";
@@ -37,10 +40,14 @@ import ReinhardTonemapping from "../Shaders/PostProcessStages/ReinhardTonemappin
 import Silhouette from "../Shaders/PostProcessStages/Silhouette.js";
 import Snow from "../Shaders/PostProcessStages/Snow.js";
 import Thunder from "../Shaders/PostProcessStages/Thunder.js";
+import VolumeLight_1 from "../Shaders/PostProcessStages/VolumeLight_1.js";
+import VolumeLight_2 from "../Shaders/PostProcessStages/VolumeLight_2.js";
+import VolumeLight_3 from "../Shaders/PostProcessStages/VolumeLight_3.js";
 import AutoExposure from "./AutoExposure.js";
 import PostProcessStage from "./PostProcessStage.js";
 import PostProcessStageComposite from "./PostProcessStageComposite.js";
 import PostProcessStageSampleMode from "./PostProcessStageSampleMode.js";
+import SceneTransforms from "./SceneTransforms.js";
 
 /**
  * Contains functions for creating common post-process stages.
@@ -808,6 +815,121 @@ PostProcessStageLibrary.createHeightFogStage = function (camera, options) {
       u_fogHeight: options.height || 1000,
       u_globalDensity: options.density || 0.6,
     },
+  });
+};
+
+/**
+ * 体积光特效.
+ *
+ * @param {Viewer} viewer The viewer.
+ * @param {object} [options] Object with the following properties:
+ * @param {number} [options.decay=0.96815].
+ * @param {number} [options.exposure=0.1].
+ * @param {number} [options.density=0.926].
+ * @param {number} [options.weight=0.58767].
+ * @param {number} [options.samples=100].
+ * @return {PostProcessStageComposite} A post-process stage composite.
+ */
+PostProcessStageLibrary.createVolumeLightStage = function (viewer, options) {
+  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  const decay = options.decay || 0.9681;
+  const exposure = options.exposure || 0.1;
+  const density = options.density || 0.926;
+  const weight = options.weight || 0.58767;
+  const samples = options.samples || 100;
+
+  const blackProcessStage = new PostProcessStage({
+    fragmentShader: VolumeLight_1,
+  });
+
+  const blurProcessStage = new PostProcessStage({
+    uniforms: {
+      decay: decay,
+      exposure: exposure,
+      density: density,
+      weight: weight,
+      samples: samples,
+      sampleTexture: blackProcessStage.name,
+      lightPositionOnScreen: () => {
+        const date = viewer.clock.currentTime;
+        const transformMatrix =
+          Transforms.computeIcrfToCentralBodyFixedMatrix(date);
+        const position =
+          Simon1994PlanetaryPositions.computeSunPositionInEarthInertialFrame(
+            date,
+          );
+        Matrix3.multiplyByVector(transformMatrix, position, position);
+        const screenPosition = SceneTransforms.worldToWindowCoordinates(
+          viewer.scene,
+          position,
+        );
+        if (screenPosition === undefined) {
+          return new Cartesian2(0.5, 1);
+        }
+        screenPosition.x = screenPosition.x / viewer.scene.canvas.width;
+        screenPosition.y = 1.0 - screenPosition.y / viewer.scene.canvas.height;
+        return screenPosition;
+      },
+    },
+    fragmentShader: VolumeLight_2,
+  });
+
+  const uniforms = {};
+  Object.defineProperties(uniforms, {
+    decay: {
+      get: function () {
+        return blurProcessStage.uniforms.decay;
+      },
+      set: function (value) {
+        blurProcessStage.uniforms.decay = value;
+      },
+    },
+    exposure: {
+      get: function () {
+        return blurProcessStage.uniforms.exposure;
+      },
+      set: function (value) {
+        blurProcessStage.uniforms.exposure = value;
+      },
+    },
+    density: {
+      get: function () {
+        return blurProcessStage.uniforms.density;
+      },
+      set: function (value) {
+        blurProcessStage.uniforms.density = value;
+      },
+    },
+    weight: {
+      get: function () {
+        return blurProcessStage.uniforms.weight;
+      },
+      set: function (value) {
+        blurProcessStage.uniforms.weight = value;
+      },
+    },
+    samples: {
+      get: function () {
+        return blurProcessStage.uniforms.samples;
+      },
+      set: function (value) {
+        blurProcessStage.uniforms.samples = value;
+      },
+    },
+  });
+
+  const overlayProcessStage = new PostProcessStage({
+    uniforms: {
+      blendTexture: blurProcessStage.name,
+    },
+    fragmentShader: VolumeLight_3,
+  });
+
+  return new PostProcessStageComposite({
+    name: "czm_volume_light",
+    stages: [blackProcessStage, blurProcessStage, overlayProcessStage],
+    inputPreviousStageTexture: false,
+    uniforms: uniforms,
   });
 };
 
