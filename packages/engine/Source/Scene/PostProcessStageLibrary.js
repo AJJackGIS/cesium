@@ -819,6 +819,69 @@ PostProcessStageLibrary.createHeightFogStage = function (camera, options) {
 };
 
 /**
+ * 天际线
+ * @param {object} [options] Object with the following properties:
+ * @param {Color} [options.color=new Color(1.0, 0.0, 0.0, 1.0)] 颜色.
+ * @returns {PostProcessStageComposite|PostProcessStageComposite}
+ */
+PostProcessStageLibrary.createSkyLineStage = function (options) {
+  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  // 描边颜色
+  const lineColor = options.color || new Color(1.0, 0.0, 0.0, 1.0);
+  const edgeDetection = PostProcessStageLibrary.createEdgeDetectionStage();
+  const redTexture = new PostProcessStage({
+    uniforms: {
+      lineColor: lineColor,
+    },
+    fragmentShader: `
+      uniform sampler2D colorTexture;
+      uniform sampler2D depthTexture;
+      in vec2 v_textureCoordinates;
+      uniform vec4 lineColor;
+      out vec4 outColor;
+      void main() {
+          vec4 color = texture(colorTexture, v_textureCoordinates);
+          float depth = czm_readDepth(depthTexture, v_textureCoordinates);
+          if (depth < 1.0 - 0.000001) {
+              outColor = color;
+          } else {
+              outColor = lineColor;
+          }
+      }`,
+  });
+  const blenderTexture = new PostProcessStage({
+    uniforms: {
+      lineColor: lineColor,
+      redTexture: redTexture.name,
+      silhouetteTexture: edgeDetection.name,
+    },
+    fragmentShader: `
+      uniform sampler2D redTexture;
+      uniform sampler2D silhouetteTexture;
+      uniform vec4 lineColor;
+      uniform sampler2D colorTexture;
+      in vec2 v_textureCoordinates;
+      out vec4 outColor;
+
+      void main(void) {
+          vec4 redColor = texture(redTexture, v_textureCoordinates);
+          vec4 silhouetteColor = texture(silhouetteTexture, v_textureCoordinates);
+          vec4 color = texture(colorTexture, v_textureCoordinates);
+          if (redColor.r == lineColor.r) {
+              outColor = mix(color, lineColor, silhouetteColor.a);
+          } else {
+              outColor = color;
+          }
+      }`,
+  });
+  return new PostProcessStageComposite({
+    stages: [edgeDetection, redTexture, blenderTexture],
+    inputPreviousStageTexture: false,
+    uniforms: edgeDetection.uniforms,
+  });
+};
+
+/**
  * 体积光特效.
  *
  * @param {Viewer} viewer The viewer.
