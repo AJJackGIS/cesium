@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <meta name="description" content="water reflection for offline render" />
+    <meta name="cesium-sandcastle-labels" content="Showcases, Offline Render" />
+    <title>Cesium Demo</title>
+    <script type="text/javascript" src="../Sandcastle-header.js"></script>
+    <script
+      type="text/javascript"
+      src="../../../Build/CesiumUnminified/Cesium.js"
+      nomodule
+    ></script>
+    <script type="module" src="../load-cesium-es6.js"></script>
+  </head>
+  <body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+    <style>
+      @import url(../templates/bucket.css);
+    </style>
+    <div id="cesiumContainer" class="fullSize">
+      <canvas
+        id="canvas"
+        style="
+          width: 30%;
+          position: absolute;
+          top: 50px;
+          left: 50px;
+          z-index: 1;
+          background-color: red;
+          border: 1px solid #000;
+        "
+      ></canvas>
+    </div>
+    <div id="loadingOverlay"><h1>Loading...</h1></div>
+    <div id="toolbar"></div>
+    <script id="cesium_sandcastle_script">
+      window.startup = async function (Cesium) {
+        "use strict";
+        //Sandcastle_Begin
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          baseLayer: new Cesium.ImageryLayer(
+            new Cesium.AMapImageryProvider({
+              crs: "WGS84",
+            }),
+          ),
+        });
+        const tileset3d = await Cesium.Cesium3DTileset.fromUrl(
+          "http://data.mars3d.cn/3dtiles/qx-dyt/tileset.json",
+        );
+        viewer.scene.primitives.add(tileset3d);
+        viewer.camera.flyToBoundingSphere(tileset3d.boundingSphere);
+
+        // 水面范围
+        const positions = [
+          108.95870600885365, 34.22048703322034, 108.96030036213482, 34.22061583478048,
+          108.96024399461201, 34.2187291938437, 108.95862100496791, 34.21861871613447,
+        ];
+        // 水面高度
+        const waterHeight = 430;
+        // 水面中心点
+        let center = Cesium.BoundingSphere.fromPoints(
+          Cesium.Cartesian3.fromDegreesArray(positions),
+        ).center;
+        const cartographicCenter = Cesium.Cartographic.fromCartesian(center);
+        cartographicCenter.height = waterHeight;
+        center = Cesium.Cartographic.toCartesian(cartographicCenter);
+        // 水面法向量
+        const waterNormal = Cesium.Ellipsoid.WGS84.geodeticSurfaceNormal(center);
+
+        const polygon = new Cesium.PolygonGeometry({
+          polygonHierarchy: new Cesium.PolygonHierarchy(
+            Cesium.Cartesian3.fromDegreesArray(positions),
+          ),
+          height: waterHeight,
+        });
+
+        const geometry = Cesium.PolygonGeometry.createGeometry(polygon);
+
+        const instance = new Cesium.GeometryInstance({
+          geometry: geometry,
+          vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+        });
+
+        const material = new Cesium.Material({
+          fabric: {
+            type: "reflectionWater",
+            uniforms: {
+              image: "",
+              waterNormal: waterNormal,
+              normalMap: Cesium.buildModuleUrl("Assets/Textures/waterNormals.jpg"),
+              specularMap: "czm_defaultImage",
+              fresnelParams: new Cesium.Cartesian3(0.8, 1.0, 5),
+              baseWaterColor: new Cesium.Color(0.2, 0.3, 0.6, 1.0),
+              blendColor: new Cesium.Color(0.0, 1.0, 0.699, 1.0),
+              frequency: 2000.0,
+              animationSpeed: 0.05,
+              amplitude: 5.0,
+              specularIntensity: 0.5,
+              fadeFactor: 1.0,
+            },
+            source: `
+            uniform sampler2D image;
+            uniform vec3 waterNormal;
+            uniform vec3 fresnelParams;  // x为最小反射系数，y为最大反射系数，z为视线因子
+            uniform sampler2D specularMap;
+            uniform sampler2D normalMap;
+            uniform vec4 baseWaterColor;
+            uniform vec4 blendColor;
+            uniform float frequency;
+            uniform float animationSpeed;
+            uniform float amplitude;
+            uniform float specularIntensity;
+            uniform float fadeFactor;
+
+            czm_material czm_getMaterial(czm_materialInput materialInput) {
+              czm_material material = czm_getDefaultMaterial(materialInput);
+              float time = czm_frameNumber * animationSpeed;
+              float fade = max(1.0, (length(materialInput.positionToEyeEC) / 10000000000.0) * frequency * fadeFactor);
+              float specularMapValue = texture(specularMap, materialInput.st).r;
+              vec4 noise = czm_getWaterNoise(normalMap, materialInput.st * frequency, time, 0.0);
+              vec3 normalTangentSpace = noise.xyz * vec3(1.0, 1.0, (1.0 / amplitude));
+              normalTangentSpace.xy /= fade;
+              normalTangentSpace = mix(vec3(0.0, 0.0, 50.0), normalTangentSpace, specularMapValue);
+              normalTangentSpace = normalize(normalTangentSpace);
+              float tsPerturbationRatio = clamp(dot(normalTangentSpace, vec3(0.0, 0.0, 1.0)), 0.0, 1.0);
+              float alpha = mix(blendColor.a, baseWaterColor.a, specularMapValue) * specularMapValue;
+              vec3 waterColor = mix(blendColor.rgb, baseWaterColor.rgb, specularMapValue);
+              waterColor += (0.1 * tsPerturbationRatio);
+
+              // 获取水面反射的颜色
+              vec2 uv = gl_FragCoord.xy / czm_viewport.zw;  // 获取屏幕uv
+              uv.s = (1.0 - uv.s);// 镜像翻转
+              // 按照法线方向来扰动反射贴图的纹理坐标
+              uv += normalTangentSpace.xz / 100.0;
+              vec3 reflectColor = texture(image, uv).rgb;
+              // 加入菲涅尔现象
+              vec3 positionEC = -materialInput.positionToEyeEC;
+              vec4 positionWC = czm_inverseView * vec4(positionEC, 1.0);
+              vec3 cameraDir = normalize(positionWC.xyz - czm_viewerPositionWC);
+              vec3 n = normalize(waterNormal);
+              float fresnel = 1.0 - dot(-cameraDir, n);
+              float min_rc = fresnelParams.x; // 物体最小反射系数
+              float max_rc = fresnelParams.y;// 物体最大反射系数
+              float f = fresnelParams.z;// 视线因子
+              fresnel = min_rc + (max_rc - min_rc) * pow(fresnel, f);
+              // 菲涅尔值高，代表反射强(更多显示水的反射)，值低则是折射强(也可以理解成更多显示水的本色)
+              material.diffuse = mix(waterColor, reflectColor, fresnel);
+              material.alpha = mix(alpha, 1.0, fresnel);
+              material.normal = normalize(materialInput.tangentToEyeMatrix * normalTangentSpace);
+              material.specular = specularIntensity;
+              material.shininess = 10.0;
+              return material;
+            }
+          `,
+          },
+        });
+
+        const appearance = new Cesium.EllipsoidSurfaceAppearance({
+          material: material,
+        });
+
+        const primitive = new Cesium.Primitive({
+          geometryInstances: instance,
+          appearance: appearance,
+          asynchronous: false,
+        });
+
+        viewer.scene.primitives.add(primitive);
+
+        // 裁剪平面
+        const models = [tileset3d];
+        const clipPlaneCollections = models.map((model) =>
+          clipAnyModel(model, center, waterNormal),
+        );
+
+        viewer.scene.preRender.addEventListener(() => {
+          const scene = viewer.scene;
+          const width = scene.context.drawingBufferWidth;
+          const height = scene.context.drawingBufferHeight;
+          const fbo = new Cesium.Framebuffer({
+            context: scene.context,
+            colorTextures: [
+              new Cesium.Texture({
+                context: scene.context,
+                width: width,
+                height: height,
+                pixelFormat: Cesium.PixelFormat.RGBA,
+              }),
+            ],
+          });
+          const reflectCamera = getMirrorCamera(viewer.camera, waterNormal, center);
+          // 渲染前开启裁剪面
+          clipPlaneCollections.forEach((clipPlaneCollection) => {
+            if (clipPlaneCollection) {
+              clipPlaneCollection.enabled = true;
+            }
+          });
+          renderToFbo(fbo, scene, reflectCamera);
+          // 渲染前开启裁剪面
+          clipPlaneCollections.forEach((clipPlaneCollection) => {
+            if (clipPlaneCollection) {
+              clipPlaneCollection.enabled = false;
+            }
+          });
+          material.uniforms.image = fbo.getColorTexture(0);
+
+          const pixels = scene.context.readPixels({
+            x: 0,
+            y: 0,
+            width: width,
+            height: height,
+            framebuffer: fbo,
+          });
+
+          const canvas = document.getElementById("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          const imgData = new ImageData(new Uint8ClampedArray(pixels), width, height);
+          ctx.putImageData(imgData, 0, 0, 0, 0, width, height);
+          // 翻转
+          ctx.translate(0, height);
+          // 镜面反转
+          ctx.scale(1, -1);
+          ctx.drawImage(canvas, 0, 0);
+        });
+
+        /**
+         * @param {Cesium.Camera} camera 原始相机
+         * @param {Cesium.Cartesian3} normal 反射面的法向量
+         * @param {Cesium.Cartesian3} centerPosition 反射面的中心点
+         */
+        function getMirrorCamera(camera, normal, centerPosition) {
+          // 场景相机到反射面中心点的向量
+          const cameraToCenter = Cesium.Cartesian3.subtract(
+            centerPosition,
+            camera.position,
+            new Cesium.Cartesian3(),
+          );
+
+          // 反射向量就是 相机原本方向 - 2倍的方向在法向量的投影
+          const n = -2 * Cesium.Cartesian3.dot(normal, cameraToCenter);
+          const t = Cesium.Cartesian3.multiplyByScalar(
+            normal,
+            n,
+            new Cesium.Cartesian3(),
+          );
+          const reflectCameraPosition = Cesium.Cartesian3.subtract(
+            camera.position,
+            t,
+            new Cesium.Cartesian3(),
+          );
+
+          // direction反射后的结果同方向计算一样
+          const ndir = 2 * Cesium.Cartesian3.dot(normal, camera.directionWC);
+          const tdir = Cesium.Cartesian3.multiplyByScalar(
+            normal,
+            ndir,
+            new Cesium.Cartesian3(),
+          );
+          const reflectCameraDirection = Cesium.Cartesian3.subtract(
+            camera.directionWC,
+            tdir,
+            new Cesium.Cartesian3(),
+          );
+          Cesium.Cartesian3.normalize(reflectCameraDirection, reflectCameraDirection);
+
+          // up反射后的结果同方向计算一样
+          const nup = 2 * Cesium.Cartesian3.dot(normal, camera.upWC);
+          const tup = Cesium.Cartesian3.multiplyByScalar(
+            normal,
+            nup,
+            new Cesium.Cartesian3(),
+          );
+          const reflectCameraUp = Cesium.Cartesian3.subtract(
+            camera.upWC,
+            tup,
+            new Cesium.Cartesian3(),
+          );
+
+          // 创建反射相机，克隆可以继承原始相机的视锥体参数
+          const reflectCamera = Cesium.Camera.clone(camera);
+          reflectCamera.position = reflectCameraPosition;
+          reflectCamera.up = reflectCameraUp;
+          reflectCamera.direction = reflectCameraDirection;
+          // reflectCamera.right = Cesium.Cartesian3.cross(
+          //   reflectCameraUp,
+          //   reflectCameraDirection,
+          //   new Cesium.Cartesian3(),
+          // );
+
+          return reflectCamera;
+        }
+
+        function renderToFbo(fbo, scene, camera) {
+          const frameState = scene._frameState;
+          const context = scene.context;
+          const uniformState = context.uniformState;
+
+          const preRenderCamera = scene._defaultView.camera; // 存储渲染前的相机位置
+          scene._defaultView.camera = camera; // 设置反射相机
+
+          const view = scene._defaultView;
+          scene._view = view;
+
+          scene.updateFrameState();
+          frameState.passes.render = true;
+          frameState.passes.postProcess = scene.postProcessStages.hasSelected;
+          frameState.tilesetPassState = new Cesium.Cesium3DTilePassState({
+            pass: Cesium.Cesium3DTilePass.RENDER,
+          });
+
+          const backgroundColor = Cesium.defaultValue(
+            scene.backgroundColor,
+            Cesium.Color.BLACK,
+          );
+          frameState.backgroundColor = backgroundColor;
+          frameState.atmosphere = scene.atmosphere;
+          scene.fog.update(frameState);
+          uniformState.update(frameState);
+
+          // const shadowMap = scene.shadowMap;
+          // if (Cesium.defined(shadowMap) && shadowMap.enabled) {
+          //   if (
+          //     !Cesium.defined(scene.light) ||
+          //     scene.light instanceof Cesium.SunLight
+          //   ) {
+          //     Cesium.Cartesian3.negate(
+          //       uniformState.sunDirectionWC,
+          //       scene._shadowMapCamera.direction,
+          //     );
+          //   } else {
+          //     Cesium.Cartesian3.clone(
+          //       scene.light.direction,
+          //       scene._shadowMapCamera.direction,
+          //     );
+          //   }
+          //   frameState.shadowMaps.push(shadowMap);
+          // }
+
+          scene._computeCommandList.length = 0;
+          scene._overlayCommandList.length = 0;
+
+          const viewport = view.viewport;
+          viewport.x = 0;
+          viewport.y = 0;
+          viewport.width = context.drawingBufferWidth;
+          viewport.height = context.drawingBufferHeight;
+
+          const passState = view.passState;
+          passState.framebuffer = fbo;
+          passState.blendingEnabled = undefined;
+          passState.scissorTest = undefined;
+
+          passState.viewport = Cesium.BoundingRectangle.clone(
+            viewport,
+            passState.viewport,
+          );
+
+          // if (Cesium.defined(scene.globe)) {
+          //   scene.globe.beginFrame(frameState);
+          // }
+
+          scene.updateEnvironment();
+          scene.updateAndExecuteCommands(passState, scene.backgroundColor);
+          scene.resolveFramebuffers(passState);
+
+          // if (Cesium.defined(scene.globe)) {
+          //   scene.globe.endFrame(frameState);
+          //
+          //   if (!scene.globe.tilesLoaded) {
+          //     scene._renderRequested = true;
+          //   }
+          // }
+          context.endFrame();
+          scene._defaultView.camera = preRenderCamera; // 重置相机
+        }
+
+        /** 根据参数裁剪3DTileset, Model, 或者Entity中的model，保留法向量方向上的部分
+         * @param m Cesium3DTileset, Model, Entity
+         * @param centerPosition  裁剪面的中心点
+         * @param normal 裁剪面的法向量
+         */
+        function clipAnyModel(m, centerPosition, normal) {
+          let transform;
+          let model;
+          // tileset有可能进行了一些变换，所以需要将transform乘上modelMatrix
+          if (m instanceof Cesium.Cesium3DTileset) {
+            model = m;
+            transform = Cesium.Matrix4.multiply(
+              model.modelMatrix,
+              model.root.transform,
+              new Cesium.Matrix4(),
+            );
+            Cesium.Matrix4.inverse(transform, transform);
+          } else if (m instanceof Cesium.Model) {
+            model = m;
+            transform = Cesium.Matrix4.inverse(model.modelMatrix, new Cesium.Matrix4());
+          } else {
+            if (!m.model) {
+              return;
+            }
+            transform = Cesium.Transforms.eastNorthUpToFixedFrame(
+              m.position.getValue(new Cesium.JulianDate()),
+            );
+            Cesium.Matrix4.inverse(transform, transform);
+            model = m.model;
+          }
+
+          const clippingPlanes = new Cesium.ClippingPlaneCollection();
+          const plane = Cesium.Plane.fromPointNormal(centerPosition, normal);
+          const clipPlane = Cesium.Plane.transform(plane, transform);
+          clippingPlanes.add(clipPlane);
+          model.clippingPlanes = clippingPlanes;
+
+          return clippingPlanes;
+        }
+
+        const controls = {
+          min: 0.8,
+          max: 1.0,
+          radius: 5.0,
+          baseWaterColor: "#334c99",
+          blendColor: "#00ffb2",
+          frequency: 2000.0,
+          animationSpeed: 0.05,
+          amplitude: 5.0,
+          specularIntensity: 0.5,
+          fadeFactor: 1.0,
+          showCamera: function () {
+            viewer.scene.primitives.add(
+              new Cesium.DebugCameraPrimitive({
+                camera: viewer.camera,
+                color: Cesium.Color.YELLOW,
+                updateOnChange: false,
+              }),
+            );
+            viewer.scene.primitives.add(
+              new Cesium.DebugCameraPrimitive({
+                camera: getMirrorCamera(viewer.camera, waterNormal, center),
+                color: Cesium.Color.RED,
+                updateOnChange: false,
+              }),
+            );
+          },
+        };
+
+        // const gui = new dat.GUI();
+        //
+        // gui.addColor(controls, "baseWaterColor").onChange(function (value) {
+        //   material.uniforms.baseWaterColor = Cesium.Color.fromCssColorString(value);
+        // });
+        // gui.addColor(controls, "blendColor").onChange(function (value) {
+        //   material.uniforms.blendColor = Cesium.Color.fromCssColorString(value);
+        // });
+        // gui.add(controls, "frequency", 0, 5000).onChange(function (value) {
+        //   material.uniforms.frequency = value;
+        // });
+        // gui.add(controls, "animationSpeed", 0, 0.1).onChange(function (value) {
+        //   material.uniforms.animationSpeed = value;
+        // });
+        // gui.add(controls, "amplitude", 0, 5).onChange(function (value) {
+        //   material.uniforms.amplitude = value;
+        // });
+        // gui.add(controls, "specularIntensity", 0, 5).onChange(function (value) {
+        //   material.uniforms.specularIntensity = value;
+        // });
+        // gui.add(controls, "fadeFactor", 0, 5).onChange(function (value) {
+        //   material.uniforms.fadeFactor = value;
+        // });
+        // gui.add(controls, "min", 0, 1).onChange(function (value) {
+        //   material.uniforms.fresnelParams.x = value;
+        // });
+        // gui.add(controls, "max", 0, 1).onChange(function (value) {
+        //   material.uniforms.fresnelParams.y = value;
+        // });
+        // gui.add(controls, "radius", 0, 10).onChange(function (value) {
+        //   material.uniforms.fresnelParams.z = value;
+        // });
+        // gui.add(controls, "showCamera");
+
+        //Sandcastle_End
+      };
+      if (typeof Cesium !== "undefined") {
+        window.startupCalled = true;
+        window.startup(Cesium).catch((error) => {
+          "use strict";
+          console.error(error);
+        });
+        Sandcastle.finishedLoading();
+      }
+    </script>
+  </body>
+</html>
