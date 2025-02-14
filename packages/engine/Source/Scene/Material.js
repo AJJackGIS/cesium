@@ -28,12 +28,14 @@ import ElevationContourMaterial from "../Shaders/Materials/ElevationContourMater
 import ElevationRampMaterial from "../Shaders/Materials/ElevationRampMaterial.js";
 import EllipseFadeMaterial from "../Shaders/Materials/EllipseFadeMaterial.js";
 import FadeMaterial from "../Shaders/Materials/FadeMaterial.js";
+import FlickerMaterial from "../Shaders/Materials/FlickerMaterial.js";
 import GridMaterial from "../Shaders/Materials/GridMaterial.js";
 import NormalMapMaterial from "../Shaders/Materials/NormalMapMaterial.js";
 import PolylineArrowMaterial from "../Shaders/Materials/PolylineArrowMaterial.js";
 import PolylineDashMaterial from "../Shaders/Materials/PolylineDashMaterial.js";
 import PolylineFlowMaterial from "../Shaders/Materials/PolylineFlowMaterial.js";
 import PolylineGlowMaterial from "../Shaders/Materials/PolylineGlowMaterial.js";
+import PolylineODLineMaterial from "../Shaders/Materials/PolylineODLineMaterial.js";
 import PolylineOutlineMaterial from "../Shaders/Materials/PolylineOutlineMaterial.js";
 import PolylineTrailImageMaterial from "../Shaders/Materials/PolylineTrailImageMaterial.js";
 import PolylineTrailMaterial from "../Shaders/Materials/PolylineTrailMaterial.js";
@@ -206,12 +208,22 @@ import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
  *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
  *      <li><code>speed</code>: 流动速率.</li>
  *  </ul>
- *   <li>PolylineImageTrail</li>
+ *  <li>PolylineImageTrail</li>
  *  <ul>
  *      <li><code>image</code>: 材质.</li>
  *      <li><code>color</code>: 颜色.</li>
  *      <li><code>speed</code>: 流动速率.</li>
  *      <li><code>repeat</code>: 重复次数.</li>
+ *  </ul>
+ *  <li>PolylineODLine</li>
+ *  <ul>
+ *      <li><code>color</code>: 颜色.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>Flicker</li>
+ *  <ul>
+ *      <li><code>color</code>: 颜色.</li>
+ *      <li><code>speed</code>: 闪缩速率.</li>
  *  </ul>
  *  <li>PolylineFlow</li>
  *  <ul>
@@ -1751,6 +1763,46 @@ Material._materialCache.addMaterial(Material.PolylineFlowType, {
       gradient: 0,
     },
     source: PolylineFlowMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the od line material.
+ * @type {string}
+ * @readonly
+ */
+Material.PolylineODLineType = "PolylineODLine";
+Material._materialCache.addMaterial(Material.PolylineODLineType, {
+  fabric: {
+    type: Material.PolylineODLineType,
+    uniforms: {
+      color: new Color(1.0, 1.0, 0.0, 0.7),
+      bgColor: new Color(1.0, 1.0, 0.0, 0.1),
+      bidirectional: 0,
+      globalAlpha: 1,
+      speed: 1.0,
+      startTime: 0,
+    },
+    source: PolylineODLineMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the flicker material.
+ * @type {string}
+ * @readonly
+ */
+Material.FlickerType = "Flicker";
+Material._materialCache.addMaterial(Material.FlickerType, {
+  fabric: {
+    type: Material.FlickerType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1.0,
+    },
+    source: FlickerMaterial,
   },
   translucent: true,
 });
