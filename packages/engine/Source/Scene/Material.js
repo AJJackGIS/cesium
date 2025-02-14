@@ -35,6 +35,7 @@ import PolylineDashMaterial from "../Shaders/Materials/PolylineDashMaterial.js";
 import PolylineFlowMaterial from "../Shaders/Materials/PolylineFlowMaterial.js";
 import PolylineGlowMaterial from "../Shaders/Materials/PolylineGlowMaterial.js";
 import PolylineOutlineMaterial from "../Shaders/Materials/PolylineOutlineMaterial.js";
+import PolylineTrailImageMaterial from "../Shaders/Materials/PolylineTrailImageMaterial.js";
 import PolylineTrailMaterial from "../Shaders/Materials/PolylineTrailMaterial.js";
 import RimLightingMaterial from "../Shaders/Materials/RimLightingMaterial.js";
 import SlopeRampMaterial from "../Shaders/Materials/SlopeRampMaterial.js";
@@ -204,6 +205,13 @@ import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
  *  <ul>
  *      <li><code>color</code>: diffuse color and alpha for the interior of the line.</li>
  *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *   <li>PolylineImageTrail</li>
+ *  <ul>
+ *      <li><code>image</code>: 材质.</li>
+ *      <li><code>color</code>: 颜色.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *      <li><code>repeat</code>: 重复次数.</li>
  *  </ul>
  *  <li>PolylineFlow</li>
  *  <ul>
@@ -1703,6 +1711,26 @@ Material._materialCache.addMaterial(Material.PolylineTrailType, {
       speed: 1.0,
     },
     source: PolylineTrailMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the polyline image trail material.
+ * @type {string}
+ * @readonly
+ */
+Material.PolylineImageTrailType = "PolylineImageTrail";
+Material._materialCache.addMaterial(Material.PolylineImageTrailType, {
+  fabric: {
+    type: Material.PolylineImageTrailType,
+    uniforms: {
+      image: Material.DefaultImageId,
+      color: new Color(1.0, 0.0, 0.0, 1.0),
+      speed: 1.0,
+      repeat: new Cartesian2(1.0, 1.0),
+    },
+    source: PolylineTrailImageMaterial,
   },
   translucent: true,
 });
