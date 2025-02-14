@@ -8,7 +8,7 @@
       name="viewport"
     />
     <meta content="Create 3D models using glTF." name="description" />
-    <meta content="Tutorials,Showcases" name="cesium-sandcastle-labels" />
+    <meta name="cesium-sandcastle-labels" content="Showcases, ImageryLayer" />
     <title>Cesium Demo</title>
     <script src="../Sandcastle-header.js" type="text/javascript"></script>
     <script
@@ -36,42 +36,109 @@
           shouldAnimate: true,
         });
 
-        viewer.imageryLayers.addImageryProvider(
-          new Cesium.BaiduImageryProvider({
-            style: "img",
-            crs: "WGS84", // 纠偏 默认为原始偏移
-          }),
-        );
+        Sandcastle.addToolbarMenu([
+          {
+            text: "img-wgs84",
+            onselect: function () {
+              addImgLayer84();
+              Sandcastle.highlight(addImgLayer84);
+            },
+          },
+          {
+            text: "img",
+            onselect: function () {
+              addImgLayer();
+              Sandcastle.highlight(addImgLayer);
+            },
+          },
+          {
+            text: "vec",
+            onselect: function () {
+              addVecLayer();
+              Sandcastle.highlight(addVecLayer);
+            },
+          },
+          {
+            text: "cia",
+            onselect: function () {
+              addCiaLayer();
+              Sandcastle.highlight(addCiaLayer);
+            },
+          },
+          {
+            text: "custom",
+            onselect: function () {
+              addCustomLayer();
+              Sandcastle.highlight(addCustomLayer);
+            },
+          },
+          {
+            text: "traffic",
+            onselect: function () {
+              addTrafficLayer();
+              Sandcastle.highlight(addTrafficLayer);
+            },
+          },
+        ]);
 
-        viewer.imageryLayers.addImageryProvider(
-          new Cesium.BaiduImageryProvider({
-            style: "img",
-          }),
-        );
+        function addImgLayer84() {
+          viewer.imageryLayers.removeAll();
+          viewer.imageryLayers.addImageryProvider(
+            new Cesium.BaiduImageryProvider({
+              style: "img",
+              crs: "WGS84", // 纠偏 默认为原始偏移
+            }),
+          );
+        }
 
-        viewer.imageryLayers.addImageryProvider(
-          new Cesium.BaiduImageryProvider({
-            style: "vec",
-          }),
-        );
+        function addImgLayer() {
+          viewer.imageryLayers.removeAll();
+          viewer.imageryLayers.addImageryProvider(
+            new Cesium.BaiduImageryProvider({
+              style: "img",
+            }),
+          );
+        }
+        function addVecLayer() {
+          viewer.imageryLayers.removeAll();
+          viewer.imageryLayers.addImageryProvider(
+            new Cesium.BaiduImageryProvider({
+              style: "vec",
+            }),
+          );
+        }
 
-        viewer.imageryLayers.addImageryProvider(
-          new Cesium.BaiduImageryProvider({
-            style: "cia",
-          }),
-        );
+        function addCiaLayer() {
+          viewer.imageryLayers.removeAll();
+          viewer.imageryLayers.addImageryProvider(
+            new Cesium.BaiduImageryProvider({
+              style: "img",
+            }),
+          );
+          viewer.imageryLayers.addImageryProvider(
+            new Cesium.BaiduImageryProvider({
+              style: "cia",
+            }),
+          );
+        }
 
-        viewer.imageryLayers.addImageryProvider(
-          new Cesium.BaiduImageryProvider({
-            style: "custom",
-          }),
-        );
+        function addCustomLayer() {
+          viewer.imageryLayers.removeAll();
+          viewer.imageryLayers.addImageryProvider(
+            new Cesium.BaiduImageryProvider({
+              style: "custom",
+            }),
+          );
+        }
 
-        viewer.imageryLayers.addImageryProvider(
-          new Cesium.BaiduImageryProvider({
-            style: "traffic",
-          }),
-        );
+        function addTrafficLayer() {
+          viewer.imageryLayers.removeAll();
+          viewer.imageryLayers.addImageryProvider(
+            new Cesium.BaiduImageryProvider({
+              style: "traffic",
+            }),
+          );
+        }
 
         //Sandcastle_End
       };
