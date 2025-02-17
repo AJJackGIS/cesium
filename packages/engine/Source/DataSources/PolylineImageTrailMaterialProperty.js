@@ -18,7 +18,7 @@ const defaultRepeat = new Cartesian2(1.0, 1.0);
  * @constructor
  *
  * @param {object} [options] Object with the following properties:
- * @param {Property|string} [options.image=] 轨迹材质
+ * @param {Property|string} [options.image=''] 轨迹材质
  * @param {Property|Color} [options.color=Color.WHITE] 轨迹线颜色
  * @param {Property|number} [options.speed=1.0] 流动帧率速度
  * @param {Property|Cartesian2} [options.repeat=new Cartesian2(1.0, 1.0)] 材质重复次数
