@@ -1,4 +1,5 @@
 import Cartesian2 from "../Core/Cartesian2.js";
+import Cartesian4 from "../Core/Cartesian4.js";
 import clone from "../Core/clone.js";
 import Color from "../Core/Color.js";
 import combine from "../Core/combine.js";
@@ -31,6 +32,7 @@ import FadeMaterial from "../Shaders/Materials/FadeMaterial.js";
 import FlickerMaterial from "../Shaders/Materials/FlickerMaterial.js";
 import GridMaterial from "../Shaders/Materials/GridMaterial.js";
 import NormalMapMaterial from "../Shaders/Materials/NormalMapMaterial.js";
+import PartialElevationContourMaterial from "../Shaders/Materials/PartialElevationContourMaterial.js";
 import PolylineArrowMaterial from "../Shaders/Materials/PolylineArrowMaterial.js";
 import PolylineDashMaterial from "../Shaders/Materials/PolylineDashMaterial.js";
 import PolylineFlowMaterial from "../Shaders/Materials/PolylineFlowMaterial.js";
@@ -1881,6 +1883,30 @@ Material._materialCache.addMaterial(Material.ElevationContourType, {
       width: 1.0,
     },
     source: ElevationContourMaterial,
+  },
+  translucent: false,
+});
+
+/**
+ * Gets the name of the partial elevation contour material.
+ * @type {string}
+ * @readonly
+ */
+Material.PartialElevationContourType = "PartialElevationContour";
+Material._materialCache.addMaterial(Material.PartialElevationContourType, {
+  fabric: {
+    type: Material.PartialElevationContourType,
+    uniforms: {
+      spacing: 100.0,
+      color: new Color(1.0, 0.0, 0.0, 1.0),
+      width: 1.0,
+      rect: new Cartesian4(0.0, 0.0, 0.0, 0.0),
+      m_0: new Cartesian4(0.0, 0.0, 0.0, 0.0),
+      m_1: new Cartesian4(0.0, 0.0, 0.0, 0.0),
+      m_2: new Cartesian4(0.0, 0.0, 0.0, 0.0),
+      m_3: new Cartesian4(0.0, 0.0, 0.0, 0.0),
+    },
+    source: PartialElevationContourMaterial,
   },
   translucent: false,
 });
