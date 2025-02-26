@@ -23,6 +23,7 @@ const TILE_URL = {
  * @param {string} [options.crs='bd09'] scheme 默认：bd09 纠偏：wgs84
  * @param {string} [options.style] 地图类型 img:影像地图 vec:电子地图 cia:电子注记 custom:自定义 traffic:交通
  * @param {string} [options.customId] 自定义类型的 customId
+ * @param {string} [options.time] style 为 traffic 时生效
  */
 class BaiduImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {

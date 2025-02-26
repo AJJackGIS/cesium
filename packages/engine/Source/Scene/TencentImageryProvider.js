@@ -17,11 +17,9 @@ const TILE_URL = {
  */
 class TencentImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
-    const url =
-      options.url ||
-      [options.protocol || "", TILE_URL[options.style] || TILE_URL["img"]].join(
-        "",
-      );
+    options.protocol = options.protocol ? `${options.protocol}:` : "";
+    options.style = options.style || "img";
+    const url = options.url || options.protocol + TILE_URL[options.style];
     options["url"] = url.replace("{id}", options.customId || String(1));
     options["subdomains"] = ["1", "2", "3"];
     if (options.style === "img") {
