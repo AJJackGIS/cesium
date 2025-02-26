@@ -16,22 +16,23 @@ const TILE_URL = {
 };
 
 /**
- * 百度地图ImageryProvider
- * @param {string} url 自定义链接
- * @param {string} crs WGS84
- * @param {string} style 地图类型 img:影像地图  vec:电子地图 cia:电子注记 custom:自定义 traffic:交通
- * @param {string} id 自定义类型的customid
+ * 百度地图 ImageryProvider
+ * @param {object} [options]
+ * @param {string} [options.url] 瓦片链接
+ * @param {string} [options.protocol] 协议 http: | https:
+ * @param {string} [options.crs='bd09'] scheme 默认：bd09 纠偏：wgs84
+ * @param {string} [options.style] 地图类型 img:影像地图 vec:电子地图 cia:电子注记 custom:自定义 traffic:交通
+ * @param {string} [options.customId] 自定义类型的 customId
  */
 class BaiduImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
     options["url"] =
       options.url ||
-      [
-        options.protocol || "",
-        TILE_URL[options.style] || TILE_URL["custom"],
-      ].join("");
+      [options.protocol || "", TILE_URL[options.style] || TILE_URL["img"]].join(
+        "",
+      );
 
-    if (options.crs === "WGS84") {
+    if (options.crs === "wgs84") {
       const resolutions = [];
       for (let i = 0; i < 19; i++) {
         resolutions[i] = 256 * Math.pow(2, 18 - i);
@@ -52,9 +53,9 @@ class BaiduImageryProvider extends UrlTemplateImageryProvider {
     this._rectangle = this._tilingScheme.rectangle;
     this._url = options.url;
     this._crs = options.crs || "";
-    this._id = options.id || "normal";
+    this._id = options.customId || "normal";
     this._time = options.time || new Date().getTime();
-    this._subdomains = options.subdomains || ["0", "1", "2", "3"];
+    this._subdomains = ["0", "1", "2", "3"];
   }
 
   requestImage(x, y, level) {
@@ -68,7 +69,7 @@ class BaiduImageryProvider extends UrlTemplateImageryProvider {
       )
       .replace("{time}", this._time)
       .replace("{id}", this._id);
-    if (this._crs === "WGS84") {
+    if (this._crs === "wgs84") {
       url = url.replace("{x}", String(x)).replace("{y}", String(-y));
     } else {
       url = url

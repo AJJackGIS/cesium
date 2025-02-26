@@ -7,20 +7,23 @@ const TILE_URL = {
 };
 
 /**
- * 腾讯地图ImageryProvider
- * @param {string} url 自定义链接
- * @param {string} style 地图类型 img:影像地图  vec:电子地图
- * @param {string} id 地图风格 1 电子地图 2 影像标注 3 影像注记+河流 4 暗色系
+ * 腾讯地图 ImageryProvider
+ * @param {object} [options]
+ * @param {string} [options.url] 瓦片链接
+ * @param {string} [options.protocol] 协议 http: | https:
+ * @param {string} [options.crs='gcj02'] scheme 默认：gcj02 纠偏：wgs84
+ * @param {string} [options.style] 地图类型 img:影像地图 vec:电子地图
+ * @param {string} [options.customId=1] 地图风格 1 电子地图 2 影像标注 3 影像注记+河流 4 暗色系 注：当 style 为 vec 时，该参数才生效
  */
 class TencentImageryProvider extends UrlTemplateImageryProvider {
   constructor(options = {}) {
     const url =
       options.url ||
-      [options.protocol || "", TILE_URL[options.style] || TILE_URL["vec"]].join(
+      [options.protocol || "", TILE_URL[options.style] || TILE_URL["img"]].join(
         "",
       );
-    options["url"] = url.replace("{id}", options.id || String(1));
-    options["subdomains"] = options.subdomains || ["1", "2", "3"];
+    options["url"] = url.replace("{id}", options.customId || String(1));
+    options["subdomains"] = ["1", "2", "3"];
     if (options.style === "img") {
       options["customTags"] = {
         sx: (imageryProvider, x, y, level) => {
@@ -31,7 +34,7 @@ class TencentImageryProvider extends UrlTemplateImageryProvider {
         },
       };
     }
-    if (options.crs === "WGS84") {
+    if (options.crs === "wgs84") {
       options["tilingScheme"] = new GCJ02WebMercatorTilingScheme();
     }
     super(options);
