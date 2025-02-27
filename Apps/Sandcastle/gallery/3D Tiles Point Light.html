@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <!-- Use Chrome Frame in IE -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <meta name="description" content="Adjust the height of a 3D Tiles tileset." />
+    <meta name="cesium-sandcastle-labels" content="3D Tiles" />
+    <title>Cesium Demo</title>
+    <script type="text/javascript" src="../Sandcastle-header.js"></script>
+    <script
+      type="text/javascript"
+      src="../../../Build/CesiumUnminified/Cesium.js"
+      nomodule
+    ></script>
+    <script type="module" src="../load-cesium-es6.js"></script>
+  </head>
+  <body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+    <style>
+      @import url(../templates/bucket.css);
+    </style>
+    <div id="cesiumContainer" class="fullSize"></div>
+    <div id="loadingOverlay"><h1>Loading...</h1></div>
+    <script id="cesium_sandcastle_script">
+      window.startup = async function (Cesium) {
+        "use strict";
+        //Sandcastle_Begin
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          terrain: Cesium.Terrain.fromWorldTerrain(),
+        });
+
+        const lightShader = new Cesium.CustomShader({
+          uniforms: {
+            u_lightPosition: {
+              type: Cesium.UniformType.VEC3,
+              value: Cesium.Cartesian3.fromDegrees(
+                -75.59629968170061,
+                40.03810791622231,
+                81.06128377630554,
+              ),
+            },
+            u_lightColor: {
+              type: Cesium.UniformType.VEC3,
+              value: Cesium.Color.fromCssColorString("#ffd409"),
+            },
+            u_lightRadius: {
+              type: Cesium.UniformType.FLOAT,
+              value: 50,
+            },
+          },
+          mode: Cesium.CustomShaderMode.MODIFY_MATERIAL,
+          lightingModel: Cesium.LightingModel.UNLIT,
+          fragmentShaderText: `
+            float getDistanceDecay(float lightDistance, float distance, float decay) {
+              if (distance >= 0.0 && decay > 0.0) {
+                  // 如果超出了distance 为负值 结果为0 则不显示
+                  // 没超出， 距离越大值越小 距离越小值越大
+                  return pow(clamp(-lightDistance / distance + 1.0, 0.0, 1.0), decay);
+              }
+              return 1.0;
+            }
+            vec3 addPointLight(vec3 lightPosition, vec3 lightColor, vec3 positionWC) {
+                float lightDistance = length(lightPosition - positionWC); // 点光源与每个片元的距离
+                lightColor *= getDistanceDecay(lightDistance, u_lightRadius, 1.0); // 根据距离衰弱
+                return lightColor;
+            }
+            void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material) {
+                vec3 positionMC = fsInput.attributes.positionMC;
+                material.diffuse += addPointLight(u_lightPosition,
+                                                  u_lightColor,
+                                                  // 模型坐标转世界坐标
+                                                  (czm_model * vec4(positionMC, 1.0)).xyz);
+            }
+          `,
+        });
+
+        try {
+          const tileset = await Cesium.Cesium3DTileset.fromIonAssetId(40866);
+          tileset.customShader = lightShader;
+          viewer.scene.primitives.add(tileset);
+          viewer.zoomTo(tileset);
+        } catch (error) {
+          console.log(`Error loading tileset: ${error}`);
+        }
+
+        //Sandcastle_End
+      };
+      if (typeof Cesium !== "undefined") {
+        window.startupCalled = true;
+        window.startup(Cesium).catch((error) => {
+          "use strict";
+          console.error(error);
+        });
+        Sandcastle.finishedLoading();
+      }
+    </script>
+  </body>
+</html>
