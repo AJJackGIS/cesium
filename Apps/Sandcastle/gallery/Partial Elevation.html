@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+      name="viewport"
+    />
+    <meta content="Draw whole/partial spheres and ellipsoids." name="description" />
+    <meta content="Showcases" name="cesium-sandcastle-labels" />
+    <title>Cesium Demo</title>
+    <script src="../Sandcastle-header.js" type="text/javascript"></script>
+    <script
+      nomodule
+      src="../../../Build/CesiumUnminified/Cesium.js"
+      type="text/javascript"
+    ></script>
+    <script src="../load-cesium-es6.js" type="module"></script>
+  </head>
+  <body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+    <style>
+      @import url(../templates/bucket.css);
+    </style>
+    <div class="fullSize" id="cesiumContainer"></div>
+    <div id="loadingOverlay"><h1>Loading...</h1></div>
+    <div id="toolbar"></div>
+    <script id="cesium_sandcastle_script">
+      window.startup = async function (Cesium) {
+        "use strict";
+        //Sandcastle_Begin
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          baseLayer: new Cesium.ImageryLayer(new Cesium.AMapImageryProvider()),
+          terrainProvider: await Cesium.CesiumTerrainProvider.fromUrl(
+            "http://data.mars3d.cn/terrain",
+          ),
+        });
+
+        const contourColor = Cesium.Color.fromCssColorString("#ff0000"); // 等高线的颜色
+        const contourSpacing = 50.0; // 等高线的等间距
+        const contourWidth = 1.0; // 等高线的宽度
+
+        const rectangle = Cesium.Rectangle.fromDegrees(108, 30, 108.1, 30.05);
+
+        viewer.camera.flyTo({
+          destination: rectangle,
+        });
+
+        viewer.scene.globe.material = Cesium.createPartialElevationContourMaterial({
+          color: contourColor,
+          width: contourWidth,
+          spacing: contourSpacing,
+          rectangle: rectangle,
+        });
+        //Sandcastle_End
+      };
+      if (typeof Cesium !== "undefined") {
+        window.startupCalled = true;
+        window.startup(Cesium).catch((error) => {
+          "use strict";
+          console.error(error);
+        });
+        Sandcastle.finishedLoading();
+      }
+    </script>
+  </body>
+</html>
