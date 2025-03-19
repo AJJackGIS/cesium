@@ -1,4 +1,4 @@
-import GCJ02WebMercatorTilingScheme from "../Core/GCJ02WebMercatorTilingScheme.js";
+import GCJ02TilingScheme from "../Core/GCJ02TilingScheme.js";
 import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
 
 // 船讯网 提供服务
@@ -25,7 +25,7 @@ class GoogleImageryProvider extends UrlTemplateImageryProvider {
       );
     options.maximumLevel = 18;
     if (options.crs === "wgs84") {
-      options["tilingScheme"] = new GCJ02WebMercatorTilingScheme();
+      options["tilingScheme"] = new GCJ02TilingScheme();
     }
     super(options);
   }

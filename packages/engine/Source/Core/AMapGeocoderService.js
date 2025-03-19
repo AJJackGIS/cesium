@@ -1,15 +1,17 @@
 import Cartesian3 from "./Cartesian3.js";
+import Frozen from "./Frozen.js";
+import Lbs from "./Lbs.js";
 
 /**
- * 高德POI定位搜索
+ * 高德地址编码服务
  * @param {object} [options]
  * @param {string} [options.key] 高德地图key
  * @param {string} [options.version=v3] 接口版本 v3 | v5
  */
 class AMapGeocoderService {
   constructor(options) {
-    options = options || {};
-    this.key = options.key || "1aa7ce312b422da1b0e2b6c36a92b569";
+    options = options ?? Frozen.EMPTY_OBJECT;
+    this.key = options.key ?? Lbs.defaultAmapKey;
     this.version = options.version || "v3";
   }
 

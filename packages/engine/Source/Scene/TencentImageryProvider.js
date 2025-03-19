@@ -1,5 +1,5 @@
 import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
-import GCJ02WebMercatorTilingScheme from "../Core/GCJ02WebMercatorTilingScheme.js";
+import GCJ02TilingScheme from "../Core/GCJ02TilingScheme.js";
 
 const TILE_URL = {
   img: "//p{s}.map.gtimg.com/sateTiles/{z}/{sx}/{sy}/{x}_{reverseY}.jpg",
@@ -33,7 +33,7 @@ class TencentImageryProvider extends UrlTemplateImageryProvider {
       };
     }
     if (options.crs === "wgs84") {
-      options["tilingScheme"] = new GCJ02WebMercatorTilingScheme();
+      options["tilingScheme"] = new GCJ02TilingScheme();
     }
     super(options);
   }

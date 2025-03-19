@@ -1,3 +1,4 @@
+import Lbs from "../Core/Lbs.js";
 import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
 
 const MAP_URL =
@@ -22,7 +23,7 @@ class TdtImageryProvider extends UrlTemplateImageryProvider {
       [
         options.protocol || "",
         options.style === "cover"
-          ? COVER_URL.replace("{key}", options.key)
+          ? COVER_URL.replace("{key}", options.key ?? Lbs.defaultTdtkey)
           : MAP_URL.replace("{style}", options.style || "img").replace(
               "{key}",
               options.key || "",

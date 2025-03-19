@@ -1,4 +1,4 @@
-import BaiduWebMercatorTilingScheme from "../Core/BaiduWebMercatorTilingScheme.js";
+import BD09TilingScheme from "../Core/BD09TilingScheme.js";
 import UrlTemplateImageryProvider from "./UrlTemplateImageryProvider.js";
 import Cartesian2 from "../Core/Cartesian2.js";
 import WebMercatorTilingScheme from "../Core/WebMercatorTilingScheme.js";
@@ -38,7 +38,7 @@ class BaiduImageryProvider extends UrlTemplateImageryProvider {
       for (let i = 0; i < 19; i++) {
         resolutions[i] = 256 * Math.pow(2, 18 - i);
       }
-      options["tilingScheme"] = new BaiduWebMercatorTilingScheme({
+      options["tilingScheme"] = new BD09TilingScheme({
         resolutions,
         rectangleSouthwestInMeters: new Cartesian2(-20037726.37, -12474104.17),
         rectangleNortheastInMeters: new Cartesian2(20037726.37, 12474104.17),

@@ -10,7 +10,7 @@ import Cartographic from "./Cartographic.js";
 /**
  * 百度WebMercatorTilingScheme
  */
-class BaiduWebMercatorTilingScheme extends WebMercatorTilingScheme {
+class BD09TilingScheme extends WebMercatorTilingScheme {
   constructor(options) {
     super(options);
     const projection = new BaiduProjectionUtils();
@@ -85,4 +85,4 @@ class BaiduWebMercatorTilingScheme extends WebMercatorTilingScheme {
   }
 }
 
-export default BaiduWebMercatorTilingScheme;
+export default BD09TilingScheme;

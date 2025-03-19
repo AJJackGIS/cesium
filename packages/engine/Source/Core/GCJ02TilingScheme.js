@@ -8,7 +8,7 @@ import Cartesian2 from "./Cartesian2.js";
 /**
  * GCJ02火星坐标系WebMercatorTilingScheme
  */
-class GCJ02WebMercatorTilingScheme extends WebMercatorTilingScheme {
+class GCJ02TilingScheme extends WebMercatorTilingScheme {
   constructor(options) {
     super(options);
     const projection = new WebMercatorProjection();
@@ -39,4 +39,4 @@ class GCJ02WebMercatorTilingScheme extends WebMercatorTilingScheme {
   }
 }
 
-export default GCJ02WebMercatorTilingScheme;
+export default GCJ02TilingScheme;
