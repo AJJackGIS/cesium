@@ -62,6 +62,11 @@ import RadarWaveMaterial from "../Shaders/Materials/RadarWaveMaterial.js";
 import RimLightingMaterial from "../Shaders/Materials/RimLightingMaterial.js";
 import SlopeRampMaterial from "../Shaders/Materials/SlopeRampMaterial.js";
 import StripeMaterial from "../Shaders/Materials/StripeMaterial.js";
+import WallDiffuseMaterial from "../Shaders/Materials/WallDiffuseMaterial.js";
+import WallImageTrailMaterial from "../Shaders/Materials/WallImageTrailMaterial.js";
+import WallLineTrailMaterial from "../Shaders/Materials/WallLineTrailMaterial.js";
+import WallRippleMaterial from "../Shaders/Materials/WallRippleMaterial.js";
+import WallTrailMaterial from "../Shaders/Materials/WallTrailMaterial.js";
 import WaterMaterial from "../Shaders/Materials/Water.js";
 import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
 import AsphaltMaterial from "../Shaders/Thirdpart/AsphaltMaterial.js";
@@ -2212,6 +2217,96 @@ Material._materialCache.addMaterial(Material.RadarWaveType, {
       speed: 3.0,
     },
     source: RadarWaveMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * WallDiffuse
+ * @type {string}
+ */
+Material.WallDiffuseType = "WallDiffuse";
+Material._materialCache.addMaterial(Material.WallDiffuseType, {
+  fabric: {
+    type: Material.WallDiffuseType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+    },
+    source: WallDiffuseMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * WallImageTrail
+ * @type {string}
+ */
+Material.WallImageTrailType = "WallImageTrail";
+Material._materialCache.addMaterial(Material.WallImageTrailType, {
+  fabric: {
+    type: Material.WallImageTrailType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      image: Material.DefaultImageId,
+      repeat: new Cartesian2(1, 1),
+      speed: 1.0,
+    },
+    source: WallImageTrailMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ *  WallLineTrail
+ * @type {string}
+ */
+Material.WallLineTrailType = "WallLineTrail";
+Material._materialCache.addMaterial(Material.WallLineTrailType, {
+  fabric: {
+    type: Material.WallLineTrailType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      image: Material.DefaultImageId,
+      repeat: new Cartesian2(1, 1),
+      speed: 1.0,
+    },
+    source: WallLineTrailMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ *  WallRipple
+ * @type {string}
+ */
+Material.WallRippleType = "WallRipple";
+Material._materialCache.addMaterial(Material.WallRippleType, {
+  fabric: {
+    type: Material.WallRippleType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      count: 3.0,
+      speed: 1.0,
+    },
+    source: WallRippleMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * WallTrail
+ * @type {string}
+ */
+Material.WallTrailType = "WallTrail";
+Material._materialCache.addMaterial(Material.WallTrailType, {
+  fabric: {
+    type: Material.WallTrailType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      image: Material.DefaultImageId,
+      speed: 1,
+    },
+    source: WallTrailMaterial,
   },
   translucent: true,
 });
