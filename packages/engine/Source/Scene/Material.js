@@ -46,11 +46,15 @@ import NormalMapMaterial from "../Shaders/Materials/NormalMapMaterial.js";
 import PartialElevationContourMaterial from "../Shaders/Materials/PartialElevationContourMaterial.js";
 import PolylineArrowMaterial from "../Shaders/Materials/PolylineArrowMaterial.js";
 import PolylineDashMaterial from "../Shaders/Materials/PolylineDashMaterial.js";
+import PolylineEmissionMaterial from "../Shaders/Materials/PolylineEmissionMaterial.js";
+import PolylineFlickerMaterial from "../Shaders/Materials/PolylineFlickerMaterial.js";
 import PolylineFlowMaterial from "../Shaders/Materials/PolylineFlowMaterial.js";
 import PolylineGlowMaterial from "../Shaders/Materials/PolylineGlowMaterial.js";
+import PolylineImageTrailMaterial from "../Shaders/Materials/PolylineImageTrailMaterial.js";
+import PolylineLightingMaterial from "../Shaders/Materials/PolylineLightingMaterial.js";
+import PolylineLightingTrailMaterial from "../Shaders/Materials/PolylineLightingTrailMaterial.js";
 import PolylineODLineMaterial from "../Shaders/Materials/PolylineODLineMaterial.js";
 import PolylineOutlineMaterial from "../Shaders/Materials/PolylineOutlineMaterial.js";
-import PolylineTrailImageMaterial from "../Shaders/Materials/PolylineTrailImageMaterial.js";
 import PolylineTrailMaterial from "../Shaders/Materials/PolylineTrailMaterial.js";
 import RimLightingMaterial from "../Shaders/Materials/RimLightingMaterial.js";
 import SlopeRampMaterial from "../Shaders/Materials/SlopeRampMaterial.js";
@@ -1676,6 +1680,23 @@ Material._materialCache.addMaterial(Material.PolylineDashType, {
 });
 
 /**
+ * Gets the name of the polyline emission material.
+ * @type {string}
+ * @readonly
+ */
+Material.PolylineEmissionType = "PolylineEmission";
+Material._materialCache.addMaterial(Material.PolylineEmissionType, {
+  fabric: {
+    type: Material.PolylineEmissionType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 1.0, 1.0),
+    },
+    source: PolylineEmissionMaterial,
+  },
+  translucent: true,
+});
+
+/**
  * Gets the name of the polyline glow material.
  * @type {string}
  * @readonly
@@ -1717,6 +1738,23 @@ Material._materialCache.addMaterial(Material.PolylineOutlineType, {
 });
 
 /**
+ * PolylineFlicker
+ * @type {string}
+ */
+Material.PolylineFlickerType = "PolylineFlicker";
+Material._materialCache.addMaterial(Material.PolylineFlickerType, {
+  fabric: {
+    type: Material.PolylineFlickerType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1,
+    },
+    source: PolylineFlickerMaterial,
+  },
+  translucent: true,
+});
+
+/**
  * Gets the name of the polyline trail material.
  * @type {string}
  * @readonly
@@ -1749,7 +1787,42 @@ Material._materialCache.addMaterial(Material.PolylineImageTrailType, {
       speed: 1.0,
       repeat: new Cartesian2(1.0, 1.0),
     },
-    source: PolylineTrailImageMaterial,
+    source: PolylineImageTrailMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * PolylineLighting
+ * @type {string}
+ */
+Material.PolylineLightingType = "PolylineLighting";
+Material._materialCache.addMaterial(Material.PolylineLightingType, {
+  fabric: {
+    type: Material.PolylineLightingType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      image: Material.DefaultImageId,
+    },
+    source: PolylineLightingMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * PolylineLightingTrail
+ * @type {string}
+ */
+Material.PolylineLightingTrailType = "PolylineLightingTrail";
+Material._materialCache.addMaterial(Material.PolylineLightingTrailType, {
+  fabric: {
+    type: Material.PolylineLightingTrailType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      image: Material.DefaultImageId,
+      speed: 3.0,
+    },
+    source: PolylineLightingTrailMaterial,
   },
   translucent: true,
 });

@@ -3,7 +3,8 @@ uniform vec4 color;
 uniform float speed;
 uniform vec2 repeat;
 
-czm_material czm_getMaterial(czm_materialInput materialInput) {
+czm_material czm_getMaterial(czm_materialInput materialInput)
+{
     czm_material material = czm_getDefaultMaterial(materialInput);
     vec2 st = repeat * materialInput.st;
     float time = fract(czm_frameNumber * speed * 10.0 / 1000.0);

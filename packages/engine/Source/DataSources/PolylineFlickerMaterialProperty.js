@@ -8,20 +8,16 @@ import Property from "./Property.js";
 
 const defaultColor = Color.WHITE;
 const defaultSpeed = 1.0;
-const defaultPercent = 0.03;
-const defaultGradient = 0.1;
 
 /**
- * 流动线材质
+ * 闪烁线材质
  * @constructor
  *
  * @param {object} [options] Object with the following properties:
  * @param {Property|Color} [options.color=Color.WHITE] 粒子颜色
  * @param {Property|number} [options.speed=1.0] 流动帧率速度
- * @param {Property|number} [options.percent=0.03] 流动部分占比
- * @param {Property|number} [options.gradient=0.1] 打底线的透明度 如果为 0 则不显示打底线
  */
-function PolylineFlowMaterialProperty(options) {
+function PolylineFlickerMaterialProperty(options) {
   options = options ?? Frozen.EMPTY_OBJECT;
 
   this._definitionChanged = new Event();
@@ -29,25 +25,16 @@ function PolylineFlowMaterialProperty(options) {
   this._colorSubscription = undefined;
   this._speed = undefined;
   this._speedSubscription = undefined;
-  this._percent = undefined;
-  this._percentSubscription = undefined;
-  this._gradient = undefined;
-  this._gradientSubscription = undefined;
 
   this.color = options.color;
   this.speed = options.speed;
-  this.percent = options.percent;
-  this.gradient = options.gradient;
 }
 
-Object.defineProperties(PolylineFlowMaterialProperty.prototype, {
+Object.defineProperties(PolylineFlickerMaterialProperty.prototype, {
   isConstant: {
     get: function () {
       return (
-        Property.isConstant(this._color) &&
-        Property.isConstant(this._speed) &&
-        Property.isConstant(this._percent) &&
-        Property.isConstant(this._gradient)
+        Property.isConstant(this._color) && Property.isConstant(this._speed)
       );
     },
   },
@@ -60,17 +47,15 @@ Object.defineProperties(PolylineFlowMaterialProperty.prototype, {
 
   color: createPropertyDescriptor("color"),
   speed: createPropertyDescriptor("speed"),
-  percent: createPropertyDescriptor("percent"),
-  gradient: createPropertyDescriptor("gradient"),
 });
 
-PolylineFlowMaterialProperty.prototype.getType = function (time) {
-  return "PolylineFlow";
+PolylineFlickerMaterialProperty.prototype.getType = function (time) {
+  return "PolylineFlicker";
 };
 
 const timeScratch = new JulianDate();
 
-PolylineFlowMaterialProperty.prototype.getValue = function (time, result) {
+PolylineFlickerMaterialProperty.prototype.getValue = function (time, result) {
   if (!defined(time)) {
     time = JulianDate.now(timeScratch);
   }
@@ -84,28 +69,16 @@ PolylineFlowMaterialProperty.prototype.getValue = function (time, result) {
     result.color,
   );
   result.speed = Property.getValueOrDefault(this._speed, time, defaultSpeed);
-  result.percent = Property.getValueOrDefault(
-    this._percent,
-    time,
-    defaultPercent,
-  );
-  result.gradient = Property.getValueOrDefault(
-    this._gradient,
-    time,
-    defaultGradient,
-  );
   return result;
 };
 
-PolylineFlowMaterialProperty.prototype.equals = function (other) {
+PolylineFlickerMaterialProperty.prototype.equals = function (other) {
   return (
     this === other ||
-    (other instanceof PolylineFlowMaterialProperty &&
+    (other instanceof PolylineFlickerMaterialProperty &&
       Property.equals(this._color, other._color) &&
-      Property.equals(this._speed, other._speed) &&
-      Property.equals(this._percent, other._percent) &&
-      Property.equals(this._gradient, other._gradient))
+      Property.equals(this._speed, other._speed))
   );
 };
 
-export default PolylineFlowMaterialProperty;
+export default PolylineFlickerMaterialProperty;

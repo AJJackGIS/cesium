@@ -5,7 +5,8 @@ uniform float startTime;
 uniform float bidirectional;
 uniform float globalAlpha;
 
-czm_material czm_getMaterial(czm_materialInput materialInput) {
+czm_material czm_getMaterial(czm_materialInput materialInput)
+{
     czm_material material = czm_getDefaultMaterial(materialInput);
     vec2 st = materialInput.st;
     float t = fract(startTime + czm_frameNumber * speed / 1000.0);
