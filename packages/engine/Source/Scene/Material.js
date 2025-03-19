@@ -37,6 +37,8 @@ import ElevationBandMaterial from "../Shaders/Materials/ElevationBandMaterial.js
 import ElevationContourMaterial from "../Shaders/Materials/ElevationContourMaterial.js";
 import ElevationRampMaterial from "../Shaders/Materials/ElevationRampMaterial.js";
 import EllipseFadeMaterial from "../Shaders/Materials/EllipseFadeMaterial.js";
+import EllipsoidElectricMaterial from "../Shaders/Materials/EllipsoidElectricMaterial.js";
+import EllipsoidTrailMaterial from "../Shaders/Materials/EllipsoidTrailMaterial.js";
 import FadeMaterial from "../Shaders/Materials/FadeMaterial.js";
 import FlickerMaterial from "../Shaders/Materials/FlickerMaterial.js";
 import GridMaterial from "../Shaders/Materials/GridMaterial.js";
@@ -1826,6 +1828,40 @@ Material._materialCache.addMaterial(Material.EllipseFadeType, {
       speed: 1.0,
     },
     source: EllipseFadeMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * EllipsoidElectric
+ * @type {string}
+ */
+Material.EllipsoidElectricType = "EllipsoidElectric";
+Material._materialCache.addMaterial(Material.EllipsoidElectricType, {
+  fabric: {
+    type: Material.EllipsoidElectricType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1,
+    },
+    source: EllipsoidElectricMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * EllipsoidTrail
+ * @type {string}
+ */
+Material.EllipsoidTrailType = "EllipsoidTrail";
+Material._materialCache.addMaterial(Material.EllipsoidTrailType, {
+  fabric: {
+    type: Material.EllipsoidTrailType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+    },
+    source: EllipsoidTrailMaterial,
   },
   translucent: true,
 });
