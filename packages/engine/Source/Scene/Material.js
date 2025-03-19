@@ -31,6 +31,8 @@ import CircleScanMaterial from "../Shaders/Materials/CircleScanMaterial.js";
 import CircleSpiralMaterial from "../Shaders/Materials/CircleSpiralMaterial.js";
 import CircleVaryMaterial from "../Shaders/Materials/CircleVaryMaterial.js";
 import CircleWaveMaterial from "../Shaders/Materials/CircleWaveMaterial.js";
+import CylinderFadeMaterial from "../Shaders/Materials/CylinderFadeMaterial.js";
+import CylinderParticlesMaterial from "../Shaders/Materials/CylinderParticlesMaterial.js";
 import CylinderWaveMaterial from "../Shaders/Materials/CylinderWaveMaterial.js";
 import DotMaterial from "../Shaders/Materials/DotMaterial.js";
 import ElevationBandMaterial from "../Shaders/Materials/ElevationBandMaterial.js";
@@ -2163,6 +2165,41 @@ Material._materialCache.addMaterial(Material.CylinderWaveType, {
       reverse: false,
     },
     source: CylinderWaveMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CylinderFade
+ * @type {string}
+ * @readonly
+ */
+Material.CylinderFadeType = "CylinderFade";
+Material._materialCache.addMaterial(Material.CylinderFadeType, {
+  fabric: {
+    type: Material.CylinderFadeType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+    },
+    source: CylinderFadeMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CylinderParticles
+ * @type {string}
+ * @readonly
+ */
+Material.CylinderParticlesType = "CylinderParticles";
+Material._materialCache.addMaterial(Material.CylinderParticlesType, {
+  fabric: {
+    type: Material.CylinderParticlesType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      image: Material.DefaultImageId,
+    },
+    source: CylinderParticlesMaterial,
   },
   translucent: true,
 });
