@@ -56,6 +56,9 @@ import PolylineLightingTrailMaterial from "../Shaders/Materials/PolylineLighting
 import PolylineODLineMaterial from "../Shaders/Materials/PolylineODLineMaterial.js";
 import PolylineOutlineMaterial from "../Shaders/Materials/PolylineOutlineMaterial.js";
 import PolylineTrailMaterial from "../Shaders/Materials/PolylineTrailMaterial.js";
+import RadarLineMaterial from "../Shaders/Materials/RadarLineMaterial.js";
+import RadarSweepMaterial from "../Shaders/Materials/RadarSweepMaterial.js";
+import RadarWaveMaterial from "../Shaders/Materials/RadarWaveMaterial.js";
 import RimLightingMaterial from "../Shaders/Materials/RimLightingMaterial.js";
 import SlopeRampMaterial from "../Shaders/Materials/SlopeRampMaterial.js";
 import StripeMaterial from "../Shaders/Materials/StripeMaterial.js";
@@ -2127,6 +2130,58 @@ Material._materialCache.addMaterial(Material.CylinderWaveType, {
       reverse: false,
     },
     source: CylinderWaveMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * Gets the name of the radar line material.
+ * @type {string}
+ * @readonly
+ */
+Material.RadarLineType = "RadarLine";
+Material._materialCache.addMaterial(Material.RadarLineType, {
+  fabric: {
+    type: Material.RadarLineType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+    },
+    source: RadarLineMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * RadarSweep
+ * @type {string}
+ */
+Material.RadarSweepType = "RadarSweep";
+Material._materialCache.addMaterial(Material.RadarSweepType, {
+  fabric: {
+    type: Material.RadarSweepType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+    },
+    source: RadarSweepMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * RadarWave
+ * @type {string}
+ */
+Material.RadarWaveType = "RadarWave";
+Material._materialCache.addMaterial(Material.RadarWaveType, {
+  fabric: {
+    type: Material.RadarWaveType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+    },
+    source: RadarWaveMaterial,
   },
   translucent: true,
 });
