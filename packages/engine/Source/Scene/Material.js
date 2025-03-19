@@ -64,6 +64,18 @@ import SlopeRampMaterial from "../Shaders/Materials/SlopeRampMaterial.js";
 import StripeMaterial from "../Shaders/Materials/StripeMaterial.js";
 import WaterMaterial from "../Shaders/Materials/Water.js";
 import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
+import AsphaltMaterial from "../Shaders/Thirdpart/AsphaltMaterial.js";
+import BlobMaterial from "../Shaders/Thirdpart/BlobMaterial.js";
+import BrickMaterial from "../Shaders/Thirdpart/BrickMaterial.js";
+import CementMaterial from "../Shaders/Thirdpart/CementMaterial.js";
+import ErosionMaterial from "../Shaders/Thirdpart/ErosionMaterial.js";
+import FacetMaterial from "../Shaders/Thirdpart/FacetMaterial.js";
+import FresnelMaterial from "../Shaders/Thirdpart/FresnelMaterial.js";
+import GrassMaterial from "../Shaders/Thirdpart/GrassMaterial.js";
+import ReflectionMaterial from "../Shaders/Thirdpart/ReflectionMaterial.js";
+import RefractionMaterial from "../Shaders/Thirdpart/RefractionMaterial.js";
+import TieDyeMaterial from "../Shaders/Thirdpart/TieDyeMaterial.js";
+import WoodMaterial from "../Shaders/Thirdpart/WoodMaterial.js";
 
 /**
  * A Material defines surface appearance through a combination of diffuse, specular,
@@ -327,22 +339,22 @@ import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
  * @exception {DeveloperError} strict: shader source does not use material.
  *
  * @see {@link https://github.com/CesiumGS/cesium/wiki/Fabric|Fabric wiki page} for a more detailed options of Fabric.
- * @demo {@link https://sandcastle.cesium.com/index.html?src=Materials.html|Cesium Sandcastle Materials Demo}
+ * @demo {@link https://sandcastle.com/index.html?src=Materials.html|Cesium Sandcastle Materials Demo}
  *
  * @example
  * // Create a color material with fromType:
- * polygon.material = Cesium.Material.fromType('Color');
- * polygon.material.uniforms.color = new Cesium.Color(1.0, 1.0, 0.0, 1.0);
+ * polygon.material = Material.fromType('Color');
+ * polygon.material.uniforms.color = new Color(1.0, 1.0, 0.0, 1.0);
  *
  * // Create the default material:
- * polygon.material = new Cesium.Material();
+ * polygon.material = new Material();
  *
  * // Create a color material with full Fabric notation:
- * polygon.material = new Cesium.Material({
+ * polygon.material = new Material({
  *   fabric: {
  *     type: 'Color',
  *     uniforms: {
- *       color: new Cesium.Color(1.0, 1.0, 0.0, 1.0)
+ *       color: new Color(1.0, 1.0, 0.0, 1.0)
  *     }
  *   }
  * });
@@ -433,8 +445,8 @@ Material._uniformList = {};
  * @exception {DeveloperError} material with that type does not exist.
  *
  * @example
- * const material = Cesium.Material.fromType('Color', {
- *   color: new Cesium.Color(1.0, 0.0, 0.0, 1.0)
+ * const material = Material.fromType('Color', {
+ *   color: new Color(1.0, 0.0, 0.0, 1.0)
  * });
  */
 Material.fromType = function (type, uniforms) {
@@ -1297,6 +1309,7 @@ Material.DefaultImageId = "czm_defaultImage";
 /**
  * Gets or sets the default cube map texture uniform value.
  * @type {string}
+ * @readonly
  */
 Material.DefaultCubeMapId = "czm_defaultCubeMap";
 
@@ -1743,6 +1756,7 @@ Material._materialCache.addMaterial(Material.PolylineOutlineType, {
 /**
  * PolylineFlicker
  * @type {string}
+ * @readonly
  */
 Material.PolylineFlickerType = "PolylineFlicker";
 Material._materialCache.addMaterial(Material.PolylineFlickerType, {
@@ -1798,6 +1812,7 @@ Material._materialCache.addMaterial(Material.PolylineImageTrailType, {
 /**
  * PolylineLighting
  * @type {string}
+ * @readonly
  */
 Material.PolylineLightingType = "PolylineLighting";
 Material._materialCache.addMaterial(Material.PolylineLightingType, {
@@ -1815,6 +1830,7 @@ Material._materialCache.addMaterial(Material.PolylineLightingType, {
 /**
  * PolylineLightingTrail
  * @type {string}
+ * @readonly
  */
 Material.PolylineLightingTrailType = "PolylineLightingTrail";
 Material._materialCache.addMaterial(Material.PolylineLightingTrailType, {
@@ -1911,6 +1927,7 @@ Material._materialCache.addMaterial(Material.EllipseFadeType, {
 /**
  * EllipsoidElectric
  * @type {string}
+ * @readonly
  */
 Material.EllipsoidElectricType = "EllipsoidElectric";
 Material._materialCache.addMaterial(Material.EllipsoidElectricType, {
@@ -1928,6 +1945,7 @@ Material._materialCache.addMaterial(Material.EllipsoidElectricType, {
 /**
  * EllipsoidTrail
  * @type {string}
+ * @readonly
  */
 Material.EllipsoidTrailType = "EllipsoidTrail";
 Material._materialCache.addMaterial(Material.EllipsoidTrailType, {
@@ -1945,6 +1963,7 @@ Material._materialCache.addMaterial(Material.EllipsoidTrailType, {
 /**
  * CircleBlur
  * @type {string}
+ * @readonly
  */
 Material.CircleBlurType = "CircleBlur";
 Material._materialCache.addMaterial(Material.CircleBlurType, {
@@ -1962,6 +1981,7 @@ Material._materialCache.addMaterial(Material.CircleBlurType, {
 /**
  * CircleDiffuse
  * @type {string}
+ * @readonly
  */
 Material.CircleDiffuseType = "CircleDiffuse";
 Material._materialCache.addMaterial(Material.CircleDiffuseType, {
@@ -1979,6 +1999,7 @@ Material._materialCache.addMaterial(Material.CircleDiffuseType, {
 /**
  * CircleFade
  * @type {string}
+ * @readonly
  */
 Material.CircleFadeType = "CircleFade";
 Material._materialCache.addMaterial(Material.CircleFadeType, {
@@ -1996,6 +2017,7 @@ Material._materialCache.addMaterial(Material.CircleFadeType, {
 /**
  * CirclePulse
  * @type {string}
+ * @readonly
  */
 Material.CirclePulseType = "CirclePulse";
 Material._materialCache.addMaterial(Material.CirclePulseType, {
@@ -2013,6 +2035,7 @@ Material._materialCache.addMaterial(Material.CirclePulseType, {
 /**
  * CircleRing
  * @type {string}
+ * @readonly
  */
 Material.CircleRingType = "CircleRing";
 Material._materialCache.addMaterial(Material.CircleRingType, {
@@ -2029,6 +2052,7 @@ Material._materialCache.addMaterial(Material.CircleRingType, {
 /**
  * CircleRotate
  * @type {string}
+ * @readonly
  */
 Material.CircleRotateType = "CircleRotate";
 Material._materialCache.addMaterial(Material.CircleRotateType, {
@@ -2046,6 +2070,7 @@ Material._materialCache.addMaterial(Material.CircleRotateType, {
 /**
  * CircleScan
  * @type {string}
+ * @readonly
  */
 Material.CircleScanType = "CircleScan";
 Material._materialCache.addMaterial(Material.CircleScanType, {
@@ -2063,6 +2088,7 @@ Material._materialCache.addMaterial(Material.CircleScanType, {
 /**
  * CircleSpiral
  * @type {string}
+ * @readonly
  */
 Material.CircleSpiralType = "CircleSpiral";
 Material._materialCache.addMaterial(Material.CircleSpiralType, {
@@ -2080,6 +2106,7 @@ Material._materialCache.addMaterial(Material.CircleSpiralType, {
 /**
  * CircleVary
  * @type {string}
+ * @readonly
  */
 Material.CircleVaryType = "CircleVary";
 Material._materialCache.addMaterial(Material.CircleVaryType, {
@@ -2097,6 +2124,7 @@ Material._materialCache.addMaterial(Material.CircleVaryType, {
 /**
  * CircleWave
  * @type {string}
+ * @readonly
  */
 Material.CircleWaveType = "CircleWave";
 Material._materialCache.addMaterial(Material.CircleWaveType, {
@@ -2155,6 +2183,7 @@ Material._materialCache.addMaterial(Material.RadarLineType, {
 /**
  * RadarSweep
  * @type {string}
+ * @readonly
  */
 Material.RadarSweepType = "RadarSweep";
 Material._materialCache.addMaterial(Material.RadarSweepType, {
@@ -2172,6 +2201,7 @@ Material._materialCache.addMaterial(Material.RadarSweepType, {
 /**
  * RadarWave
  * @type {string}
+ * @readonly
  */
 Material.RadarWaveType = "RadarWave";
 Material._materialCache.addMaterial(Material.RadarWaveType, {
@@ -2301,7 +2331,7 @@ Material._materialCache.addMaterial(Material.ElevationBandType, {
 });
 
 /**
- * Gets the name of the water mask material.
+ * WaterMask
  * @type {string}
  * @readonly
  */
@@ -2319,3 +2349,263 @@ Material._materialCache.addMaterial(Material.WaterMaskType, {
 });
 
 export default Material;
+
+/**
+ * 沥青
+ * @type {string}
+ * @readonly
+ */
+Material.AsphaltType = "Asphalt";
+Material._materialCache.addMaterial(Material.AsphaltType, {
+  fabric: {
+    type: Material.AsphaltType,
+    uniforms: {
+      asphaltColor: new Color(0.15, 0.15, 0.15, 1.0),
+      bumpSize: 0.02,
+      roughness: 0.2,
+    },
+    source: AsphaltMaterial,
+  },
+  translucent: function (material) {
+    return material.uniforms.asphaltColor.alpha < 1.0;
+  },
+});
+
+/**
+ * 斑点
+ * @type {string}
+ * @readonly
+ */
+Material.BlobType = "Blob";
+Material._materialCache.addMaterial(Material.BlobType, {
+  fabric: {
+    type: Material.BlobType,
+    uniforms: {
+      lightColor: new Color(1.0, 1.0, 1.0, 0.5),
+      darkColor: new Color(0.0, 0.0, 1.0, 0.5),
+      frequency: 10.0,
+    },
+    source: BlobMaterial,
+  },
+  translucent: function (material) {
+    const uniforms = material.uniforms;
+    return uniforms.lightColor.alpha < 1.0 || uniforms.darkColor.alpha < 0.0;
+  },
+});
+
+/**
+ * 砖块
+ * @type {string}
+ * @readonly
+ */
+Material.BrickType = "Brick";
+Material._materialCache.addMaterial(Material.BrickType, {
+  fabric: {
+    type: Material.BrickType,
+    uniforms: {
+      brickColor: new Color(0.6, 0.3, 0.1, 1.0),
+      mortarColor: new Color(0.8, 0.8, 0.7, 1.0),
+      brickSize: new Cartesian2(0.3, 0.15),
+      brickPct: new Cartesian2(0.9, 0.85),
+      brickRoughness: 0.2,
+      mortarRoughness: 0.1,
+    },
+    source: BrickMaterial,
+  },
+  translucent: function (material) {
+    const uniforms = material.uniforms;
+    return uniforms.brickColor.alpha < 1.0 || uniforms.mortarColor.alpha < 1.0;
+  },
+});
+
+/**
+ * 水泥
+ * @type {string}
+ * @readonly
+ */
+Material.CementType = "Cement";
+Material._materialCache.addMaterial(Material.CementType, {
+  fabric: {
+    type: Material.CementType,
+    uniforms: {
+      cementColor: new Color(0.95, 0.95, 0.85, 1.0),
+      grainScale: 0.01,
+      roughness: 0.3,
+    },
+    source: CementMaterial,
+  },
+  translucent: function (material) {
+    return material.uniforms.cementColor.alpha < 1.0;
+  },
+});
+
+/**
+ * 腐蚀
+ * @type {string}
+ * @readonly
+ */
+Material.ErosionType = "Erosion";
+Material._materialCache.addMaterial(Material.ErosionType, {
+  fabric: {
+    type: Material.ErosionType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.5),
+      time: 1.0,
+    },
+    source: ErosionMaterial,
+  },
+  translucent: function (material) {
+    return material.uniforms.color.alpha < 1.0;
+  },
+});
+
+/**
+ * 琢面
+ * @type {string}
+ * @readonly
+ */
+Material.FacetType = "Facet";
+Material._materialCache.addMaterial(Material.FacetType, {
+  fabric: {
+    type: Material.FacetType,
+    uniforms: {
+      lightColor: new Color(0.25, 0.25, 0.25, 0.75),
+      darkColor: new Color(0.75, 0.75, 0.75, 0.75),
+      frequency: 10.0,
+    },
+    source: FacetMaterial,
+  },
+  translucent: function (material) {
+    const uniforms = material.uniforms;
+    return uniforms.lightColor.alpha < 1.0 || uniforms.darkColor.alpha < 0.0;
+  },
+});
+
+/**
+ * Fresnel
+ * @type {string}
+ * @readonly
+ */
+Material.FresnelType = "Fresnel";
+Material._materialCache.addMaterial(Material.FresnelType, {
+  fabric: {
+    type: Material.FresnelType,
+    materials: {
+      reflection: {
+        type: Material.ReflectionType,
+      },
+      refraction: {
+        type: Material.RefractionType,
+      },
+    },
+    source: FresnelMaterial,
+  },
+  translucent: false,
+});
+
+/**
+ * 草地
+ * @type {string}
+ * @readonly
+ */
+Material.GrassType = "Grass";
+Material._materialCache.addMaterial(Material.GrassType, {
+  fabric: {
+    type: Material.GrassType,
+    uniforms: {
+      grassColor: new Color(0.25, 0.4, 0.1, 1.0),
+      dirtColor: new Color(0.1, 0.1, 0.1, 1.0),
+      patchiness: 1.5,
+    },
+    source: GrassMaterial,
+  },
+  translucent: function (material) {
+    const uniforms = material.uniforms;
+    return uniforms.grassColor.alpha < 1.0 || uniforms.dirtColor.alpha < 1.0;
+  },
+});
+
+/**
+ * Reflection
+ * @type {string}
+ * @readonly
+ */
+Material.ReflectionType = "Reflection";
+Material._materialCache.addMaterial(Material.ReflectionType, {
+  fabric: {
+    type: Material.ReflectionType,
+    uniforms: {
+      cubeMap: Material.DefaultCubeMapId,
+      channels: "rgb",
+    },
+    source: ReflectionMaterial,
+  },
+  translucent: false,
+});
+
+/**
+ * Refraction
+ * @type {string}
+ * @readonly
+ */
+Material.RefractionType = "Refraction";
+Material._materialCache.addMaterial(Material.RefractionType, {
+  fabric: {
+    type: Material.RefractionType,
+    uniforms: {
+      cubeMap: Material.DefaultCubeMapId,
+      channels: "rgb",
+      indexOfRefractionRatio: 0.9,
+    },
+    source: RefractionMaterial,
+  },
+  translucent: false,
+});
+
+/**
+ * 扎染
+ * @type {string}
+ * @readonly
+ */
+Material.TyeDyeType = "TieDye";
+Material._materialCache.addMaterial(Material.TyeDyeType, {
+  fabric: {
+    type: Material.TyeDyeType,
+    uniforms: {
+      lightColor: new Color(1.0, 1.0, 0.0, 0.75),
+      darkColor: new Color(1.0, 0.0, 0.0, 0.75),
+      frequency: 5.0,
+    },
+    source: TieDyeMaterial,
+  },
+  translucent: function (material) {
+    const uniforms = material.uniforms;
+    return uniforms.lightColor.alpha < 1.0 || uniforms.darkColor.alpha < 0.0;
+  },
+});
+
+/**
+ * 木料
+ * @type {string}
+ * @readonly
+ */
+Material.WoodType = "Wood";
+Material._materialCache.addMaterial(Material.WoodType, {
+  fabric: {
+    type: Material.WoodType,
+    uniforms: {
+      lightWoodColor: new Color(0.6, 0.3, 0.1, 1.0),
+      darkWoodColor: new Color(0.4, 0.2, 0.07, 1.0),
+      ringFrequency: 3.0,
+      noiseScale: new Cartesian2(0.7, 0.5),
+      grainFrequency: 27.0,
+    },
+    source: WoodMaterial,
+  },
+  translucent: function (material) {
+    const uniforms = material.uniforms;
+    return (
+      uniforms.lightWoodColor.alpha < 1.0 || uniforms.darkWoodColor.alpha < 1.0
+    );
+  },
+});
