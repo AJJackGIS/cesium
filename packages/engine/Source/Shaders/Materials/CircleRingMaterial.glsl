@@ -1,5 +1,4 @@
 uniform vec4 color;
-uniform float speed;
 
 czm_material czm_getMaterial(czm_materialInput materialInput)
 {
@@ -7,7 +6,6 @@ czm_material czm_getMaterial(czm_materialInput materialInput)
     vec2 st = materialInput.st;
     vec2 center = st - vec2(0.5, 0.5);
     float length = length(center) / 0.5;
-    float time = 1. - abs(czm_frameNumber * speed / 360. - 0.5);
     float param = 1. - step(length, 0.6); //大于0.6模糊，rate = 0.6
     float scale = param * length; // 0.6< length 返回0，反之返回1.
     float alpha = param * (1.0 - abs(scale - 0.8) / 0.2); // 0.8 < length 返回0，反之返回1.

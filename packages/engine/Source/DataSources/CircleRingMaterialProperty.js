@@ -7,7 +7,6 @@ import createPropertyDescriptor from "./createPropertyDescriptor.js";
 import Property from "./Property.js";
 
 const defaultColor = Color.RED;
-const defaultSpeed = 1.0;
 
 /**
  * 指环圆材质
@@ -15,7 +14,6 @@ const defaultSpeed = 1.0;
  *
  * @param {object} [options] Object with the following properties:
  * @param {Property|Color} [options.color=Color.WHITE] The {@link Color} Property to be used.
- * @param {Property|number} [options.speed=1.0] 速度
  */
 function CircleRingMaterialProperty(options) {
   options = options ?? Frozen.EMPTY_OBJECT;
@@ -23,19 +21,14 @@ function CircleRingMaterialProperty(options) {
   this._definitionChanged = new Event();
   this._color = undefined;
   this._colorSubscription = undefined;
-  this._speed = undefined;
-  this._speedSubscription = undefined;
 
   this.color = options.color;
-  this.speed = options.speed;
 }
 
 Object.defineProperties(CircleRingMaterialProperty.prototype, {
   isConstant: {
     get: function () {
-      return (
-        Property.isConstant(this._color) && Property.isConstant(this._speed)
-      );
+      return Property.isConstant(this._color);
     },
   },
 
@@ -46,7 +39,6 @@ Object.defineProperties(CircleRingMaterialProperty.prototype, {
   },
 
   color: createPropertyDescriptor("color"),
-  speed: createPropertyDescriptor("speed"),
 });
 
 CircleRingMaterialProperty.prototype.getType = function (time) {
@@ -69,8 +61,6 @@ CircleRingMaterialProperty.prototype.getValue = function (time, result) {
     result.color,
   );
 
-  result.speed = Property.getValueOrDefault(this._speed, time, defaultSpeed);
-
   return result;
 };
 
@@ -78,8 +68,7 @@ CircleRingMaterialProperty.prototype.equals = function (other) {
   return (
     this === other ||
     (other instanceof CircleRingMaterialProperty &&
-      Property.equals(this._color, other._color) &&
-      Property.equals(this._speed, other._speed))
+      Property.equals(this._color, other._color))
   );
 };
 
