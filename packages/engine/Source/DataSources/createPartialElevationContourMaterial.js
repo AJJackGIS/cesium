@@ -3,9 +3,9 @@ import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
 import Cartographic from "../Core/Cartographic.js";
 import Color from "../Core/Color.js";
-import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import DeveloperError from "../Core/DeveloperError.js";
+import Frozen from "../Core/Frozen.js";
 import Matrix4 from "../Core/Matrix4.js";
 import Rectangle from "../Core/Rectangle.js";
 import Transforms from "../Core/Transforms.js";
@@ -22,10 +22,10 @@ import Material from "../Scene/Material.js";
  * @param {Rectangle} [options.rectangle] 范围
  */
 function createPartialElevationContourMaterial(options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  this._color = options.color || Color.YELLOW;
-  this._spacing = options.spacing || 50;
-  this._width = options.width || 1;
+  options = options ?? Frozen.EMPTY_OBJECT;
+  this._color = options.color ?? Color.YELLOW;
+  this._spacing = options.spacing ?? 50;
+  this._width = options.width ?? 1;
 
   if (!defined(options.rectangle)) {
     throw new DeveloperError("rectangle can't be empty");

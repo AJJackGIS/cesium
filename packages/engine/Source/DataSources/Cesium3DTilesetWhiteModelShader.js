@@ -1,7 +1,7 @@
 import buildModuleUrl from "../Core/buildModuleUrl.js";
 import Cartesian3 from "../Core/Cartesian3.js";
 import Color from "../Core/Color.js";
-import defaultValue from "../Core/defaultValue.js";
+import Frozen from "../Core/Frozen.js";
 import CustomShader from "../Scene/Model/CustomShader.js";
 import LightingModel from "../Scene/Model/LightingModel.js";
 import TextureUniform from "../Scene/Model/TextureUniform.js";
@@ -21,10 +21,10 @@ class Cesium3DTilesetWhiteModelShader {
    * @returns {CustomShader}
    */
   static createShaderByHeight(options) {
-    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    const color = options.color || Color.WHITE;
-    const height = options.height || 100.0;
-    const reverse = options.reverse || false;
+    options = options ?? Frozen.EMPTY_OBJECT;
+    const color = options.color ?? Color.WHITE;
+    const height = options.height ?? 100.0;
+    const reverse = options.reverse ?? false;
 
     return new CustomShader({
       lightingModel: LightingModel.UNLIT,
@@ -64,11 +64,11 @@ class Cesium3DTilesetWhiteModelShader {
    * @returns {CustomShader}
    */
   static createShaderByHeightAndHale(options) {
-    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-    const color = options.color || Color.WHITE;
-    const baseHeight = options.baseHeight || 0.0;
-    const height = options.height || 100.0;
-    const reverse = options.reverse || false;
+    options = options ?? Frozen.EMPTY_OBJECT;
+    const color = options.color ?? Color.WHITE;
+    const baseHeight = options.baseHeight ?? 0.0;
+    const height = options.height ?? 100.0;
+    const reverse = options.reverse ?? false;
 
     return new CustomShader({
       lightingModel: LightingModel.UNLIT,
@@ -122,13 +122,13 @@ class Cesium3DTilesetWhiteModelShader {
    * @returns {CustomShader}
    */
   static createShaderByTexture(options) {
-    options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+    options = options ?? Frozen.EMPTY_OBJECT;
     const ceiling =
-      options.ceiling || buildModuleUrl("Assets/Textures/blue_ceiling.png");
+      options.ceiling ?? buildModuleUrl("Assets/Textures/blue_ceiling.png");
     const profile =
-      options.profile || buildModuleUrl("Assets/Textures/blue_profile.png");
-    const ceilingSize = options.ceilingSize || 30.0;
-    const profileSize = options.profileSize || 30.0;
+      options.profile ?? buildModuleUrl("Assets/Textures/blue_profile.png");
+    const ceilingSize = options.ceilingSize ?? 30.0;
+    const profileSize = options.profileSize ?? 30.0;
 
     return new CustomShader({
       lightingModel: LightingModel.UNLIT,

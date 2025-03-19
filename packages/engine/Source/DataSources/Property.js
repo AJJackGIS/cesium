@@ -68,14 +68,18 @@ Property.prototype.getValue = DeveloperError.throwInstantiationError;
 Property.prototype.equals = DeveloperError.throwInstantiationError;
 
 /**
- * @private
+ * @param left
+ * @param right
+ * @returns {boolean}
  */
 Property.equals = function (left, right) {
   return left === right || (defined(left) && left.equals(right));
 };
 
 /**
- * @private
+ * @param left
+ * @param right
+ * @returns {boolean}
  */
 Property.arrayEquals = function (left, right) {
   if (left === right) {
@@ -94,21 +98,29 @@ Property.arrayEquals = function (left, right) {
 };
 
 /**
- * @private
+ * @param property
+ * @returns {boolean}
  */
 Property.isConstant = function (property) {
   return !defined(property) || property.isConstant;
 };
 
 /**
- * @private
+ * @param property
+ * @param time
+ * @param result
+ * @returns {object|undefined}
  */
 Property.getValueOrUndefined = function (property, time, result) {
   return defined(property) ? property.getValue(time, result) : undefined;
 };
 
 /**
- * @private
+ * @param property
+ * @param time
+ * @param valueDefault
+ * @param result
+ * @returns {object}
  */
 Property.getValueOrDefault = function (property, time, valueDefault, result) {
   return defined(property)
@@ -117,7 +129,11 @@ Property.getValueOrDefault = function (property, time, valueDefault, result) {
 };
 
 /**
- * @private
+ * @param property
+ * @param time
+ * @param valueDefault
+ * @param result
+ * @returns {object}
  */
 Property.getValueOrClonedDefault = function (
   property,

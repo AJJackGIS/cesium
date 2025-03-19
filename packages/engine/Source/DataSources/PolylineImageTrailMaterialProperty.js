@@ -1,8 +1,8 @@
 import Cartesian2 from "../Core/Cartesian2.js";
 import Color from "../Core/Color.js";
-import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import Event from "../Core/Event.js";
+import Frozen from "../Core/Frozen.js";
 import JulianDate from "../Core/JulianDate.js";
 import Material from "../Scene/Material.js";
 import createPropertyDescriptor from "./createPropertyDescriptor.js";
@@ -24,7 +24,7 @@ const defaultRepeat = new Cartesian2(1.0, 1.0);
  * @param {Property|Cartesian2} [options.repeat=new Cartesian2(1.0, 1.0)] 材质重复次数
  */
 function PolylineImageTrailMaterialProperty(options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  options = options ?? Frozen.EMPTY_OBJECT;
 
   this._definitionChanged = new Event();
   this._image = undefined;

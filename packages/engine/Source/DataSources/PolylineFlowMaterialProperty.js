@@ -1,7 +1,7 @@
 import Color from "../Core/Color.js";
-import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import Event from "../Core/Event.js";
+import Frozen from "../Core/Frozen.js";
 import JulianDate from "../Core/JulianDate.js";
 import createPropertyDescriptor from "./createPropertyDescriptor.js";
 import Property from "./Property.js";
@@ -22,7 +22,7 @@ const defaultGradient = 0.0;
  * @param {Property|number} [options.gradient=0.0] 打底线的透明度 如果为 0 则不显示打底线
  */
 function PolylineFlowMaterialProperty(options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  options = options ?? Frozen.EMPTY_OBJECT;
 
   this._definitionChanged = new Event();
   this._color = undefined;

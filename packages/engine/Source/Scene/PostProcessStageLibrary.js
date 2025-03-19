@@ -4,9 +4,9 @@ import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
 import Color from "../Core/Color.js";
 import createGuid from "../Core/createGuid.js";
-import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import Ellipsoid from "../Core/Ellipsoid.js";
+import Frozen from "../Core/Frozen.js";
 import CesiumMath from "../Core/Math.js";
 import Matrix3 from "../Core/Matrix3.js";
 import Quaternion from "../Core/Quaternion.js";
@@ -802,7 +802,7 @@ PostProcessStageLibrary.createGroundFogStage = function () {
  * @return {PostProcessStage} A post-process stage.
  */
 PostProcessStageLibrary.createHeightFogStage = function (camera, options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  options = options ?? Frozen.EMPTY_OBJECT;
   return new PostProcessStage({
     name: "czm_height_fog",
     fragmentShader: HeightFog,
@@ -825,9 +825,9 @@ PostProcessStageLibrary.createHeightFogStage = function (camera, options) {
  * @returns {PostProcessStageComposite|PostProcessStageComposite}
  */
 PostProcessStageLibrary.createSkyLineStage = function (options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  options = options ?? Frozen.EMPTY_OBJECT;
   // 描边颜色
-  const lineColor = options.color || new Color(1.0, 0.0, 0.0, 1.0);
+  const lineColor = options.color ?? new Color(1.0, 0.0, 0.0, 1.0);
   const edgeDetection = PostProcessStageLibrary.createEdgeDetectionStage();
   const redTexture = new PostProcessStage({
     uniforms: {
@@ -894,12 +894,12 @@ PostProcessStageLibrary.createSkyLineStage = function (options) {
  * @return {PostProcessStageComposite} A post-process stage composite.
  */
 PostProcessStageLibrary.createVolumeLightStage = function (viewer, options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const decay = options.decay || 0.9681;
-  const exposure = options.exposure || 0.1;
-  const density = options.density || 0.926;
-  const weight = options.weight || 0.58767;
-  const samples = options.samples || 100;
+  options = options ?? Frozen.EMPTY_OBJECT;
+  const decay = options.decay ?? 0.9681;
+  const exposure = options.exposure ?? 0.1;
+  const density = options.density ?? 0.926;
+  const weight = options.weight ?? 0.58767;
+  const samples = options.samples ?? 100;
 
   const blackProcessStage = new PostProcessStage({
     fragmentShader: VolumeLight_1,
@@ -1006,11 +1006,11 @@ PostProcessStageLibrary.createVolumeLightStage = function (viewer, options) {
  * @return {PostProcessStage} A post-process stage.
  */
 PostProcessStageLibrary.createCircleScanStage = function (options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const center = options.center || new Cartesian3(110, 30);
-  const color = options.color || Color.RED;
-  const radius = options.radius || 1000;
-  const speed = options.speed || 1;
+  options = options ?? Frozen.EMPTY_OBJECT;
+  const center = options.center ?? new Cartesian3(110, 30);
+  const color = options.color ?? Color.RED;
+  const radius = options.radius ?? 1000;
+  const speed = options.speed ?? 1;
 
   return new PostProcessStage({
     name: "czm_circle_scan",
@@ -1035,11 +1035,11 @@ PostProcessStageLibrary.createCircleScanStage = function (options) {
  * @return {PostProcessStage} A post-process stage.
  */
 PostProcessStageLibrary.createRadarScanStage = function (options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
-  const center = options.center || new Cartesian3(110, 30);
-  const color = options.color || Color.RED;
-  const radius = options.radius || 1000;
-  const speed = options.speed || 1;
+  options = options ?? Frozen.EMPTY_OBJECT;
+  const center = options.center ?? new Cartesian3(110, 30);
+  const color = options.color ?? Color.RED;
+  const radius = options.radius ?? 1000;
+  const speed = options.speed ?? 1;
   const up = Ellipsoid.WGS84.geodeticSurfaceNormal(center);
   const time = new Date().getTime();
 

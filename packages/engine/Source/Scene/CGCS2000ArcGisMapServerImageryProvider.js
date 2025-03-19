@@ -1,9 +1,9 @@
 import Cartesian2 from "../Core/Cartesian2.js";
 import CGCS2000GeographicTilingScheme from "../Core/CGCS2000GeographicTilingScheme.js";
 import Credit from "../Core/Credit.js";
-import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import Event from "../Core/Event.js";
+import Frozen from "../Core/Frozen.js";
 import GeographicTilingScheme from "../Core/GeographicTilingScheme.js";
 import Rectangle from "../Core/Rectangle.js";
 import Resource from "../Core/Resource.js";
@@ -16,7 +16,7 @@ function ImageryProviderBuilder(options) {
 
   const ellipsoid = options.ellipsoid;
   this.tilingScheme = new GeographicTilingScheme({ ellipsoid: ellipsoid });
-  this.rectangle = defaultValue(options.rectangle, this.tilingScheme.rectangle);
+  this.rectangle = options.rectangle ?? this.tilingScheme.rectangle;
   this.ellipsoid = ellipsoid;
 
   let credit = options.credit;
@@ -27,8 +27,8 @@ function ImageryProviderBuilder(options) {
   this.tileCredits = undefined;
   this.tileDiscardPolicy = options.tileDiscardPolicy;
 
-  this.tileWidth = defaultValue(options.tileWidth, 256);
-  this.tileHeight = defaultValue(options.tileHeight, 256);
+  this.tileWidth = options.tileWidth ?? 256;
+  this.tileHeight = options.tileHeight ?? 256;
   this.maximumLevel = options.maximumLevel;
 }
 
@@ -159,15 +159,11 @@ function CGCS2000ArcGisMapServerImageryProvider(options) {
   this._tileWidth = 256;
   this._tileHeight = 256;
   this._maximumLevel = options.maximumLevel;
-  this._tilingScheme = defaultValue(
-    options.tilingScheme,
-    new GeographicTilingScheme({ ellipsoid: options.ellipsoid }),
-  );
+  this._tilingScheme =
+    options.tilingScheme ??
+    new GeographicTilingScheme({ ellipsoid: options.ellipsoid });
   this._useTiles = true;
-  this._rectangle = defaultValue(
-    options.rectangle,
-    this._tilingScheme.rectangle,
-  );
+  this._rectangle = options.rectangle ?? this._tilingScheme.rectangle;
   this._layers = options.layers;
   this._credit = options.credit;
   this._tileCredits = undefined;
@@ -297,7 +293,7 @@ CGCS2000ArcGisMapServerImageryProvider.fromUrl = async function (url, options) {
     url: url,
   });
   resource.appendForwardSlash();
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  options = options ?? Frozen.EMPTY_OBJECT;
   const provider = new CGCS2000ArcGisMapServerImageryProvider(options);
   provider._resource = resource;
   const imageryProviderBuilder = new ImageryProviderBuilder(options);

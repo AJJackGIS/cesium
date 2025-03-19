@@ -1,6 +1,6 @@
 import Cartesian2 from "./Cartesian2.js";
-import defaultValue from "./defaultValue.js";
 import Ellipsoid from "./Ellipsoid.js";
+import Frozen from "./Frozen.js";
 import GeographicProjection from "./GeographicProjection.js";
 import CesiumMath from "./Math.js";
 import Rectangle from "./Rectangle.js";
@@ -11,21 +11,15 @@ import Rectangle from "./Rectangle.js";
  * @constructor
  */
 function CGCS2000GeographicTilingScheme(options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  options = options ?? Frozen.EMPTY_OBJECT;
   this._tileInfo = options.tileInfo;
   this._ellipsoid = Ellipsoid.CGCS2000;
   this._rectangle = Rectangle.MAX_VALUE;
   this._projection = new GeographicProjection(this._ellipsoid);
   // 这个没用
-  this._numberOfLevelZeroTilesX = defaultValue(
-    options.numberOfLevelZeroTilesX,
-    4,
-  );
+  this._numberOfLevelZeroTilesX = options.numberOfLevelZeroTilesX ?? 4;
   // 按照 WMTS里面第一级的MatrixHeight来设置，但是好像也没用
-  this._numberOfLevelZeroTilesY = defaultValue(
-    options.numberOfLevelZeroTilesY,
-    2,
-  );
+  this._numberOfLevelZeroTilesY = options.numberOfLevelZeroTilesY ?? 2;
 }
 
 Object.defineProperties(CGCS2000GeographicTilingScheme.prototype, {

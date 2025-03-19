@@ -2,7 +2,6 @@ import buildModuleUrl from "../Core/buildModuleUrl.js";
 import BoxGeometry from "../Core/BoxGeometry.js";
 import Cartesian3 from "../Core/Cartesian3.js";
 import Check from "../Core/Check.js";
-import defaultValue from "../Core/defaultValue.js";
 import defined from "../Core/defined.js";
 import destroyObject from "../Core/destroyObject.js";
 import DeveloperError from "../Core/DeveloperError.js";
@@ -51,13 +50,13 @@ import SceneMode from "./SceneMode.js";
  * @see Transforms.computeTemeToPseudoFixedMatrix
  */
 function SkyBoxGround(viewer, options) {
-  options = options || {};
+  options = options ?? {};
   this._viewer = viewer;
   this._skybox = viewer.scene.skyBox;
-  this._changeHeight = options.changeHeight || 240000;
+  this._changeHeight = options.changeHeight ?? 240000;
   this.sources = options.sources;
   this._sources = undefined;
-  this.show = defaultValue(options.show, true);
+  this.show = options.show ?? true;
   this._command = new DrawCommand({
     modelMatrix: Matrix4.clone(Matrix4.IDENTITY),
     owner: this,
