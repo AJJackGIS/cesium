@@ -4,10 +4,10 @@ import clone from "../Core/clone.js";
 import Color from "../Core/Color.js";
 import combine from "../Core/combine.js";
 import createGuid from "../Core/createGuid.js";
-import Frozen from "../Core/Frozen.js";
 import defined from "../Core/defined.js";
 import destroyObject from "../Core/destroyObject.js";
 import DeveloperError from "../Core/DeveloperError.js";
+import Frozen from "../Core/Frozen.js";
 import loadKTX2 from "../Core/loadKTX2.js";
 import Matrix2 from "../Core/Matrix2.js";
 import Matrix3 from "../Core/Matrix3.js";
@@ -21,6 +21,15 @@ import TextureMinificationFilter from "../Renderer/TextureMinificationFilter.js"
 import AspectRampMaterial from "../Shaders/Materials/AspectRampMaterial.js";
 import BumpMapMaterial from "../Shaders/Materials/BumpMapMaterial.js";
 import CheckerboardMaterial from "../Shaders/Materials/CheckerboardMaterial.js";
+import CircleBlurMaterial from "../Shaders/Materials/CircleBlurMaterial.js";
+import CircleDiffuseMaterial from "../Shaders/Materials/CircleDiffuseMaterial.js";
+import CircleFadeMaterial from "../Shaders/Materials/CircleFadeMaterial.js";
+import CirclePulseMaterial from "../Shaders/Materials/CirclePulseMaterial.js";
+import CircleRingMaterial from "../Shaders/Materials/CircleRingMaterial.js";
+import CircleRotateMaterial from "../Shaders/Materials/CircleRotateMaterial.js";
+import CircleScanMaterial from "../Shaders/Materials/CircleScanMaterial.js";
+import CircleSpiralMaterial from "../Shaders/Materials/CircleSpiralMaterial.js";
+import CircleVaryMaterial from "../Shaders/Materials/CircleVaryMaterial.js";
 import CircleWaveMaterial from "../Shaders/Materials/CircleWaveMaterial.js";
 import CylinderWaveMaterial from "../Shaders/Materials/CylinderWaveMaterial.js";
 import DotMaterial from "../Shaders/Materials/DotMaterial.js";
@@ -1822,18 +1831,169 @@ Material._materialCache.addMaterial(Material.EllipseFadeType, {
 });
 
 /**
- * Gets the name of the circle wave material.
+ * CircleBlur
  * @type {string}
- * @readonly
+ */
+Material.CircleBlurType = "CircleBlur";
+Material._materialCache.addMaterial(Material.CircleBlurType, {
+  fabric: {
+    type: Material.CircleBlurType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+    },
+    source: CircleBlurMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleDiffuse
+ * @type {string}
+ */
+Material.CircleDiffuseType = "CircleDiffuse";
+Material._materialCache.addMaterial(Material.CircleDiffuseType, {
+  fabric: {
+    type: Material.CircleDiffuseType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1.0,
+    },
+    source: CircleDiffuseMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleFade
+ * @type {string}
+ */
+Material.CircleFadeType = "CircleFade";
+Material._materialCache.addMaterial(Material.CircleFadeType, {
+  fabric: {
+    type: Material.CircleFadeType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1.0,
+    },
+    source: CircleFadeMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CirclePulse
+ * @type {string}
+ */
+Material.CirclePulseType = "CirclePulse";
+Material._materialCache.addMaterial(Material.CirclePulseType, {
+  fabric: {
+    type: Material.CirclePulseType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1.0,
+    },
+    source: CirclePulseMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleRing
+ * @type {string}
+ */
+Material.CircleRingType = "CircleRing";
+Material._materialCache.addMaterial(Material.CircleRingType, {
+  fabric: {
+    type: Material.CircleRingType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+    },
+    source: CircleRingMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleRotate
+ * @type {string}
+ */
+Material.CircleRotateType = "CircleRotate";
+Material._materialCache.addMaterial(Material.CircleRotateType, {
+  fabric: {
+    type: Material.CircleRotateType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      image: Material.DefaultImageId,
+    },
+    source: CircleRotateMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleScan
+ * @type {string}
+ */
+Material.CircleScanType = "CircleScan";
+Material._materialCache.addMaterial(Material.CircleScanType, {
+  fabric: {
+    type: Material.CircleScanType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1,
+    },
+    source: CircleScanMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleSpiral
+ * @type {string}
+ */
+Material.CircleSpiralType = "CircleSpiral";
+Material._materialCache.addMaterial(Material.CircleSpiralType, {
+  fabric: {
+    type: Material.CircleSpiralType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+    },
+    source: CircleSpiralMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleVary
+ * @type {string}
+ */
+Material.CircleVaryType = "CircleVary";
+Material._materialCache.addMaterial(Material.CircleVaryType, {
+  fabric: {
+    type: Material.CircleVaryType,
+    uniforms: {
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+    },
+    source: CircleVaryMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleWave
+ * @type {string}
  */
 Material.CircleWaveType = "CircleWave";
 Material._materialCache.addMaterial(Material.CircleWaveType, {
   fabric: {
     type: Material.CircleWaveType,
     uniforms: {
-      color: new Color(1.0, 0.0, 0.0, 1.0),
-      speed: 1.0,
-      count: 2.0,
+      color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 3.0,
+      count: 1,
       gradient: 0.1,
     },
     source: CircleWaveMaterial,

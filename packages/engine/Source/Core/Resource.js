@@ -3,10 +3,10 @@ import appendForwardSlash from "./appendForwardSlash.js";
 import Check from "./Check.js";
 import clone from "./clone.js";
 import combine from "./combine.js";
-import Frozen from "./Frozen.js";
 import defer from "./defer.js";
 import defined from "./defined.js";
 import DeveloperError from "./DeveloperError.js";
+import Frozen from "./Frozen.js";
 import getAbsoluteUri from "./getAbsoluteUri.js";
 import getBaseUri from "./getBaseUri.js";
 import getExtensionFromUri from "./getExtensionFromUri.js";
@@ -173,7 +173,6 @@ function defaultClone(value, defaultValue) {
  *
  * @returns {Resource} If resource is a String, a Resource constructed with the url and options. Otherwise the resource parameter is returned.
  *
- * @private
  */
 Resource.createIfNeeded = function (resource) {
   if (resource instanceof Resource) {

@@ -8,22 +8,16 @@ import Property from "./Property.js";
 
 const defaultColor = Color.RED;
 const defaultSpeed = 1.0;
-const defaultCount = 2.0;
-const defaultGradient = 0.1;
 
 /**
- * 波纹圆材质
+ * 扩散圆材质
  * @constructor
  *
  * @param {object} [options] Object with the following properties:
- *
  * @param {Property|Color} [options.color=Color.WHITE] The {@link Color} Property to be used.
  * @param {Property|number} [options.speed=1.0] 速度
- * @param {Property|number} [options.count=2.0] 波纹个数
- * @param {Property|number} [options.gradient=0.1] 打底线颜色透明度
- *
  */
-function CircleWaveMaterialProperty(options) {
+function CircleDiffuseMaterialProperty(options) {
   options = options ?? Frozen.EMPTY_OBJECT;
 
   this._definitionChanged = new Event();
@@ -31,25 +25,16 @@ function CircleWaveMaterialProperty(options) {
   this._colorSubscription = undefined;
   this._speed = undefined;
   this._speedSubscription = undefined;
-  this._count = undefined;
-  this._countSubscription = undefined;
-  this._gradient = undefined;
-  this._gradientSubscription = undefined;
 
   this.color = options.color;
   this.speed = options.speed;
-  this.count = options.count;
-  this.gradient = options.gradient;
 }
 
-Object.defineProperties(CircleWaveMaterialProperty.prototype, {
+Object.defineProperties(CircleDiffuseMaterialProperty.prototype, {
   isConstant: {
     get: function () {
       return (
-        Property.isConstant(this._color) &&
-        Property.isConstant(this._speed) &&
-        Property.isConstant(this._count) &&
-        Property.isConstant(this._gradient)
+        Property.isConstant(this._color) && Property.isConstant(this._speed)
       );
     },
   },
@@ -62,17 +47,15 @@ Object.defineProperties(CircleWaveMaterialProperty.prototype, {
 
   color: createPropertyDescriptor("color"),
   speed: createPropertyDescriptor("speed"),
-  count: createPropertyDescriptor("count"),
-  gradient: createPropertyDescriptor("gradient"),
 });
 
-CircleWaveMaterialProperty.prototype.getType = function (time) {
-  return "CircleWave";
+CircleDiffuseMaterialProperty.prototype.getType = function (time) {
+  return "CircleDiffuse";
 };
 
 const timeScratch = new JulianDate();
 
-CircleWaveMaterialProperty.prototype.getValue = function (time, result) {
+CircleDiffuseMaterialProperty.prototype.getValue = function (time, result) {
   if (!defined(time)) {
     time = JulianDate.now(timeScratch);
   }
@@ -87,24 +70,17 @@ CircleWaveMaterialProperty.prototype.getValue = function (time, result) {
   );
 
   result.speed = Property.getValueOrDefault(this._speed, time, defaultSpeed);
-  result.count = Property.getValueOrDefault(this._count, time, defaultCount);
-  result.gradient = Property.getValueOrDefault(
-    this._gradient,
-    time,
-    defaultGradient,
-  );
 
   return result;
 };
 
-CircleWaveMaterialProperty.prototype.equals = function (other) {
+CircleDiffuseMaterialProperty.prototype.equals = function (other) {
   return (
     this === other ||
-    (other instanceof CircleWaveMaterialProperty &&
+    (other instanceof CircleDiffuseMaterialProperty &&
       Property.equals(this._color, other._color) &&
-      Property.equals(this._speed, other._speed) &&
-      Property.equals(this._count, other._count) &&
-      Property.equals(this._gradient, other._gradient))
+      Property.equals(this._speed, other._speed))
   );
 };
-export default CircleWaveMaterialProperty;
+
+export default CircleDiffuseMaterialProperty;
