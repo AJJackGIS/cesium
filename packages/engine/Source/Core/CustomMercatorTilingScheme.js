@@ -1,5 +1,5 @@
 import Cartesian2 from "./Cartesian2.js";
-import Rectangle, { MAX_VALUE } from "./Rectangle.js";
+import Rectangle from "./Rectangle.js";
 import WebMercatorTilingScheme from "./WebMercatorTilingScheme.js";
 
 /**
@@ -37,7 +37,7 @@ class CustomMercatorTilingScheme extends WebMercatorTilingScheme {
 
   tileXYToNativeRectangle(x, y, level, result) {
     if (!this._resolutions || !this._resolutions[level + this._zoomOffset]) {
-      return MAX_VALUE;
+      return Rectangle.MAX_VALUE;
     }
     if (x < 0 || y < 0) {
       return Rectangle.MAX_VALUE;
