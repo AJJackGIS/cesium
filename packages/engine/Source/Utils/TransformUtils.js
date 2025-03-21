@@ -2,11 +2,11 @@ import Cartesian3 from "../Core/Cartesian3.js";
 import Cartographic from "../Core/Cartographic.js";
 import Ellipsoid from "../Core/Ellipsoid.js";
 import CesiumMath from "../Core/Math.js";
-import SceneMode from "../Scene/SceneMode.js";
-import SceneTransforms from "../Scene/SceneTransforms.js";
-import WebMercatorProjection from "../Core/WebMercatorProjection.js";
 
 import Position from "../Core/Position.js";
+import WebMercatorProjection from "../Core/WebMercatorProjection.js";
+import SceneMode from "../Scene/SceneMode.js";
+import SceneTransforms from "../Scene/SceneTransforms.js";
 
 const WMP = new WebMercatorProjection();
 
@@ -61,6 +61,15 @@ class TransformUtils {
           Ellipsoid.WGS84,
         )
       : Cartesian3.ZERO;
+  }
+
+  /**
+   * Transforms Cartesian To Cartographic
+   * @param  {Cartesian3} position
+   * @returns {Cartographic}
+   */
+  static transformCartesianToCartographic(position) {
+    return Cartographic.fromCartesian(position);
   }
 
   /**
