@@ -1,4 +1,4 @@
-.widget.tool-tip {
+.cesium-viewer-tooltip {
   position: absolute;
   left: 0;
   top: 0;
@@ -9,9 +9,8 @@
   padding: 0 10px;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 4px;
-  visibility: hidden;
+  display: block;
   pointer-events: none;
-  z-index: -1;
 
   &:before {
     content: "";

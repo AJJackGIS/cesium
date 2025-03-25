@@ -2,23 +2,23 @@ import {
   BoundingSphere,
   BoundingSphereState,
   Cartesian3,
-  CesiumWidget,
   Cesium3DTileFeature,
+  CesiumWidget,
   Clock,
   ConstantPositionProperty,
-  Frozen,
   defined,
   destroyObject,
   DeveloperError,
   Entity,
   Event,
   EventHelper,
+  Frozen,
   getElement,
+  IonGeocoderService,
   JulianDate,
   Math as CesiumMath,
   Property,
   ScreenSpaceEventType,
-  IonGeocoderService,
 } from "@cesium/engine";
 import Animation from "../Animation/Animation.js";
 import AnimationViewModel from "../Animation/AnimationViewModel.js";
@@ -36,6 +36,7 @@ import SceneModePicker from "../SceneModePicker/SceneModePicker.js";
 import SelectionIndicator from "../SelectionIndicator/SelectionIndicator.js";
 import subscribeAndEvaluate from "../subscribeAndEvaluate.js";
 import Timeline from "../Timeline/Timeline.js";
+import Tooltip from "../Tooltip/Tooltip.js";
 import VRButton from "../VRButton/VRButton.js";
 
 const boundingSphereScratch = new BoundingSphere();
@@ -287,6 +288,7 @@ function enableVRUI(viewer, enabled) {
  * @property {boolean} [sceneModePicker=true] If set to false, the SceneModePicker widget will not be created.
  * @property {boolean} [selectionIndicator=true] If set to false, the SelectionIndicator widget will not be created.
  * @property {boolean} [timeline=true] If set to false, the Timeline widget will not be created.
+ * @property {boolean} [tooltip=true] If set to false, the Tooltip widget will not be created.
  * @property {boolean} [navigationHelpButton=true] If set to false, the navigation help button will not be created.
  * @property {boolean} [navigationInstructionsInitiallyVisible=true] True if the navigation instructions should initially be visible, or false if the should not be shown until the user explicitly clicks the button.
  * @property {boolean} [scene3DOnly=false] When <code>true</code>, each geometry instance will only be rendered in 3D to save GPU memory.
@@ -755,6 +757,15 @@ Either specify options.terrainProvider instead or set options.baseLayerPicker to
     timeline.zoomTo(clock.startTime, clock.stopTime);
   }
 
+  // Tooltip
+  let tooltip;
+  if (!defined(options.tooltip) || options.tooltip !== false) {
+    const tooltipContainer = document.createElement("div");
+    tooltipContainer.className = "cesium-viewer-tooltip";
+    viewerContainer.appendChild(tooltipContainer);
+    tooltip = new Tooltip(tooltipContainer, cesiumWidget);
+  }
+
   // Fullscreen
   let fullscreenButton;
   let fullscreenSubscription;
@@ -839,6 +850,7 @@ Either specify options.terrainProvider instead or set options.baseLayerPicker to
   this._destroyClockViewModel = destroyClockViewModel;
   this._toolbar = toolbar;
   this._homeButton = homeButton;
+  this._tooltip = tooltip;
   this._sceneModePicker = sceneModePicker;
   this._projectionPicker = projectionPicker;
   this._baseLayerPicker = baseLayerPicker;
@@ -1096,6 +1108,18 @@ Object.defineProperties(Viewer.prototype, {
   timeline: {
     get: function () {
       return this._timeline;
+    },
+  },
+
+  /**
+   * Gets the Tooltip widget.
+   * @memberof Viewer.prototype
+   * @type {Tooltip}
+   * @readonly
+   */
+  tooltip: {
+    get: function () {
+      return this._tooltip;
     },
   },
 
