@@ -122,7 +122,7 @@ MathUtils.center = function (positions) {
  * 根据弧线的坐标节点数组
  * @param points
  * @param options
- * @returns {*[]}
+ * @returns {number[]}
  */
 MathUtils.curve = function (points, options) {
   options = options ?? Frozen.EMPTY_OBJECT;
@@ -141,7 +141,7 @@ MathUtils.curve = function (points, options) {
  * @param {Position} obj1
  * @param {Position} obj2
  * @param {number} count
- * @returns {null|[]}
+ * @returns {number[]}
  * @private
  */
 function getCurveByTwoPoints(obj1, obj2, count) {
