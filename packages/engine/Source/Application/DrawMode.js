@@ -2,7 +2,7 @@
  * 标绘类型
  * @enum {number}
  */
-const DrawType = {
+const DrawMode = {
   /**
    * 点
    * @type {number}
@@ -50,7 +50,7 @@ const DrawType = {
    * @type {number}
    * @constant
    */
-  IMAGE: 6,
+  Marker: 6,
 };
 
-export default Object.freeze(DrawType);
+export default Object.freeze(DrawMode);
