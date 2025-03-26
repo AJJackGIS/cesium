@@ -9,7 +9,7 @@ import Matrix4 from "../Core/Matrix4.js";
 import Rectangle from "../Core/Rectangle.js";
 import Transforms from "../Core/Transforms.js";
 import VertexFormat from "../Core/VertexFormat.js";
-import transformUtils from "./TransformUtils.js";
+import TransformUtils from "./TransformUtils.js";
 
 /**
  * 拓展CesiumMath工具类
@@ -80,7 +80,7 @@ MathUtils.area = function (positions) {
  * @returns {Rectangle}
  */
 MathUtils.bounds = function (positions, expand) {
-  const array = transformUtils.transformCartesianArrayToWGS84Array(positions);
+  const array = TransformUtils.transformCartesianArrayToWGS84Array(positions);
   let minLng = 180;
   let minLat = 90;
   let maxLng = -180;
@@ -206,13 +206,13 @@ function getCurveByTwoPoints(obj1, obj2, count) {
 /**
  * 获取线段的空间长度
  * @param {Cartesian3[]} positions
- * @returns {string}
+ * @returns {number}
  */
 MathUtils.distance = function (positions) {
   let distance = 0;
   for (let i = 0; i < positions.length - 1; i++) {
-    const c1 = transformUtils.transformCartesianToCartographic(positions[i]);
-    const c2 = transformUtils.transformCartesianToCartographic(
+    const c1 = TransformUtils.transformCartesianToCartographic(positions[i]);
+    const c2 = TransformUtils.transformCartesianToCartographic(
       positions[i + 1],
     );
     const geodesic = new EllipsoidGeodesic();
@@ -222,7 +222,7 @@ MathUtils.distance = function (positions) {
     distance += s;
   }
 
-  return distance.toFixed(3);
+  return +distance.toFixed(3);
 };
 
 /**
@@ -252,8 +252,8 @@ MathUtils.heading = function (start, end) {
  * @returns {Cartesian3}
  */
 MathUtils.midPosition = function (start, end, fraction) {
-  const startPosition = transformUtils.transformCartesianToCartographic(start);
-  const endPosition = transformUtils.transformCartesianToCartographic(end);
+  const startPosition = TransformUtils.transformCartesianToCartographic(start);
+  const endPosition = TransformUtils.transformCartesianToCartographic(end);
   const mc = new EllipsoidGeodesic(
     startPosition,
     endPosition,

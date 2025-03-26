@@ -37,20 +37,6 @@ const DrawMode = {
    * @constant
    */
   RECTANGLE: 4,
-
-  /**
-   * 文字
-   * @type {number}
-   * @constant
-   */
-  LABEL: 5,
-
-  /**
-   * 图片
-   * @type {number}
-   * @constant
-   */
-  MARKER: 6,
 };
 
 export default Object.freeze(DrawMode);

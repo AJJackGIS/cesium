@@ -2,6 +2,7 @@ import Frozen from "../Core/Frozen.js";
 import ScreenSpaceEventHandler from "../Core/ScreenSpaceEventHandler.js";
 import CustomDataSource from "../DataSources/CustomDataSource.js";
 import ClampMode from "./ClampMode.js";
+import DrawCircle from "./DrawCircle.js";
 import DrawMode from "./DrawMode.js";
 import DrawPoint from "./DrawPoint.js";
 import DrawPolygon from "./DrawPolygon.js";
@@ -72,6 +73,14 @@ class DrawHandler {
       ).addEventHandler();
     } else if (this.mode === DrawMode.RECTANGLE) {
       new DrawRectangle(
+        this.viewer,
+        this.clampMode,
+        this.dataSources,
+        this.eventHandler,
+        callback,
+      ).addEventHandler();
+    } else if (this.mode === DrawMode.CIRCLE) {
+      new DrawCircle(
         this.viewer,
         this.clampMode,
         this.dataSources,
