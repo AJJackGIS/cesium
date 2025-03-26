@@ -50,7 +50,7 @@ const DrawMode = {
    * @type {number}
    * @constant
    */
-  Marker: 6,
+  MARKER: 6,
 };
 
 export default Object.freeze(DrawMode);

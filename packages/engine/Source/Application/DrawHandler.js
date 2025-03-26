@@ -1,107 +1,100 @@
-import Color from "../Core/Color.js";
-import Event from "../Core/Event.js";
-import Material from "../Scene/Material.js";
+import Frozen from "../Core/Frozen.js";
+import ScreenSpaceEventHandler from "../Core/ScreenSpaceEventHandler.js";
+import CustomDataSource from "../DataSources/CustomDataSource.js";
+import ClampMode from "./ClampMode.js";
+import DrawMode from "./DrawMode.js";
+import DrawPoint from "./DrawPoint.js";
+import DrawPolygon from "./DrawPolygon.js";
+import DrawPolyline from "./DrawPolyline.js";
+import DrawRectangle from "./DrawRectangle.js";
+
+const defaultFunction = () => {};
 
 /**
  * 绘制工具
  * @constructor
  * @param {Viewer} viewer viewer对象
- * @param {DrawMode} mode 绘制模式，包含点、线、面、图标。
- * @param {ClampMode} clampMode 绘制风格，包含空间、贴地、贴对象
+ * @param {object} options
+ * @param {DrawMode} options.drawMode 绘制模式，包含点、线、面、图标。
+ * @param {ClampMode} options.clampMode 绘制风格，包含空间、贴地、贴对象
+ * @param {function} options.drawFinished 绘制完成后的回调函数
  */
 class DrawHandler {
-  constructor(viewer, mode, clampMode) {
+  constructor(viewer, options) {
     this.viewer = viewer;
-    this.mode = mode;
+    options = options ?? Frozen.EMPTY_OBJECT;
+    this.mode = options.drawMode ?? DrawMode.POINT;
+    this.clampMode = options.clampMode ?? ClampMode.GROUND;
+    this.drawFinished = options.drawFinished ?? defaultFunction;
 
-    /**
-     * 获取或者设置绘制几何对象的风格，空间、贴地、贴对象。
-     * @type {Number}
-     */
-    this.clampMode = clampMode;
-
-    /**
-     * 绘制handler的激活事件
-     *
-     * @example
-     * handler.activeEvt.addEventListener(result => {
-     *
-     * });
-     * @type {Event}
-     *
-     * @readonly
-     */
-    this.activeEvt = new Event();
-
-    /**
-     * <p>绘制完成事件,监听绘制完成的事件，获取当前绘制结果。</p>
-     * <p>当绘制模式为DrawMode.Point,事件回调的结果是{object : point}。</p>
-     * <p>当绘制模式为DrawMode.Polygon,事件回调的结果是{object : polygon}。</p>
-     * <p>当绘制模式为DrawMode.Line,事件回调的结果是{object : polyline}。</p>
-     * <p>当绘制模式为DrawMode.Marker,事件回调的结果是{object : marker}。</p>
-     * @example
-     * handler.drawEvt.addEventListener(result => {
-     *   console.log(result);
-     * });
-     * @type {Event}
-     *
-     * @readonly
-     */
-    this.drawEvt = new Event();
-
-    /**
-     * 绘制handler的移动事件。
-     *
-     * @example
-     * handler.movingEvt.addEventListener(function(result){
-     *
-     * });
-     *
-     * @type {Event}
-     *
-     * @readonly
-     */
-    this.movingEvt = new Event();
-
-    /**
-     * 设置绘制的图元是否开启深度检测，默认开启
-     * @type {boolean}
-     */
-    this.enableDepthTest = true;
-
-    /**
-     * 设置线颜色
-     * @type {Color}
-     */
-    this.lineColor = Color.RED;
-
-    /**
-     * 获取或设置线材质
-     * @type {Material}
-     */
-    this.lineMaterial = Material.fromType("Color");
-
-    /**
-     * 线宽
-     * @type {number}
-     */
-    this.lineWidth = 2;
+    this.tooltip = viewer.tooltip; // 鼠标提示窗口
+    this.dataSources = new CustomDataSource("draw_elements"); // 存储绘制对象
+    this.viewer.dataSources.add(this.dataSources);
+    this.eventHandler = new ScreenSpaceEventHandler(this.viewer.canvas); // 鼠标交互事件
   }
 
   /**
-   * 激活handler
+   * 开始绘制
    */
-  activate() {}
+  start() {
+    if (this.tooltip) {
+      this.tooltip.enable = true;
+    }
+
+    const callback = (data) => {
+      this.drawFinished(data);
+      this.destroy();
+    };
+
+    if (this.mode === DrawMode.POINT) {
+      new DrawPoint(
+        this.viewer,
+        this.clampMode,
+        this.dataSources,
+        this.eventHandler,
+        callback,
+      ).addEventHandler();
+    } else if (this.mode === DrawMode.POLYLINE) {
+      new DrawPolyline(
+        this.viewer,
+        this.clampMode,
+        this.dataSources,
+        this.eventHandler,
+        callback,
+      ).addEventHandler();
+    } else if (this.mode === DrawMode.POLYGON) {
+      new DrawPolygon(
+        this.viewer,
+        this.clampMode,
+        this.dataSources,
+        this.eventHandler,
+        callback,
+      ).addEventHandler();
+    } else if (this.mode === DrawMode.RECTANGLE) {
+      new DrawRectangle(
+        this.viewer,
+        this.clampMode,
+        this.dataSources,
+        this.eventHandler,
+        callback,
+      ).addEventHandler();
+    }
+  }
 
   /**
-   * 清除所有图元
+   * 移除绘制资源
+   * @private
    */
-  clear() {}
-
-  /**
-   * 使handler无效
-   */
-  deactivate() {}
+  destroy() {
+    if (this.eventHandler && !this.eventHandler.isDestroyed()) {
+      this.eventHandler.destroy();
+    }
+    this.dataSources.entities.removeAll();
+    this.viewer.dataSources.remove(this.dataSources);
+    if (this.tooltip) {
+      this.tooltip.enable = false;
+    }
+  }
 }
 
 export default DrawHandler;
