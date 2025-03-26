@@ -54,7 +54,10 @@ Object.defineProperties(Tooltip.prototype, {
   enable: {
     set: function (value) {
       if (value) {
-        if (!this._screenSpaceEventHandler) {
+        if (
+          !this._screenSpaceEventHandler ||
+          this._screenSpaceEventHandler.isDestroyed()
+        ) {
           this._screenSpaceEventHandler = new ScreenSpaceEventHandler(
             this._canvas,
           );

@@ -9,7 +9,7 @@
   padding: 0 10px;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 4px;
-  display: block;
+  display: none;
   pointer-events: none;
 
   &:before {
