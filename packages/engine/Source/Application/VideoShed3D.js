@@ -37,8 +37,8 @@ import VideoShed3DFS from "../Shaders/PostProcessStages/VideoShed3DFS.js";
  * @param {number} options.alpha 混合因子
  * @param {string} options.url 视频或者图片url
  * @param {Color} options.color 颜色
- * @param {string} options.text 颜色
- * @param {object} options.textStyle 颜色 {@link writeTextToCanvas}
+ * @param {string} options.text 文字
+ * @param {object} options.textStyle 文字样式 {@link writeTextToCanvas}
  * @param {boolean} options.debugFrustum 显示视椎体
  * @param {number} options.fov 相机水平张角
  * @param {boolean} options.videoPlay 暂停播放
@@ -212,6 +212,7 @@ VideoShed3D.prototype._switchShow = function () {
 /**
  * 激活或重置视频URL
  * @param videoSrc
+ * @private
  */
 VideoShed3D.prototype.activeVideo = function (videoSrc) {
   //在可视域添加视频
@@ -245,6 +246,7 @@ VideoShed3D.prototype.activeVideo = function (videoSrc) {
 
 /**
  * 删除视频播放监听
+ * @private
  */
 VideoShed3D.prototype.deActiveVideo = function () {
   if (this.activeVideoListener) {
@@ -256,6 +258,7 @@ VideoShed3D.prototype.deActiveVideo = function () {
 /**
  * 激活或重置图片URL
  * @param picSrc
+ * @private
  */
 VideoShed3D.prototype.activePicture = function (picSrc) {
   const image = new Image();
@@ -274,6 +277,7 @@ VideoShed3D.prototype.activePicture = function (picSrc) {
 /**
  * 激活或重置颜色
  * @param color
+ * @private
  */
 VideoShed3D.prototype.activeColor = function (color) {
   const r = color.red * 255;
@@ -295,6 +299,7 @@ VideoShed3D.prototype.activeColor = function (color) {
  * 激活或重置文字
  * @param text
  * @param styles
+ * @private
  */
 VideoShed3D.prototype.activeText = function (text, styles) {
   //在可视域添加文字
@@ -550,6 +555,9 @@ VideoShed3D.prototype.isDestroyed = function () {
   return false;
 };
 
+/**
+ * destroy
+ */
 VideoShed3D.prototype.destroy = function () {
   this.viewer.scene.postProcessStages.remove(this.postProcess);
   this.viewer.scene.primitives.remove(this.cameraFrustum);
@@ -582,6 +590,12 @@ VideoShed3D.prototype.destroy = function () {
 };
 
 Object.defineProperties(VideoShed3D.prototype, {
+  /**
+   * 获取或设置 alpha
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {number}
+   */
   alpha: {
     get: function get() {
       return this._alpha;
@@ -590,6 +604,12 @@ Object.defineProperties(VideoShed3D.prototype, {
       this._alpha = val;
     },
   },
+  /**
+   * 获取或设置 aspectRatio
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {number}
+   */
   aspectRatio: {
     get: function get() {
       return this._aspectRatio;
@@ -599,6 +619,12 @@ Object.defineProperties(VideoShed3D.prototype, {
       this.changeVideoAspect();
     },
   },
+  /**
+   * 获取或设置 debugFrustum
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {boolean}
+   */
   debugFrustum: {
     get: function get() {
       return this._debugFrustum;
@@ -608,6 +634,12 @@ Object.defineProperties(VideoShed3D.prototype, {
       this.cameraFrustum.show = val;
     },
   },
+  /**
+   * 获取或设置 fov
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {number}
+   */
   fov: {
     get: function get() {
       return this._camerafov;
@@ -617,6 +649,12 @@ Object.defineProperties(VideoShed3D.prototype, {
       this._changeCameraFov();
     },
   },
+  /**
+   * 获取或设置 cameraPosition
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {Cartesian3}
+   */
   cameraPosition: {
     get: function get() {
       return this._cameraPosition;
@@ -629,6 +667,12 @@ Object.defineProperties(VideoShed3D.prototype, {
       this._changeCameraPos();
     },
   },
+  /**
+   * 获取或设置 viewPosition
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {Cartesian3}
+   */
   viewPosition: {
     get: function get() {
       return this.viewPosition;
@@ -641,6 +685,12 @@ Object.defineProperties(VideoShed3D.prototype, {
       this._changeViewPos();
     },
   },
+  /**
+   * 获取或设置 videoPlay
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {boolean}
+   */
   videoPlay: {
     get: function get() {
       return this._videoPlay;
@@ -656,6 +706,13 @@ Object.defineProperties(VideoShed3D.prototype, {
       }
     },
   },
+  /**
+   * 获取 params
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {boolean}
+   * @readonly
+   */
   params: {
     get: function get() {
       const viewJson = {};
@@ -674,6 +731,12 @@ Object.defineProperties(VideoShed3D.prototype, {
       return viewJson;
     },
   },
+  /**
+   * 获取或设置 show
+   * @memberof VideoShed3D.prototype
+   *
+   * @type {boolean}
+   */
   show: {
     get: function get() {
       return this.defaultShow;
