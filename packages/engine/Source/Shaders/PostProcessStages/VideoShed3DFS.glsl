@@ -1,6 +1,8 @@
 uniform float alpha;
+uniform bool mask;
 uniform sampler2D shadowMapTexture;
 uniform sampler2D colorTexture;
+uniform sampler2D maskTexture;
 in vec2 v_textureCoordinates;
 uniform sampler2D videoTexture;
 uniform sampler2D depthTexture;
@@ -107,6 +109,11 @@ void main() {
     shadowParameters.nDotL = nDotL;
     float visibility = _czm_shadowVisibility(shadowMapTexture, shadowParameters);
     vec4 videoColor = texture(videoTexture, shadowPosition.xy);
+    if (mask) {
+        vec4 maskColor = texture(maskTexture, shadowPosition.xy);
+        videoColor *= maskColor;
+    }
+
     if (visibility == 1.0) {
         out_FragColor = mix(color, vec4(videoColor.xyz, 1.0), alpha * videoColor.a);
     } else {

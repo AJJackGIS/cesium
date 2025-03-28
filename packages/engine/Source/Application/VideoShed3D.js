@@ -1,3 +1,4 @@
+import buildModuleUrl from "../Core/buildModuleUrl.js";
 import Cartesian2 from "../Core/Cartesian2.js";
 import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
@@ -39,6 +40,8 @@ import VideoShed3DFS from "../Shaders/PostProcessStages/VideoShed3DFS.js";
  * @param {number} options.fov 相机水平张角
  * @param {boolean} options.videoPlay 暂停播放
  * @param {boolean} options.show 显示隐藏
+ * @param {boolean} options.enableMask 控制羽化
+ * @param {string} options.maskUrl 羽化材质
  */
 function VideoShed3D(viewer, options) {
   if (!defined(viewer)) {
@@ -70,8 +73,8 @@ function VideoShed3D(viewer, options) {
   // 视频对象
   this.videoElement = undefined;
   this.activeVideoListener = undefined; // 视频监听事件
-  //初始化一个默认材质，否则会报错
-  this.videoTexture = new Texture({
+
+  const emptyTexture = new Texture({
     context: this.viewer.scene.context,
     source: {
       width: 1,
@@ -80,11 +83,30 @@ function VideoShed3D(viewer, options) {
     },
     flipY: false,
   });
+  //初始化一个默认材质，否则会报错
+  this.videoTexture = emptyTexture;
   this._videoPlay = options.videoPlay ?? true; //暂停播放
   this.defaultShow = options.show ?? true; //显示和隐藏
   this.cameraFrustum = undefined; // 视锥体
   this.orientation = undefined;
   this.viewShadowMap = undefined;
+  this.enableMask = options.enableMask ?? true;
+  this.maskUrl =
+    options.maskUrl ?? buildModuleUrl("Assets/Textures/eclosion.png");
+  this.maskTexture = emptyTexture;
+  if (this.enableMask) {
+    const image = new Image();
+    image.onload = () => {
+      this.maskTexture = new Texture({
+        context: this.viewer.scene.context,
+        source: image,
+      });
+    };
+    image.onerror = (e) => {
+      console.error(`图片加载失败：${this.maskUrl}`, e);
+    };
+    image.src = this.maskUrl;
+  }
 
   switch (this.type) {
     case 3:
@@ -439,11 +461,17 @@ VideoShed3D.prototype._addPostProcess = function () {
       alpha: function () {
         return _this.alpha;
       },
+      mask: function () {
+        return _this.enableMask;
+      },
       shadowMapTexture: function () {
         return _this.viewShadowMap._shadowMapTexture;
       },
       videoTexture: function () {
         return _this.videoTexture;
+      },
+      maskTexture: function () {
+        return _this.maskTexture;
       },
       shadowMap_matrix: function () {
         return _this.viewShadowMap._shadowMapMatrix;
