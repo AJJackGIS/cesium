@@ -15,6 +15,7 @@ import Matrix3 from "../Core/Matrix3.js";
 import PerspectiveFrustum from "../Core/PerspectiveFrustum.js";
 import PixelFormat from "../Core/PixelFormat.js";
 import Quaternion from "../Core/Quaternion.js";
+import writeTextToCanvas from "../Core/writeTextToCanvas.js";
 import PixelDatatype from "../Renderer/PixelDatatype.js";
 import Texture from "../Renderer/Texture.js";
 import Camera from "../Scene/Camera.js";
@@ -32,10 +33,12 @@ import VideoShed3DFS from "../Shaders/PostProcessStages/VideoShed3DFS.js";
  * @param {object} options
  * @param {Cartesian3} options.cameraPosition 相机位置
  * @param {Cartesian3} options.viewPosition 视点位置
- * @param {number} options.type 投射类型 (纯色: 1, 图片: 2, 视频: 3)
+ * @param {number} options.type 投射类型 (纯色: 1, 图片: 2, 视频: 3, 文字: 4)
  * @param {number} options.alpha 混合因子
  * @param {string} options.url 视频或者图片url
  * @param {Color} options.color 颜色
+ * @param {string} options.text 颜色
+ * @param {object} options.textStyle 颜色 {@link writeTextToCanvas}
  * @param {boolean} options.debugFrustum 显示视椎体
  * @param {number} options.fov 相机水平张角
  * @param {boolean} options.videoPlay 暂停播放
@@ -65,6 +68,8 @@ function VideoShed3D(viewer, options) {
   this.alpha = options.alpha ?? 1;
   this.url = options.url;
   this.color = options.color ?? Color.RED.withAlpha(0.7);
+  this.text = options.text ?? "Hello World";
+  this.textStyle = options.textStyle;
   this._debugFrustum = options.debugFrustum ?? true;
   this._aspectRatio = this._getAspectRatio(); //宽高比
   this._camerafov =
@@ -109,6 +114,9 @@ function VideoShed3D(viewer, options) {
   }
 
   switch (this.type) {
+    case 4:
+      this.activeText(this.text, this.textStyle);
+      break;
     case 3:
       this.activeVideo(this.url);
       break;
@@ -283,6 +291,31 @@ VideoShed3D.prototype.activeColor = function (color) {
   });
 };
 
+/**
+ * 激活或重置文字
+ * @param text
+ * @param styles
+ */
+VideoShed3D.prototype.activeText = function (text, styles) {
+  //在可视域添加文字
+  styles = {
+    font: "50px 楷体",
+    fill: true,
+    stroke: true,
+    fillColor: new Color(1.0, 1.0, 0.0, 1.0),
+    strokeColor: new Color(1.0, 1.0, 1.0, 0.8),
+    backgroundColor: new Color(1.0, 1.0, 1.0, 0.1),
+    strokeWidth: 2,
+    padding: 40,
+    ...styles,
+  };
+  this.textCanvas = writeTextToCanvas(text, styles);
+  this.videoTexture = new Texture({
+    context: this.viewer.scene.context,
+    source: this.textCanvas,
+    flipY: true,
+  });
+};
 /**
  * 呈现投影相机的第一视角
  */
