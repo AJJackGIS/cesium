@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=Edge,chrome=1" http-equiv="X-UA-Compatible" />
+    <!-- Use Chrome Frame in IE -->
+    <meta
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+      name="viewport"
+    />
+    <meta
+      content="A sample photogrammetry dataset rendered with 3D Tiles."
+      name="description"
+    />
+    <meta content="Showcases, 3D Tiles, Analysis" name="cesium-sandcastle-labels" />
+    <title>Cesium Demo</title>
+    <script src="../Sandcastle-header.js" type="text/javascript"></script>
+    <script
+      nomodule
+      src="../../../Build/CesiumUnminified/Cesium.js"
+      type="text/javascript"
+    ></script>
+    <script src="../load-cesium-es6.js" type="module"></script>
+  </head>
+  <body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+    <style>
+      @import url(../templates/bucket.css);
+    </style>
+    <div class="fullSize" id="cesiumContainer"></div>
+    <div id="loadingOverlay"><h1>Loading...</h1></div>
+    <div id="toolbar"></div>
+    <script id="cesium_sandcastle_script">
+      window.startup = async function (Cesium) {
+        "use strict";
+        //Sandcastle_Begin
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          terrain: Cesium.Terrain.fromWorldTerrain(),
+        });
+
+        try {
+          const tileset = await Cesium.Cesium3DTileset.fromIonAssetId(40866);
+          viewer.scene.primitives.add(tileset);
+          viewer.zoomTo(tileset);
+
+          const viewShed = new Cesium.ViewShed3D(viewer, {
+            cameraPosition: Cesium.Cartesian3.fromDegrees(
+              -75.59745216876196,
+              40.03844058280213,
+              92.93035751539844,
+            ),
+            viewPosition: Cesium.Cartesian3.fromDegrees(
+              -75.59744863348456,
+              40.038186564881926,
+              79.06541876048595,
+            ),
+            horizontalAngle: 60,
+            verticalAngle: 60,
+            alpha: 0.4,
+          });
+        } catch (error) {
+          console.log(`Error loading tileset: ${error}`);
+        } //Sandcastle_End
+      };
+      if (typeof Cesium !== "undefined") {
+        window.startupCalled = true;
+        window.startup(Cesium).catch((error) => {
+          "use strict";
+          console.error(error);
+        });
+        Sandcastle.finishedLoading();
+      }
+    </script>
+  </body>
+</html>
