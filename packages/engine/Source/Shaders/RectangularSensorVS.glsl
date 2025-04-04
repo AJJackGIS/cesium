@@ -1,5 +1,5 @@
-attribute vec4 position;
-attribute vec3 normal;
+in vec4 position;
+in vec3 normal;
 out vec3 v_position;
 out vec3 v_positionWC;
 out vec3 v_positionEC;

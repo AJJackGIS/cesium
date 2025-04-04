@@ -29,7 +29,7 @@ import VideoShed3DFS from "../Shaders/PostProcessStages/VideoShed3DFS.js";
  * 视频投射
  *
  * @constructor
- * @param viewer
+ * @param {Viewer} viewer
  * @param {object} options
  * @param {Cartesian3} options.cameraPosition 相机位置
  * @param {Cartesian3} options.viewPosition 视点位置
@@ -321,6 +321,7 @@ VideoShed3D.prototype.activeText = function (text, styles) {
     flipY: true,
   });
 };
+
 /**
  * 呈现投影相机的第一视角
  */

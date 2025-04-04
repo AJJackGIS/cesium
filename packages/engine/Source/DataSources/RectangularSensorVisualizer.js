@@ -8,8 +8,8 @@ import Matrix3 from "../Core/Matrix3.js";
 import Matrix4 from "../Core/Matrix4.js";
 import Quaternion from "../Core/Quaternion.js";
 import Transforms from "../Core/Transforms.js";
-import MaterialProperty from "../DataSources/MaterialProperty.js";
-import Property from "../DataSources/Property.js";
+import MaterialProperty from "./MaterialProperty.js";
+import Property from "./Property.js";
 import RectangularSensorPrimitive from "./RectangularSensorPrimitive.js";
 
 const matrix3Scratch = new Matrix3();
@@ -20,6 +20,14 @@ const cachedOrientation = new Quaternion();
 const diffVectorScratch = new Cartesian3();
 const orientationScratch = new Quaternion();
 
+/**
+ * @alias RectangularSensorVisualizer
+ * @param scene
+ * @param entityCollection
+ * @constructor
+ *
+ * @private
+ */
 function RectangularSensorVisualizer(scene, entityCollection) {
   // >>includeStart('debug', pragmas.debug);
   if (!defined(scene)) {
@@ -187,6 +195,7 @@ RectangularSensorVisualizer.prototype.update = function (time) {
     primitive.radius = radius;
     primitive.xHalfAngle = xHalfAngle;
     primitive.yHalfAngle = yHalfAngle;
+
     primitive.lineColor = Property.getValueOrDefault(
       rectangularSensorGraphics._lineColor,
       time,

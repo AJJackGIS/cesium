@@ -1,6 +1,6 @@
-#ifdef GL_OES_standard_derivatives
-#extension GL_OES_standard_derivatives: enable
-#endif
+//#ifdef GL_OES_standard_derivatives
+//#extension GL_OES_standard_derivatives: enable
+//#endif
 
 uniform bool u_showIntersection;
 uniform bool u_showThroughEllipsoid;
@@ -9,10 +9,10 @@ uniform float u_xHalfAngle;
 uniform float u_yHalfAngle;
 uniform float u_normalDirection;
 uniform vec4 u_color;
-varying vec3 v_position;
-varying vec3 v_positionWC;
-varying vec3 v_positionEC;
-varying vec3 v_normalEC;
+in vec3 v_position;
+in vec3 v_positionWC;
+in vec3 v_positionEC;
+in vec3 v_normalEC;
 
 vec4 getColor(float sensorRadius, vec3 pointEC)
 {
@@ -27,14 +27,14 @@ vec4 getColor(float sensorRadius, vec3 pointEC)
     czm_material material = czm_getMaterial(materialInput);
     material.diffuse = u_color.rgb;
     material.alpha = u_color.a;
-    return mix(czm_phong(normalize(positionToEyeEC), material), vec4(material.diffuse, material.alpha), 0.4);
+    return mix(czm_phong(normalize(positionToEyeEC), material, czm_lightDirectionEC), vec4(material.diffuse, material.alpha), 0.4);
 }
 
 bool isOnBoundary(float value, float epsilon)
 {
     float width = getIntersectionWidth();
     float tolerance = width * epsilon;
-    #ifdef GL_OES_standard_derivatives
+    #if (__VERSION__ == 300 || defined(GL_OES_standard_derivatives))
     float delta = max(abs(dFdx(value)), abs(dFdy(value)));
     float pixels = width * delta;
     float temp = abs(value);
@@ -47,7 +47,7 @@ bool isOnBoundary(float value, float epsilon)
     // the points is close to zero.
     return temp < tolerance && temp < pixels || (delta < 10.0 * tolerance && temp - delta < tolerance && temp < pixels);
     #else
-    return abs(value) < tolerance;
+        return abs(value) < tolerance;
     #endif
 }
 
@@ -59,8 +59,14 @@ vec4 shade(bool isOnBoundary)
     return getColor(u_radius, v_positionEC);
 }
 
-float ellipsoidSurfaceFunction(czm_ellipsoid ellipsoid, vec3 point) {
-    vec3 scaled = ellipsoid.inverseRadii * point;
+//float ellipsoidSurfaceFunction(czm_ellipsoid ellipsoid, vec3 point) {
+//    vec3 scaled = ellipsoid.inverseRadii * point;
+//    return dot(scaled, scaled) - 1.0;
+//}
+
+float ellipsoidSurfaceFunction(vec3 point)
+{
+    vec3 scaled = czm_ellipsoidInverseRadii * point;
     return dot(scaled, scaled) - 1.0;
 }
 
@@ -83,8 +89,9 @@ void main()
     if (resY < cos(u_yHalfAngle) - 0.0001) {
         discard;
     }
-    czm_ellipsoid ellipsoid = czm_getWgs84EllipsoidEC();
-    float ellipsoidValue = ellipsoidSurfaceFunction(ellipsoid, v_positionWC);      // Occluded by the ellipsoid?
+    //    czm_ellipsoid ellipsoid = czm_getWgs84EllipsoidEC();
+    //    float ellipsoidValue = ellipsoidSurfaceFunction(ellipsoid, v_positionWC);      // Occluded by the ellipsoid?
+    float ellipsoidValue = ellipsoidSurfaceFunction(v_positionWC);      // Occluded by the ellipsoid?
     if (!u_showThroughEllipsoid) {
         // Discard if in the ellipsoid
         // PERFORMANCE_IDEA: A coarse check for ellipsoid intersection could be done on the CPU first.
@@ -93,11 +100,12 @@ void main()
         }
 
         // Discard if in the sensor's shadow
-        if (inSensorShadow(sensorVertexWC, ellipsoid, v_positionWC)) {
+        //        if (inSensorShadow(sensorVertexWC, ellipsoid, v_positionWC)) {
+        if (inSensorShadow(sensorVertexWC, v_positionWC)) {
             discard;
         }
     }
     // Notes: Each surface functions should have an associated tolerance based on the floating point error.
     bool isOnEllipsoid = isOnBoundary(ellipsoidValue, czm_epsilon3);
-    gl_FragColor = shade(isOnEllipsoid);
+    out_FragColor = shade(isOnEllipsoid);
 }

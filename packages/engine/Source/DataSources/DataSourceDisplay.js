@@ -1,4 +1,3 @@
-import RectangularSensorVisualizer from "../Application/RectangularSensorVisualizer.js";
 import ApproximateTerrainHeights from "../Core/ApproximateTerrainHeights.js";
 import BoundingSphere from "../Core/BoundingSphere.js";
 import Check from "../Core/Check.js";
@@ -19,6 +18,7 @@ import ModelVisualizer from "./ModelVisualizer.js";
 import PathVisualizer from "./PathVisualizer.js";
 import PointVisualizer from "./PointVisualizer.js";
 import PolylineVisualizer from "./PolylineVisualizer.js";
+import RectangularSensorVisualizer from "./RectangularSensorVisualizer.js";
 
 /**
  * Visualizes a collection of {@link DataSource} instances.

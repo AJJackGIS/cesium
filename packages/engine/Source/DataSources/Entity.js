@@ -2,10 +2,10 @@ import Cartesian3 from "../Core/Cartesian3.js";
 import Cartographic from "../Core/Cartographic.js";
 import Check from "../Core/Check.js";
 import createGuid from "../Core/createGuid.js";
-import Frozen from "../Core/Frozen.js";
 import defined from "../Core/defined.js";
 import DeveloperError from "../Core/DeveloperError.js";
 import Event from "../Core/Event.js";
+import Frozen from "../Core/Frozen.js";
 import CesiumMath from "../Core/Math.js";
 import Matrix3 from "../Core/Matrix3.js";
 import Matrix4 from "../Core/Matrix4.js";
@@ -19,6 +19,7 @@ import HeightReference, {
 } from "../Scene/HeightReference.js";
 import BillboardGraphics from "./BillboardGraphics.js";
 import BoxGraphics from "./BoxGraphics.js";
+import Cesium3DTilesetGraphics from "./Cesium3DTilesetGraphics.js";
 import ConstantPositionProperty from "./ConstantPositionProperty.js";
 import CorridorGraphics from "./CorridorGraphics.js";
 import createPropertyDescriptor from "./createPropertyDescriptor.js";
@@ -28,7 +29,6 @@ import EllipseGraphics from "./EllipseGraphics.js";
 import EllipsoidGraphics from "./EllipsoidGraphics.js";
 import LabelGraphics from "./LabelGraphics.js";
 import ModelGraphics from "./ModelGraphics.js";
-import Cesium3DTilesetGraphics from "./Cesium3DTilesetGraphics.js";
 import PathGraphics from "./PathGraphics.js";
 import PlaneGraphics from "./PlaneGraphics.js";
 import PointGraphics from "./PointGraphics.js";
@@ -38,6 +38,7 @@ import PolylineVolumeGraphics from "./PolylineVolumeGraphics.js";
 import Property from "./Property.js";
 import PropertyBag from "./PropertyBag.js";
 import RectangleGraphics from "./RectangleGraphics.js";
+import RectangularSensorGraphics from "./RectangularSensorGraphics.js";
 import WallGraphics from "./WallGraphics.js";
 
 const cartoScratch = new Cartographic();
@@ -97,8 +98,28 @@ function createPropertyTypeDescriptor(name, Type) {
  * @property {PropertyBag | Object<string,*>} [properties] Arbitrary properties to associate with this entity.
  * @property {PolylineVolumeGraphics | PolylineVolumeGraphics.ConstructorOptions} [polylineVolume] A polylineVolume to associate with this entity.
  * @property {RectangleGraphics | RectangleGraphics.ConstructorOptions} [rectangle] A rectangle to associate with this entity.
+ * @property {RectangularSensorGraphics | RectangularSensorGraphics.ConstructorOptions} [rectangleSensor] A rectangleSensor to associate with this entity.
  * @property {WallGraphics | WallGraphics.ConstructorOptions} [wall] A wall to associate with this entity.
  */
+
+function updateShow(entity, children, isShowing) {
+  const length = children.length;
+  for (let i = 0; i < length; i++) {
+    const child = children[i];
+    const childShow = child._show;
+    const oldValue = !isShowing && childShow;
+    const newValue = isShowing && childShow;
+    if (oldValue !== newValue) {
+      updateShow(child, child._children, isShowing);
+    }
+  }
+  entity._definitionChanged.raiseEvent(
+    entity,
+    "isShowing",
+    isShowing,
+    !isShowing,
+  );
+}
 
 /**
  * Entity instances aggregate multiple forms of visualization into a single high-level object.
@@ -148,6 +169,7 @@ function Entity(options) {
     "position",
     "properties",
     "rectangle",
+    "rectangularSensor",
     "viewFrom",
     "wall",
     ...ExtraPropertyNames,
@@ -193,6 +215,8 @@ function Entity(options) {
   this._propertiesSubscription = undefined;
   this._rectangle = undefined;
   this._rectangleSubscription = undefined;
+  this._rectangularSensor = undefined;
+  this._rectangularSensorSubscription = undefined;
   this._viewFrom = undefined;
   this._viewFromSubscription = undefined;
   this._wall = undefined;
@@ -207,25 +231,6 @@ function Entity(options) {
 
   this.parent = options.parent;
   this.merge(options);
-}
-
-function updateShow(entity, children, isShowing) {
-  const length = children.length;
-  for (let i = 0; i < length; i++) {
-    const child = children[i];
-    const childShow = child._show;
-    const oldValue = !isShowing && childShow;
-    const newValue = isShowing && childShow;
-    if (oldValue !== newValue) {
-      updateShow(child, child._children, isShowing);
-    }
-  }
-  entity._definitionChanged.raiseEvent(
-    entity,
-    "isShowing",
-    isShowing,
-    !isShowing,
-  );
 }
 
 Object.defineProperties(Entity.prototype, {
@@ -493,6 +498,15 @@ Object.defineProperties(Entity.prototype, {
    * @type {RectangleGraphics|undefined}
    */
   rectangle: createPropertyTypeDescriptor("rectangle", RectangleGraphics),
+  /**
+   * Gets or sets the rectangularSensor.
+   * @memberof Entity.prototype
+   * @type {RectangularSensorGraphics|undefined}
+   */
+  rectangularSensor: createPropertyTypeDescriptor(
+    "rectangularSensor",
+    RectangularSensorGraphics,
+  ),
   /**
    * Gets or sets the suggested initial offset when tracking this object.
    * The offset is typically defined in the east-north-up reference frame,

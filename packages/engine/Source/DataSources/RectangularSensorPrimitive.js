@@ -26,6 +26,7 @@ import BlendingState from "../Scene/BlendingState.js";
 import CullFace from "../Scene/CullFace.js";
 import Material from "../Scene/Material.js";
 import SceneMode from "../Scene/SceneMode.js";
+import RectangularSensor from "../Shaders/RectangularSensor.js";
 import RectangularSensorFS from "../Shaders/RectangularSensorFS.js";
 import RectangularSensorScanPlaneFS from "../Shaders/RectangularSensorScanPlaneFS.js";
 import RectangularSensorVS from "../Shaders/RectangularSensorVS.js";
@@ -37,6 +38,11 @@ const attributeLocations = {
   normal: 1,
 };
 
+/**
+ * @alias RectangularSensorPrimitive
+ * @param options
+ * @constructor
+ */
 function RectangularSensorPrimitive(options) {
   const self = this;
 
@@ -259,7 +265,7 @@ function RectangularSensorPrimitive(options) {
 
   this._uniforms = {
     u_type: function u_type() {
-      return 0; //面
+      return 2; //面
     },
     u_xHalfAngle: function u_xHalfAngle() {
       return self.xHalfAngle;
@@ -323,6 +329,10 @@ function RectangularSensorPrimitive(options) {
     },
   };
 }
+
+RectangularSensorPrimitive.prototype.isDestroyed = function () {
+  return false;
+};
 
 RectangularSensorPrimitive.prototype.update = function (frameState) {
   const mode = frameState.mode;
@@ -863,11 +873,13 @@ function createVertexArray(primitive, frameState) {
 
   //显示弧面
   if (primitive.showDomeSurfaces) {
+    console.log(primitive.showDomeSurfaces);
     primitive._domeVA = createDomeVertexArray(context);
   }
 
   //显示弧面线
   if (primitive.showDomeLines) {
+    console.log(primitive.showDomeLines);
     primitive._domeLineVA = createDomeLineVertexArray(context);
   }
 
@@ -906,7 +918,7 @@ function createCommonShaderProgram(primitive, frameState, material) {
 
   const vs = RectangularSensorVS;
   const fs = new ShaderSource({
-    sources: ["rectangularSensor", material.shaderSource, RectangularSensorFS],
+    sources: [RectangularSensor, material.shaderSource, RectangularSensorFS],
   });
 
   primitive._sp = ShaderProgram.replaceCache({
@@ -918,7 +930,7 @@ function createCommonShaderProgram(primitive, frameState, material) {
   });
 
   const pickFS = new ShaderSource({
-    sources: ["rectangularSensor", material.shaderSource, RectangularSensorFS],
+    sources: [RectangularSensor, material.shaderSource, RectangularSensorFS],
     pickColorQualifier: "uniform",
   });
 
@@ -937,7 +949,7 @@ function createScanPlaneShaderProgram(primitive, frameState, material) {
   const vs = RectangularSensorVS;
   const fs = new ShaderSource({
     sources: [
-      "rectangularSensor",
+      RectangularSensor,
       material.shaderSource,
       RectangularSensorScanPlaneFS,
     ],

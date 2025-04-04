@@ -1,6 +1,7 @@
 import Cartesian2 from "../Core/Cartesian2.js";
 import Cartesian3 from "../Core/Cartesian3.js";
 import Cartesian4 from "../Core/Cartesian4.js";
+import clone from "../Core/clone.js";
 import Color from "../Core/Color.js";
 import DeveloperError from "../Core/DeveloperError.js";
 import Frozen from "../Core/Frozen.js";
@@ -15,7 +16,6 @@ import PostProcessStage from "../Scene/PostProcessStage.js";
 import SceneMode from "../Scene/SceneMode.js";
 import ShadowMap from "../Scene/ShadowMap.js";
 import ViewShed3DFS from "../Shaders/PostProcessStages/ViewShed3DFS.js";
-import RectangularSensorGraphics from "./RectangularSensorGraphics.js";
 
 const defaultOpts = {
   cameraPosition: null, //相机位置
@@ -30,6 +30,24 @@ const defaultOpts = {
   show: true, //可视域显示
 };
 
+/**
+ * 可视域分析
+ * @param {Viewer} viewer
+ * @param {object} options
+ * @param {Cartesian3} options.cameraPosition 相机位置
+ * @param {Cartesian3} options.viewPosition 视点位置
+ * @param {number} options.horizontalAngle 水平张角
+ * @param {number} options.verticalAngle 垂直张角
+ * @param {Color} options.visibleAreaColor 可视区域颜色
+ * @param {Color} options.hiddenAreaColor 不可视区域颜色
+ * @param {number} options.alpha 透明度
+ * @param {number} options.distance 距离
+ * @param {boolean} options.frustum 是否显示视锥
+ * @param {boolean} options.show 是否显示
+ * @param {function} options.calback 回调函数
+ *
+ * @constructor
+ */
 function ViewShed3D(viewer, options) {
   if (!viewer) {
     throw new DeveloperError("ViewShed3D: viewer is not defined");
@@ -117,20 +135,20 @@ ViewShed3D.prototype._addToScene = function () {
   this.viewer.scene.primitives.add(this);
 };
 
-ViewShed3D.prototype._createShadowMap = function (cpos, viewPosition, fq) {
+ViewShed3D.prototype._createShadowMap = function (cpos, viewPosition) {
   const camera_pos = cpos;
-  const lookat_pos = viewPosition;
+  const lookAt_pos = viewPosition;
   const scene = this.viewer.scene;
   const camera1 = new Camera(scene);
   camera1.position = camera_pos;
   camera1.direction = Cartesian3.subtract(
-    lookat_pos,
+    lookAt_pos,
     camera_pos,
     new Cartesian3(0, 0, 0),
   );
   camera1.up = Cartesian3.normalize(camera_pos, new Cartesian3(0, 0, 0));
 
-  const far = Number(Cartesian3.distance(lookat_pos, camera_pos).toFixed(1));
+  const far = Number(Cartesian3.distance(lookAt_pos, camera_pos).toFixed(1));
   this.distance = far;
 
   camera1.frustum = new PerspectiveFrustum({
@@ -149,7 +167,26 @@ ViewShed3D.prototype._createShadowMap = function (cpos, viewPosition, fq) {
     cascadesEnabled: false,
     context: scene.context,
     pointLightRadius: far,
+    brightness: 1,
   });
+};
+
+/**
+ * 呈现投影相机的第一视角
+ */
+ViewShed3D.prototype.locate = function () {
+  const camera_pos = clone(this.cameraPosition);
+  const lookAt_pos = clone(this.viewPosition);
+  this.viewer.camera.position = camera_pos;
+  this.viewer.camera.direction = Cartesian3.subtract(
+    lookAt_pos,
+    camera_pos,
+    new Cartesian3(0, 0, 0),
+  );
+  this.viewer.camera.up = Cartesian3.normalize(
+    camera_pos,
+    new Cartesian3(0, 0, 0),
+  );
 };
 
 ViewShed3D.prototype.getFrustumQuaternion = function (cpos, viewPosition) {
@@ -176,11 +213,7 @@ ViewShed3D.prototype.getFrustumQuaternion = function (cpos, viewPosition) {
   Matrix3.setColumn(rotation, 1, up, rotation);
   Matrix3.setColumn(rotation, 2, direction, rotation);
   //计算视锥姿态
-  const orientation = Quaternion.fromRotationMatrix(
-    rotation,
-    scratchOrientation,
-  );
-  return orientation;
+  return Quaternion.fromRotationMatrix(rotation, scratchOrientation);
 };
 
 ViewShed3D.prototype._addPostProcess = function () {
@@ -193,68 +226,66 @@ ViewShed3D.prototype._addPostProcess = function () {
   this.postProcess = new PostProcessStage({
     fragmentShader: fragmentShaderSource,
     uniforms: {
-      czzj: function czzj() {
+      czzj: function () {
         return _this.verticalAngle;
       },
-      dis: function dis() {
+      dis: function () {
         return _this.distance;
       },
-      spzj: function spzj() {
+      spzj: function () {
         return _this.horizontalAngle;
       },
-      visibleColor: function visibleColor() {
+      visibleColor: function () {
         return _this.visibleAreaColor;
       },
-      disVisibleColor: function disVisibleColor() {
+      disVisibleColor: function () {
         return _this.hiddenAreaColor;
       },
-      mixNum: function mixNum() {
+      mixNum: function () {
         return _this.alpha;
       },
-      stcshadow: function stcshadow() {
+      stcshadow: function () {
         return shadow_stc.viewShadowMap._shadowMapTexture;
       },
-      _shadowMap_matrix: function _shadowMap_matrix() {
+      _shadowMap_matrix: function () {
         return shadow_stc.viewShadowMap._shadowMapMatrix;
       },
-      shadowMap_lightPositionEC: function shadowMap_lightPositionEC() {
+      shadowMap_lightPositionEC: function () {
         return shadow_stc.viewShadowMap._lightPositionEC;
       },
-      shadowMap_lightDirectionEC: function shadowMap_lightDirectionEC() {
+      shadowMap_lightDirectionEC: function () {
         return shadow_stc.viewShadowMap._lightDirectionEC;
       },
-      shadowMap_lightUp: function shadowMap_lightUp() {
+      shadowMap_lightUp: function () {
         return shadow_stc.viewShadowMap._lightCamera.up;
       },
-      shadowMap_lightDir: function shadowMap_lightDir() {
+      shadowMap_lightDir: function () {
         return shadow_stc.viewShadowMap._lightCamera.direction;
       },
-      shadowMap_lightRight: function shadowMap_lightRight() {
+      shadowMap_lightRight: function () {
         return shadow_stc.viewShadowMap._lightCamera.right;
       },
-      shadowMap_texelSizeDepthBiasAndNormalShadingSmooth:
-        function shadowMap_texelSizeDepthBiasAndNormalShadingSmooth() {
-          const texelStepSize = new Cartesian2();
-          texelStepSize.x = 1.0 / shadow_stc.viewShadowMap._textureSize.x;
-          texelStepSize.y = 1.0 / shadow_stc.viewShadowMap._textureSize.y;
-          return Cartesian4.fromElements(
-            texelStepSize.x,
-            texelStepSize.y,
-            bias.depthBias,
-            bias.normalShadingSmooth,
-            this.combinedUniforms1,
-          );
-        },
-      shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness:
-        function shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness() {
-          return Cartesian4.fromElements(
-            bias.normalOffsetScale,
-            shadow_stc.viewShadowMap._distance,
-            shadow_stc.viewShadowMap.maximumDistance,
-            shadow_stc.viewShadowMap._darkness,
-            this.combinedUniforms2,
-          );
-        },
+      shadowMap_texelSizeDepthBiasAndNormalShadingSmooth: function () {
+        const texelStepSize = new Cartesian2();
+        texelStepSize.x = 1.0 / shadow_stc.viewShadowMap._textureSize.x;
+        texelStepSize.y = 1.0 / shadow_stc.viewShadowMap._textureSize.y;
+        return Cartesian4.fromElements(
+          texelStepSize.x,
+          texelStepSize.y,
+          bias.depthBias,
+          bias.normalShadingSmooth,
+          this.combinedUniforms1,
+        );
+      },
+      shadowMap_normalOffsetScaleDistanceMaxDistanceAndDarkness: function () {
+        return Cartesian4.fromElements(
+          bias.normalOffsetScale,
+          shadow_stc.viewShadowMap._distance,
+          shadow_stc.viewShadowMap.maximumDistance,
+          shadow_stc.viewShadowMap._darkness,
+          this.combinedUniforms2,
+        );
+      },
     },
   });
   if (this.show) {
@@ -278,23 +309,30 @@ ViewShed3D.prototype.addRadar = function (cpos, frustumQuaternion) {
     position: position,
     orientation: frustumQuaternion,
     show: this.show,
-    rectangularSensor: new RectangularSensorGraphics({
+    rectangularSensor: {
       radius: _this.distance, //传感器的半径
       xHalfAngle: CesiumMath.toRadians(_this.horizontalAngle / 2), //传感器水平半角
       yHalfAngle: CesiumMath.toRadians(_this.verticalAngle / 2), //传感器垂直半角
-
-      material: new Color(0.0, 1.0, 1.0, 0.4), //目前用的统一材质
+      // material: new Color(0.0, 1.0, 0.0, 1.0), //目前用的统一材质
       lineColor: new Color(1.0, 1.0, 1.0, 1.0), //线的颜色
-      slice: 8,
+      // domeSurfaceMaterial: new Color(1.0, 0.0, 0.0, 1.0),
+      // slice: 4,
       showScanPlane: false, //是否显示扫描面
-      scanPlaneColor: new Color(0.0, 1.0, 1.0, 1.0), //扫描面颜色
-      scanPlaneMode: "vertical", // 扫描面模式 垂直vertical/水平horizontal
-      scanPlaneRate: 3, //扫描速率,
+      // scanPlaneColor: new Color(1.0, 1.0, 1.0, 1.0), //扫描面颜色
+      // scanPlaneMode: "horizontal", // 扫描面模式 垂直vertical/水平horizontal
+      // scanPlaneRate: 3, //扫描速率,
       showThroughEllipsoid: false, //此参数控制深度检测，为false启用深度检测，可以解决雷达一半在地球背面时显示的问题
       showLateralSurfaces: false,
       showDomeSurfaces: false,
-    }),
+      // showDomeLines: false,
+      // showIntersection: false,
+      showSectorSegmentLines: true,
+    },
   });
+};
+
+ViewShed3D.prototype._switchRadar = function () {
+  this.radar.show = this._frustum;
 };
 
 ViewShed3D.prototype.update = function (frameState) {
@@ -316,6 +354,13 @@ ViewShed3D.prototype._switchShow = function () {
   this.radar.show = this.show;
 };
 
+ViewShed3D.prototype.isDestroyed = function () {
+  return false;
+};
+
+/**
+ * destroy
+ */
 ViewShed3D.prototype.destroy = function () {
   this._unbindMouseEvent();
 
@@ -338,6 +383,12 @@ ViewShed3D.prototype.destroy = function () {
 };
 
 Object.defineProperties(ViewShed3D.prototype, {
+  /**
+   * 获取或设置 水平张角
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {number}
+   */
   horizontalAngle: {
     get: function get() {
       return this._horizontalAngle;
@@ -347,6 +398,13 @@ Object.defineProperties(ViewShed3D.prototype, {
       this.resetRadar();
     },
   },
+
+  /**
+   * 获取或设置 垂直张角
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {number}
+   */
   verticalAngle: {
     get: function get() {
       return this._verticalAngle;
@@ -356,6 +414,13 @@ Object.defineProperties(ViewShed3D.prototype, {
       this.resetRadar();
     },
   },
+
+  /**
+   * 获取或设置 可视距离
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {number}
+   */
   distance: {
     get: function get() {
       return this._distance;
@@ -365,6 +430,13 @@ Object.defineProperties(ViewShed3D.prototype, {
       this.resetRadar();
     },
   },
+
+  /**
+   * 获取或设置 可视区域颜色
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {Color}
+   */
   visibleAreaColor: {
     get: function get() {
       return this._visibleAreaColor;
@@ -373,6 +445,13 @@ Object.defineProperties(ViewShed3D.prototype, {
       this._visibleAreaColor = val;
     },
   },
+
+  /**
+   * 获取或设置 不可视区域颜色
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {Color}
+   */
   hiddenAreaColor: {
     get: function get() {
       return this._hiddenAreaColor;
@@ -381,6 +460,13 @@ Object.defineProperties(ViewShed3D.prototype, {
       this._hiddenAreaColor = val;
     },
   },
+
+  /**
+   * 获取或设置 透明度 0 - 1
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {number}
+   */
   alpha: {
     get: function get() {
       return this._alpha;
@@ -389,6 +475,13 @@ Object.defineProperties(ViewShed3D.prototype, {
       this._alpha = val;
     },
   },
+
+  /**
+   * 获取或设置 显示和隐藏
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {boolean}
+   */
   show: {
     get: function get() {
       return this.defaultShow;
@@ -396,6 +489,22 @@ Object.defineProperties(ViewShed3D.prototype, {
     set: function set(val) {
       this.defaultShow = Boolean(val);
       this._switchShow();
+    },
+  },
+
+  /**
+   * 获取或设置 视锥是否显示
+   * @memberof ViewShed3D.prototype
+   *
+   * @type {boolean}
+   */
+  frustum: {
+    get: function get() {
+      return this._frustum;
+    },
+    set: function set(val) {
+      this._frustum = Boolean(val);
+      this._switchRadar();
     },
   },
 });
