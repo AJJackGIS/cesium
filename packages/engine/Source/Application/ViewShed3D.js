@@ -5,12 +5,15 @@ import clone from "../Core/clone.js";
 import Color from "../Core/Color.js";
 import DeveloperError from "../Core/DeveloperError.js";
 import Frozen from "../Core/Frozen.js";
+import HeadingPitchRoll from "../Core/HeadingPitchRoll.js";
 import CesiumMath from "../Core/Math.js";
 import Matrix3 from "../Core/Matrix3.js";
+import Matrix4 from "../Core/Matrix4.js";
 import PerspectiveFrustum from "../Core/PerspectiveFrustum.js";
 import Quaternion from "../Core/Quaternion.js";
 import ScreenSpaceEventHandler from "../Core/ScreenSpaceEventHandler.js";
 import ScreenSpaceEventType from "../Core/ScreenSpaceEventType.js";
+import Transforms from "../Core/Transforms.js";
 import Camera from "../Scene/Camera.js";
 import PostProcessStage from "../Scene/PostProcessStage.js";
 import SceneMode from "../Scene/SceneMode.js";
@@ -295,6 +298,7 @@ ViewShed3D.prototype._addPostProcess = function () {
 
 ViewShed3D.prototype.removeRadar = function () {
   this.viewer.entities.remove(this.radar);
+  this.viewer.entities.remove(this.sketch);
 };
 
 ViewShed3D.prototype.resetRadar = function () {
@@ -324,9 +328,52 @@ ViewShed3D.prototype.addRadar = function (cpos, frustumQuaternion) {
       showThroughEllipsoid: false, //此参数控制深度检测，为false启用深度检测，可以解决雷达一半在地球背面时显示的问题
       showLateralSurfaces: false,
       showDomeSurfaces: false,
-      // showDomeLines: false,
+      showDomeLines: false,
       // showIntersection: false,
-      showSectorSegmentLines: true,
+      showSectorSegmentLines: false,
+    },
+  });
+  this._addSketch();
+};
+
+/**
+ * 创建视网
+ */
+ViewShed3D.prototype._addSketch = function () {
+  // todo: 这个地方的计算还是有问题
+  this.viewDistance = Cartesian3.distance(
+    this.cameraPosition,
+    this.viewPosition,
+  );
+  const viewHeading = getHeading(this.cameraPosition, this.viewPosition);
+  const viewPitch = getPitch(this.cameraPosition, this.viewPosition);
+  const orientation = Transforms.headingPitchRollQuaternion(
+    this.cameraPosition,
+    HeadingPitchRoll.fromDegrees(
+      viewHeading - 1.5 * this.horizontalAngle,
+      viewPitch,
+      0.0,
+    ),
+  );
+  this.sketch = this.viewer.entities.add({
+    position: this.cameraPosition,
+    orientation: orientation,
+    ellipsoid: {
+      radii: new Cartesian3(
+        this.viewDistance,
+        this.viewDistance,
+        this.viewDistance,
+      ),
+      minimumClock: CesiumMath.toRadians(-this.horizontalAngle / 2),
+      maximumClock: CesiumMath.toRadians(this.horizontalAngle / 2),
+      minimumCone: CesiumMath.toRadians(this.verticalAngle + 3.5),
+      maximumCone: CesiumMath.toRadians(180 - this.verticalAngle - 3.5),
+      fill: false,
+      outline: true,
+      subdivisions: 256,
+      stackPartitions: 64,
+      slicePartitions: 64,
+      outlineColor: Color.WHITE,
     },
   });
 };
@@ -366,8 +413,10 @@ ViewShed3D.prototype.destroy = function () {
 
   this.viewer.scene.postProcessStages.remove(this.postProcess);
   this.viewer.entities.remove(this.radar);
+  this.viewer.entities.remove(this.sketch);
 
   delete this.radar;
+  delete this.sketch;
   delete this.postProcess;
   delete this.viewShadowMap;
   delete this.verticalAngle;
@@ -532,6 +581,36 @@ function getCurrentMousePosition(scene, position) {
     cartesian = scene.camera.pickEllipsoid(position, scene.globe.ellipsoid);
   }
   return cartesian;
+}
+
+/**
+ * 获取偏航角
+ * @param {Cartesian3} fromPosition
+ * @param {Cartesian3} toPosition
+ * @returns {Number} 偏航角
+ */
+function getHeading(fromPosition, toPosition) {
+  const finalPosition = new Cartesian3();
+  const matrix4 = Transforms.eastNorthUpToFixedFrame(fromPosition);
+  Matrix4.inverse(matrix4, matrix4);
+  Matrix4.multiplyByPoint(matrix4, toPosition, finalPosition);
+  Cartesian3.normalize(finalPosition, finalPosition);
+  return CesiumMath.toDegrees(Math.atan2(finalPosition.x, finalPosition.y));
+}
+
+/**
+ * 获取俯仰角
+ * @param {Cartesian3} fromPosition
+ * @param {Cartesian3} toPosition
+ * @returns {Number} 俯仰角
+ */
+function getPitch(fromPosition, toPosition) {
+  const finalPosition = new Cartesian3();
+  const matrix4 = Transforms.eastNorthUpToFixedFrame(fromPosition);
+  Matrix4.inverse(matrix4, matrix4);
+  Matrix4.multiplyByPoint(matrix4, toPosition, finalPosition);
+  Cartesian3.normalize(finalPosition, finalPosition);
+  return CesiumMath.toDegrees(Math.asin(finalPosition.z));
 }
 
 export default ViewShed3D;
