@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <meta name="description" content="Create 3D models using glTF." />
+    <meta name="cesium-sandcastle-labels" content="Tutorials,Showcases,GIF" />
+    <title>Cesium Demo</title>
+    <script type="text/javascript" src="../Sandcastle-header.js"></script>
+    <script
+      type="text/javascript"
+      src="../../../Build/CesiumUnminified/Cesium.js"
+      nomodule
+    ></script>
+    <script type="module" src="../load-cesium-es6.js"></script>
+  </head>
+  <body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+    <style>
+      @import url(../templates/bucket.css);
+    </style>
+    <div id="cesiumContainer" class="fullSize"></div>
+    <div id="loadingOverlay"><h1>Loading...</h1></div>
+    <div id="toolbar"></div>
+    <script id="cesium_sandcastle_script">
+      window.startup = async function (Cesium) {
+        "use strict";
+        //Sandcastle_Begin
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          infoBox: false,
+          selectionIndicator: false,
+          shadows: true,
+          shouldAnimate: true,
+        });
+
+        const div = document.createElement("div");
+        const img = document.createElement("img");
+        div.appendChild(img);
+        img.src = "../images/cheering_minions.gif";
+
+        img.onload = () => {
+          const rub = new window.SuperGif({
+            gif: img,
+          });
+
+          rub.load(() => {
+            viewer.trackedEntity = viewer.entities.add({
+              position: Cesium.Cartesian3.fromDegrees(114, 30),
+              billboard: {
+                image: new Cesium.CallbackProperty(() => {
+                  return rub.get_canvas().toDataURL("image/png");
+                }, false),
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+                scaleByDistance: new Cesium.NearFarScalar(500, 1.0, 2000, 0.1),
+              },
+            });
+          });
+        };
+        //Sandcastle_End
+      };
+      if (typeof Cesium !== "undefined") {
+        window.startupCalled = true;
+        window.startup(Cesium).catch((error) => {
+          "use strict";
+          console.error(error);
+        });
+        Sandcastle.finishedLoading();
+      }
+    </script>
+  </body>
+</html>
