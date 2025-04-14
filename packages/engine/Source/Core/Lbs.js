@@ -1,10 +1,22 @@
 const Lbs = {};
 
 /**
+ * 百度 key
+ * @type {string}
+ */
+Lbs.defaultBaiduKey = "DXtZNcNHxhPxgbOLQhmR88AG7JNmKVOO";
+
+/**
  * 高德 key
  * @type {string}
  */
 Lbs.defaultAmapKey = "1aa7ce312b422da1b0e2b6c36a92b569";
+
+/**
+ * 腾讯 key
+ * @type {string}
+ */
+Lbs.defaultTencentKey = "PEHBZ-U3VHG-NKCQJ-IAOXJ-TU4QQ-DOFYF";
 
 /**
  * 天地图 key
