@@ -22,7 +22,7 @@ Lbs.defaultTencentKey = "PEHBZ-U3VHG-NKCQJ-IAOXJ-TU4QQ-DOFYF";
  * 天地图 key
  * @type {string}
  */
-Lbs.defaultTdtkey = "8255d7658d0d21485dcb2e4e9c2a5df5";
+Lbs.defaultTdtkey = "218a9b7a90033963a6f627eb1bf61eec";
 
 /**
  * Cesium Key

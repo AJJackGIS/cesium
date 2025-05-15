@@ -23,10 +23,10 @@ class TdtImageryProvider extends UrlTemplateImageryProvider {
       [
         options.protocol || "",
         options.style === "cover"
-          ? COVER_URL.replace("{key}", options.key ?? Lbs.defaultTdtkey)
+          ? COVER_URL.replace("{key}", options.key || Lbs.defaultTdtkey)
           : MAP_URL.replace("{style}", options.style || "img").replace(
               "{key}",
-              options.key || "",
+              options.key || Lbs.defaultTdtkey,
             ),
       ].join("");
     super({
