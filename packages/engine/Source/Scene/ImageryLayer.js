@@ -123,6 +123,7 @@ import TileImagery from "./TileImagery.js";
  * @property {Rectangle} [cutoutRectangle] Cartographic rectangle for cutting out a portion of this ImageryLayer.
  * @property {Color} [colorToAlpha] Color to be used as alpha.
  * @property {number} [colorToAlphaThreshold=0.004] Threshold for color-to-alpha.
+ * @property {ImageryTheme} [theme] The theme of the layer.
  */
 
 /**
@@ -342,6 +343,13 @@ function ImageryLayer(imageryProvider, options) {
   this.colorToAlphaThreshold =
     options.colorToAlphaThreshold ??
     ImageryLayer.DEFAULT_APPLY_COLOR_TO_ALPHA_THRESHOLD;
+
+  /**
+   * The imagery layer theme
+   *
+   * @type {ImageryTheme}
+   */
+  this.theme = options.theme ?? undefined;
 }
 
 Object.defineProperties(ImageryLayer.prototype, {
@@ -1181,8 +1189,9 @@ ImageryLayer.prototype._createTextureWebGL = function (context, imagery) {
 
   const image = imagery.image;
 
+  let texture;
   if (defined(image.internalFormat)) {
-    return new Texture({
+    texture = new Texture({
       context: context,
       pixelFormat: image.internalFormat,
       width: image.width,
@@ -1192,15 +1201,23 @@ ImageryLayer.prototype._createTextureWebGL = function (context, imagery) {
       },
       sampler: sampler,
     });
+  } else {
+    texture = new Texture({
+      context: context,
+      source: image,
+      pixelFormat: this._imageryProvider.hasAlphaChannel
+        ? PixelFormat.RGBA
+        : PixelFormat.RGB,
+      sampler: sampler,
+    });
   }
-  return new Texture({
-    context: context,
-    source: image,
-    pixelFormat: this._imageryProvider.hasAlphaChannel
-      ? PixelFormat.RGBA
-      : PixelFormat.RGB,
-    sampler: sampler,
-  });
+
+  // create a new texture from theme
+  if (this.theme) {
+    const textureProcessed = this.theme.processTexture(context, texture);
+    return textureProcessed || texture;
+  }
+  return texture;
 };
 
 /**
