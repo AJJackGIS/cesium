@@ -26,7 +26,6 @@ import Rectangle from "./Rectangle.js";
  * const occluderEllipsoid = new Cesium.Ellipsoid(1.0, 1.1, 0.9);
  * const occluder = new Cesium.EllipsoidalOccluder(occluderEllipsoid, cameraPosition);
  *
- * @private
  */
 function EllipsoidalOccluder(ellipsoid, cameraPosition) {
   //>>includeStart('debug', pragmas.debug);
