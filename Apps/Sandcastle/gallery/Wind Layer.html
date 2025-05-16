@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+      name="viewport"
+    />
+    <meta content="wind layer" name="description" />
+    <meta content="Tutorials,Showcases" name="cesium-sandcastle-labels" />
+    <title>Cesium Demo</title>
+    <script src="../Sandcastle-header.js" type="text/javascript"></script>
+    <script
+      nomodule
+      src="../../../Build/CesiumUnminified/Cesium.js"
+      type="text/javascript"
+    ></script>
+    <script src="../load-cesium-es6.js" type="module"></script>
+  </head>
+  <body class="sandcastle-loading" data-sandcastle-bucket="bucket-requirejs.html">
+    <style>
+      @import url(../templates/bucket.css);
+    </style>
+    <div class="fullSize" id="cesiumContainer"></div>
+    <div id="loadingOverlay"><h1>Loading...</h1></div>
+    <div id="toolbar"></div>
+    <script id="cesium_sandcastle_script">
+      window.startup = async function (Cesium) {
+        "use strict";
+        //Sandcastle_Begin
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          baseLayer: new Cesium.ImageryLayer(new Cesium.AMapImageryProvider()),
+        });
+        const controls = {
+          show: true,
+          colorScale: "#f00",
+          frameRate: 10,
+          globalAlpha: 0.8,
+          maxAge: 60,
+          paths: 2000,
+          velocityScale: 0.03,
+          lineWidth: 1,
+        };
+        let windLayer;
+        fetch("../../SampleData/wind.json")
+          .then((res) => res.json())
+          .then((res) => {
+            windLayer = new Cesium.WindLayer(res, controls);
+            windLayer.addTo(viewer);
+            // setTimeout(() => {
+            //   windLayer.setOptions({ colorScale: "#0f0" });
+            // }, 4000);
+          });
+
+        addGuiController(); // add controller
+        function addGuiController() {
+          const gui = new dat.GUI();
+
+          gui.add(controls, "show").onChange((value) => {
+            windLayer.show = value;
+          });
+
+          gui.addColor(controls, "colorScale").onChange((value) => {
+            windLayer.setOptions({
+              colorScale: value,
+            });
+          });
+
+          gui
+            .add(controls, "frameRate", 1, 100)
+            .step(1)
+            .onChange((value) => {
+              windLayer.setOptions({
+                frameRate: value,
+              });
+            });
+
+          gui
+            .add(controls, "globalAlpha", 0, 1)
+            .step(0.1)
+            .onChange((value) => {
+              windLayer.setOptions({
+                globalAlpha: value,
+              });
+            });
+
+          gui
+            .add(controls, "maxAge", 0, 180)
+            .step(5)
+            .onChange((value) => {
+              windLayer.setOptions({
+                maxAge: value,
+              });
+            });
+
+          gui
+            .add(controls, "paths", 1000, 4000)
+            .step(100)
+            .onChange((value) => {
+              windLayer.setOptions({
+                paths: value,
+              });
+            });
+
+          gui
+            .add(controls, "velocityScale", 0.01, 0.1)
+            .step(0.01)
+            .onChange((value) => {
+              windLayer.setOptions({
+                velocityScale: value,
+              });
+            });
+
+          gui
+            .add(controls, "lineWidth", 0, 3)
+            .step(0.1)
+            .onChange((value) => {
+              windLayer.setOptions({
+                lineWidth: value,
+              });
+            });
+        }
+
+        //Sandcastle_End
+      };
+      if (typeof Cesium !== "undefined") {
+        window.startupCalled = true;
+        window.startup(Cesium).catch((error) => {
+          "use strict";
+          console.error(error);
+        });
+        Sandcastle.finishedLoading();
+      }
+    </script>
+  </body>
+</html>
