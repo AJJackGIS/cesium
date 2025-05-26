@@ -177,6 +177,83 @@ class CoordTransformUtils {
     lng = +lng;
     return !(lng > 73.66 && lng < 135.05 && lat > 3.86 && lat < 53.55);
   }
+
+  /**
+   * 经度转瓦片号
+   *
+   * @param lng 经度
+   * @param z   级别
+   */
+  static lon2tile(lng, z) {
+    return Math.floor(Math.pow(2, z - 1) * (lng / 180 + 1));
+  }
+
+  /**
+   * 纬度转瓦片号
+   *
+   * @param lat 纬度
+   * @param z   级别
+   */
+  static calY(lat, z) {
+    const x = Math.tan((Math.PI * lat) / 180);
+    const y = 1 / Math.cos((Math.PI * lat) / 180);
+    const q = Math.log(x + y) / Math.PI;
+    return Math.floor(Math.pow(2, z - 1) * (1 - q));
+  }
+
+  /**
+   * 瓦片号转经度
+   * @param x
+   * @param z
+   * @returns {number}
+   */
+  static tile2lon(x, z) {
+    return (x / Math.pow(2, z)) * 360 - 180;
+  }
+
+  /**
+   * 瓦片号转纬度
+   * @param y
+   * @param z
+   * @returns {number}
+   */
+  static tile2lat(y, z) {
+    const n = Math.PI - (2 * Math.PI * y) / Math.pow(2, z);
+    return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  }
+
+  /**
+   * 经纬度转墨卡托投影坐标
+   * @param lonLat
+   * @returns {{x: number, y: number}}
+   */
+  static lonLat2Mercator(lonLat) {
+    const mercator = { x: 0, y: 0 };
+    const x = (lonLat.x * 20037508.34) / 180;
+    let y =
+      Math.log(Math.tan(((90 + lonLat.y) * Math.PI) / 360)) / (Math.PI / 180);
+    y = (y * 20037508.34) / 180;
+    mercator.x = x;
+    mercator.y = y;
+    return mercator;
+  }
+
+  /**
+   * 墨卡托投影坐标转经纬度坐标
+   * @param mercator
+   * @returns {{x: number, y: number}}
+   */
+  static mercator2LonLat(mercator) {
+    const lonLat = { x: 0, y: 0 };
+    const x = (mercator.x / 20037508.34) * 180;
+    let y = (mercator.y / 20037508.34) * 180;
+    y =
+      (180 / Math.PI) *
+      (2 * Math.atan(Math.exp((y * Math.PI) / 180)) - Math.PI / 2);
+    lonLat.x = x;
+    lonLat.y = y;
+    return lonLat;
+  }
 }
 
 export default CoordTransformUtils;
