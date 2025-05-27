@@ -1,8 +1,8 @@
-import Cartesian3 from "../Core/Cartesian3.js";
-import ScreenSpaceEventType from "../Core/ScreenSpaceEventType.js";
-import CallbackProperty from "../DataSources/CallbackProperty.js";
-import Entity from "../DataSources/Entity.js";
-import TransformUtils from "../Utils/TransformUtils.js";
+import Cartesian3 from "../../Core/Cartesian3.js";
+import ScreenSpaceEventType from "../../Core/ScreenSpaceEventType.js";
+import CallbackProperty from "../../DataSources/CallbackProperty.js";
+import Entity from "../../DataSources/Entity.js";
+import TransformUtils from "../../Utils/TransformUtils.js";
 import DrawBase from "./DrawBase.js";
 
 /**

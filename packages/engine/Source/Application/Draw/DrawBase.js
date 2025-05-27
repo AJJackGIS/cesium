@@ -1,5 +1,5 @@
-import Color from "../Core/Color.js";
-import HeightReference from "../Scene/HeightReference.js";
+import Color from "../../Core/Color.js";
+import HeightReference from "../../Scene/HeightReference.js";
 import ClampMode from "./ClampMode.js";
 
 /**

@@ -1,12 +1,13 @@
-import Cartesian3 from "../Core/Cartesian3.js";
-import ScreenSpaceEventType from "../Core/ScreenSpaceEventType.js";
-import CallbackProperty from "../DataSources/CallbackProperty.js";
-import Entity from "../DataSources/Entity.js";
-import TransformUtils from "../Utils/TransformUtils.js";
+import Cartesian3 from "../../Core/Cartesian3.js";
+import PolygonHierarchy from "../../Core/PolygonHierarchy.js";
+import ScreenSpaceEventType from "../../Core/ScreenSpaceEventType.js";
+import CallbackProperty from "../../DataSources/CallbackProperty.js";
+import Entity from "../../DataSources/Entity.js";
+import TransformUtils from "../../Utils/TransformUtils.js";
 import DrawBase from "./DrawBase.js";
 
 /**
- * 绘制线
+ * 绘制面
  * @param {Viewer} viewer
  * @param {ClampMode} clampMode
  * @param {DataSource} dataSource
@@ -14,7 +15,7 @@ import DrawBase from "./DrawBase.js";
  * @param {function} callback
  * @private
  */
-class DrawPolyline extends DrawBase {
+class DrawPolygon extends DrawBase {
   constructor(viewer, clampMode, dataSource, eventHandler, callback) {
     super(viewer, clampMode, dataSource, eventHandler, callback);
   }
@@ -33,11 +34,28 @@ class DrawPolyline extends DrawBase {
     });
     this.dataSource.entities.add(moveEntity);
 
-    // 创建线实体
+    // 创建面实体
     const positions = [];
+    const polygonEntity = new Entity({
+      polygon: {
+        hierarchy: new CallbackProperty(() => {
+          if (positions.length > 0) {
+            return new PolygonHierarchy([...positions, position, positions[0]]);
+          }
+          return new PolygonHierarchy([...positions, position]);
+        }, false),
+        ...this.style,
+      },
+    });
+    this.dataSource.entities.add(polygonEntity);
+
+    // 创建线实体
     const polylineEntity = new Entity({
       polyline: {
         positions: new CallbackProperty(() => {
+          if (positions.length > 0) {
+            return [...positions, position, positions[0]];
+          }
           return [...positions, position];
         }, false),
         ...this.style,
@@ -64,4 +82,4 @@ class DrawPolyline extends DrawBase {
   }
 }
 
-export default DrawPolyline;
+export default DrawPolygon;
