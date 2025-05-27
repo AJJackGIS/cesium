@@ -93,16 +93,19 @@
   color: #202020;
   margin: 0;
 }
+
 .cesium-widget-errorPanel-buttonPanel button:focus {
   border-color: #510c00;
   background: #f0d9d5;
   color: #510c00;
 }
+
 .cesium-widget-errorPanel-buttonPanel button:hover {
   border-color: #510c00;
   background: #f0d9d5;
   color: #510c00;
 }
+
 .cesium-widget-errorPanel-buttonPanel button:active {
   border-color: #510c00;
   background: #b17b72;
@@ -116,4 +119,11 @@
 
 .cesium-widget-errorPanel-more-details:hover {
   color: #2b0700;
+}
+
+.cesium-widget-divIcon {
+  user-select: none;
+  background-color: #fff;
+  padding: 2px;
+  border-radius: 4px;
 }
