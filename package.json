@@ -52,7 +52,8 @@
   ],
   "dependencies": {
     "@cesium/engine": "^17.0.0",
-    "@cesium/widgets": "^12.0.0"
+    "@cesium/widgets": "^12.0.0",
+    "@mars3d/heatmap.js": "^2.0.7"
   },
   "devDependencies": {
     "@cesium/eslint-config": "^12.0.0",
