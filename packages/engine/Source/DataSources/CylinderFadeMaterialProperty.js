@@ -7,6 +7,7 @@ import createPropertyDescriptor from "./createPropertyDescriptor.js";
 import Property from "./Property.js";
 
 const defaultColor = Color.YELLOW;
+const defaultSpeed = 1.0;
 
 /**
  * 动态锥材质
@@ -14,6 +15,7 @@ const defaultColor = Color.YELLOW;
  *
  * @param {object} [options] Object with the following properties:
  * @param {Property|Color} [options.color=Color.WHITE] The {@link Color} Property to be used.
+ * @param {Property|number} [options.speed=1.0]
  */
 function CylinderFadeMaterialProperty(options) {
   options = options ?? Frozen.EMPTY_OBJECT;
@@ -21,14 +23,19 @@ function CylinderFadeMaterialProperty(options) {
   this._definitionChanged = new Event();
   this._color = undefined;
   this._colorSubscription = undefined;
+  this._speed = undefined;
+  this._speedSubscription = undefined;
 
   this.color = options.color;
+  this.speed = options.speed;
 }
 
 Object.defineProperties(CylinderFadeMaterialProperty.prototype, {
   isConstant: {
     get: function () {
-      return Property.isConstant(this._color);
+      return (
+        Property.isConstant(this._color) && Property.isConstant(this._speed)
+      );
     },
   },
 
@@ -39,6 +46,7 @@ Object.defineProperties(CylinderFadeMaterialProperty.prototype, {
   },
 
   color: createPropertyDescriptor("color"),
+  speed: createPropertyDescriptor("speed"),
 });
 
 CylinderFadeMaterialProperty.prototype.getType = function (time) {
@@ -60,6 +68,7 @@ CylinderFadeMaterialProperty.prototype.getValue = function (time, result) {
     defaultColor,
     result.color,
   );
+  result.speed = Property.getValueOrDefault(this._speed, time, defaultSpeed);
   return result;
 };
 
@@ -67,7 +76,8 @@ CylinderFadeMaterialProperty.prototype.equals = function (other) {
   return (
     this === other ||
     (other instanceof CylinderFadeMaterialProperty &&
-      Property.equals(this._color, other._color))
+      Property.equals(this._color, other._color) &&
+      Property.equals(this._speed, other._speed))
   );
 };
 

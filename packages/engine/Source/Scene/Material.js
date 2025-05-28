@@ -2180,6 +2180,7 @@ Material._materialCache.addMaterial(Material.CylinderFadeType, {
     type: Material.CylinderFadeType,
     uniforms: {
       color: new Color(1.0, 0.0, 0.0, 0.7),
+      speed: 1.0,
     },
     source: CylinderFadeMaterial,
   },
