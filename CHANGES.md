@@ -1,5 +1,47 @@
 # Change Log
 
+## 1.132 - 2025-08-01
+
+### @cesium/engine
+
+#### Fixes :wrench:
+
+- Fixes incorrect polygon culling in 2D scene mode. [#1552](https://github.com/CesiumGS/cesium/issues/1552)
+- Fixes material flashing when changing properties. [#1640](https://github.com/CesiumGS/cesium/issues/1640), [#12716](https://github.com/CesiumGS/cesium/issues/12716)
+- Fixed an issue where draped imagery on tilesets was not updated based on the visibility of the imagery layer. [#12742](https://github.com/CesiumGS/cesium/issues/12742)
+- Fixes an exception when removing a Gaussian splat tileset from the scene primitives when it has more than one tile. [#12726](https://github.com/CesiumGS/cesium/pull/12726)
+- Fixes rendering of Gaussian splats when they are scaled by the glTF transform, tileset transform, or model matrix. [#12721](https://github.com/CesiumGS/cesium/issues/12721), [#12718](https://github.com/CesiumGS/cesium/issues/12718)
+- Updated the type of many properties and functions of `Scene` to clarify that they may be `undefined`. For the full list check PR: [#12736](https://github.com/CesiumGS/cesium/pull/12736)
+- Fixes Gaussian splats incorrectly rendering when `Cesium3DTileset.show` is `false`. [#12748](https://github.com/CesiumGS/cesium/pull/12748)
+
+#### Additions :tada:
+
+- Expand the CustomShader Sample to support real-time modification of CustomShader. [#12702](https://github.com/CesiumGS/cesium/pull/12702)
+
+## 1.131 - 2025-07-01
+
+### @cesium/engine
+
+#### Fixes :wrench:
+
+- Updates use of deprecated options on createImageBitmap. [#12664](https://github.com/CesiumGS/cesium/pull/12664)
+- Fixed raymarching step size for cylindrical voxels. [#12681](https://github.com/CesiumGS/cesium/pull/12681)
+- Fixes handling of tileset `modelMatrix` changes for translations and rotations in `GaussianSplatPrimitive`. [#12706](https://github.com/CesiumGS/cesium/pull/12706)
+
+#### Additions :tada:
+
+- Added `HeightReference` to `Cesium3DTileset.ConstructorOptions` to allow clamping point features in 3D Tile vector data to terrain or 3D Tiles [#11710](https://github.com/CesiumGS/cesium/pull/11710)
+- Added the ability to pass `OffscreenCanvas` & `ImageBitmap` directly to `Material` uniforms. [#12558](https://github.com/CesiumGS/cesium/pull/12558)
+
+## 1.130.1 - 2025-06-16
+
+### @cesium/engine
+
+#### Additions :tada:
+
+- Added experimental support for loading 3D Tiles with Gaussian splats encoded with SPZ compression using the draft glTF extension [`KHR_spz_gaussian_splats_compression`](https://github.com/KhronosGroup/glTF/pull/2490). [#12582](https://github.com/CesiumGS/cesium/pull/12582)
+- Added support for integral texture formats: R32I, RG32I, RGB32I, RGBA32I, R32UI, RG32UI, RGB32UI, RGBA32UI [#12582](https://github.com/CesiumGS/cesium/pull/12582)
+
 ## 1.130 - 2025-06-02
 
 ### @cesium/engine
@@ -5649,7 +5691,6 @@ _This releases fixes 2D and other issues with Chrome 29.0.1547.57 ([#1002](https
   - TileProviders now take a proxy object instead of a string, to allow more control over how proxy URLs are built. Construct a DefaultProxy, passing the previous proxy URL, to get the previous behavior.
   - `Ellipsoid.getScaledWgs84()` has been removed since it is not needed.
   - `getXXX()` methods which returned a new instance of what should really be a constant are now exposed as frozen properties instead. This should improve performance and memory pressure.
-
     - `Cartsian2/3/4.getUnitX()` -> `Cartsian2/3/4.UNIT_X`
     - `Cartsian2/3/4.getUnitY()` -> `Cartsian2/3/4.UNIT_Y`
     - `Cartsian2/3/4.getUnitZ()` -> `Cartsian3/4.UNIT_Z`

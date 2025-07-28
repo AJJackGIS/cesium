@@ -1010,7 +1010,9 @@ function createTexture2DUpdateFunction(uniformId) {
           });
       } else if (
         uniformValue instanceof HTMLCanvasElement ||
-        uniformValue instanceof HTMLImageElement
+        uniformValue instanceof HTMLImageElement ||
+        uniformValue instanceof ImageBitmap ||
+        uniformValue instanceof OffscreenCanvas
       ) {
         material._loadedImages.push({
           id: uniformId,
@@ -1187,7 +1189,9 @@ function getUniformType(uniformValue) {
       type === "string" ||
       uniformValue instanceof Resource ||
       uniformValue instanceof HTMLCanvasElement ||
-      uniformValue instanceof HTMLImageElement
+      uniformValue instanceof HTMLImageElement ||
+      uniformValue instanceof ImageBitmap ||
+      uniformValue instanceof OffscreenCanvas
     ) {
       if (/^([rgba]){1,4}$/i.test(uniformValue)) {
         uniformType = "channels";
