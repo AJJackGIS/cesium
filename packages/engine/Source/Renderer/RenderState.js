@@ -1,8 +1,8 @@
 import BoundingRectangle from "../Core/BoundingRectangle.js";
 import Color from "../Core/Color.js";
-import Frozen from "../Core/Frozen.js";
 import defined from "../Core/defined.js";
 import DeveloperError from "../Core/DeveloperError.js";
+import Frozen from "../Core/Frozen.js";
 import WebGLConstants from "../Core/WebGLConstants.js";
 import WindingOrder from "../Core/WindingOrder.js";
 import ContextLimits from "./ContextLimits.js";
@@ -455,8 +455,6 @@ let renderStateCache = {};
  *
  * @see DrawCommand
  * @see ClearCommand
- *
- * @private
  */
 RenderState.fromCache = function (renderState) {
   const partialKey = JSON.stringify(renderState);
