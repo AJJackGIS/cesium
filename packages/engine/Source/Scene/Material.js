@@ -22,11 +22,13 @@ import AspectRampMaterial from "../Shaders/Materials/AspectRampMaterial.js";
 import BumpMapMaterial from "../Shaders/Materials/BumpMapMaterial.js";
 import CheckerboardMaterial from "../Shaders/Materials/CheckerboardMaterial.js";
 import CircleBlurMaterial from "../Shaders/Materials/CircleBlurMaterial.js";
+import CircleDiffuse2Material from "../Shaders/Materials/CircleDiffuse2Material.js";
 import CircleDiffuseMaterial from "../Shaders/Materials/CircleDiffuseMaterial.js";
 import CircleFadeMaterial from "../Shaders/Materials/CircleFadeMaterial.js";
 import CirclePulseMaterial from "../Shaders/Materials/CirclePulseMaterial.js";
 import CircleRingMaterial from "../Shaders/Materials/CircleRingMaterial.js";
 import CircleRotateMaterial from "../Shaders/Materials/CircleRotateMaterial.js";
+import CircleScan2Material from "../Shaders/Materials/CircleScan2Material.js";
 import CircleScanMaterial from "../Shaders/Materials/CircleScanMaterial.js";
 import CircleSpiralMaterial from "../Shaders/Materials/CircleSpiralMaterial.js";
 import CircleVaryMaterial from "../Shaders/Materials/CircleVaryMaterial.js";
@@ -277,6 +279,61 @@ import WoodMaterial from "../Shaders/Thirdpart/WoodMaterial.js";
  *      <li><code>speed</code>: 流动速率.</li>
  *      <li><code>percent</code>: 流动部分占比.</li>
  *      <li><code>gradient</code>: 打底线颜色透明度.</li>
+ *  </ul>
+ *  <li>CircleBlur</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleDiffuse</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleDiffuse2</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleFade</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CirclePulse</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleRing</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleRotate</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleScan</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleScan2</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleSpiral</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleVary</li>
+ *  <ul>
+ *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
  *  </ul>
  *  <li>CylinderWave</li>
  *  <ul>
@@ -2008,6 +2065,24 @@ Material._materialCache.addMaterial(Material.CircleDiffuseType, {
 });
 
 /**
+ * CircleDiffuse2
+ * @type {string}
+ * @readonly
+ */
+Material.CircleDiffuse2Type = "CircleDiffuse2";
+Material._materialCache.addMaterial(Material.CircleDiffuse2Type, {
+  fabric: {
+    type: Material.CircleDiffuse2Type,
+    uniforms: {
+      color: new Color(0, 0.7, 1, 1.0),
+      speed: 1.0,
+    },
+    source: CircleDiffuse2Material,
+  },
+  translucent: true,
+});
+
+/**
  * CircleFade
  * @type {string}
  * @readonly
@@ -2092,6 +2167,24 @@ Material._materialCache.addMaterial(Material.CircleScanType, {
       speed: 1,
     },
     source: CircleScanMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleScan2
+ * @type {string}
+ * @readonly
+ */
+Material.CircleScan2Type = "CircleScan2";
+Material._materialCache.addMaterial(Material.CircleScan2Type, {
+  fabric: {
+    type: Material.CircleScan2Type,
+    uniforms: {
+      color: new Color(0, 0.7, 1, 1.0),
+      speed: 1,
+    },
+    source: CircleScan2Material,
   },
   translucent: true,
 });
