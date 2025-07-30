@@ -2,8 +2,10 @@ import Cartesian3 from "../Core/Cartesian3.js";
 import Cartographic from "../Core/Cartographic.js";
 import Ellipsoid from "../Core/Ellipsoid.js";
 import CesiumMath from "../Core/Math.js";
+import Matrix4 from "../Core/Matrix4.js";
 
 import Position from "../Core/Position.js";
+import Transforms from "../Core/Transforms.js";
 import WebMercatorProjection from "../Core/WebMercatorProjection.js";
 import SceneMode from "../Scene/SceneMode.js";
 import SceneTransforms from "../Scene/SceneTransforms.js";
@@ -162,6 +164,31 @@ class TransformUtils {
       viewer.scene,
       this.transformWGS84ToCartesian(position),
     );
+  }
+
+  /**
+   * 根据位置和旋转获取偏移位置
+   * @param {Cartesian3} position
+   * @param {HeadingPitchRoll} hpr
+   * @param {number} viewDistance
+   * @returns
+   */
+  static getPositionOffset(position, hpr, viewDistance) {
+    if (viewDistance > 0) {
+      hpr.heading -= CesiumMath.PI_OVER_TWO;
+
+      const mat4 = Transforms.headingPitchRollToFixedFrame(position, hpr);
+      const dir = Matrix4.multiplyByPointAsVector(
+        mat4,
+        Cartesian3.UNIT_X,
+        new Cartesian3(),
+      );
+
+      Cartesian3.multiplyByScalar(dir, viewDistance, dir);
+      Cartesian3.subtract(position, dir, position);
+    }
+
+    return position;
   }
 }
 
