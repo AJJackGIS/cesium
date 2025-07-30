@@ -25,6 +25,7 @@ import CircleBlurMaterial from "../Shaders/Materials/CircleBlurMaterial.js";
 import CircleDiffuse2Material from "../Shaders/Materials/CircleDiffuse2Material.js";
 import CircleDiffuseMaterial from "../Shaders/Materials/CircleDiffuseMaterial.js";
 import CircleFadeMaterial from "../Shaders/Materials/CircleFadeMaterial.js";
+import CircleHaloMaterial from "../Shaders/Materials/CircleHaloMaterial.js";
 import CirclePulseMaterial from "../Shaders/Materials/CirclePulseMaterial.js";
 import CircleRingMaterial from "../Shaders/Materials/CircleRingMaterial.js";
 import CircleRotateMaterial from "../Shaders/Materials/CircleRotateMaterial.js";
@@ -298,6 +299,10 @@ import WoodMaterial from "../Shaders/Thirdpart/WoodMaterial.js";
  *  <li>CircleFade</li>
  *  <ul>
  *      <li><code>color</code>: diffuse color and alpha.</li>
+ *      <li><code>speed</code>: 流动速率.</li>
+ *  </ul>
+ *  <li>CircleHalo</li>
+ *  <ul>
  *      <li><code>speed</code>: 流动速率.</li>
  *  </ul>
  *  <li>CirclePulse</li>
@@ -2096,6 +2101,23 @@ Material._materialCache.addMaterial(Material.CircleFadeType, {
       speed: 1.0,
     },
     source: CircleFadeMaterial,
+  },
+  translucent: true,
+});
+
+/**
+ * CircleFade
+ * @type {string}
+ * @readonly
+ */
+Material.CircleHaloType = "CircleHalo";
+Material._materialCache.addMaterial(Material.CircleHaloType, {
+  fabric: {
+    type: Material.CircleHaloType,
+    uniforms: {
+      speed: 1.0,
+    },
+    source: CircleHaloMaterial,
   },
   translucent: true,
 });
