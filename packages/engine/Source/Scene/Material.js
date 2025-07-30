@@ -34,6 +34,7 @@ import CircleScanMaterial from "../Shaders/Materials/CircleScanMaterial.js";
 import CircleSpiralMaterial from "../Shaders/Materials/CircleSpiralMaterial.js";
 import CircleVaryMaterial from "../Shaders/Materials/CircleVaryMaterial.js";
 import CircleWaveMaterial from "../Shaders/Materials/CircleWaveMaterial.js";
+import CloudNoiseMaterial from "../Shaders/Materials/CloudNoiseMaterial.js";
 import CylinderFadeMaterial from "../Shaders/Materials/CylinderFadeMaterial.js";
 import CylinderParticlesMaterial from "../Shaders/Materials/CylinderParticlesMaterial.js";
 import CylinderWaveMaterial from "../Shaders/Materials/CylinderWaveMaterial.js";
@@ -74,6 +75,7 @@ import WallRippleMaterial from "../Shaders/Materials/WallRippleMaterial.js";
 import WallTrailMaterial from "../Shaders/Materials/WallTrailMaterial.js";
 import WaterMaterial from "../Shaders/Materials/Water.js";
 import WaterMaskMaterial from "../Shaders/Materials/WaterMaskMaterial.js";
+import WaterRipple from "../Shaders/Materials/WaterRipple.js";
 import AsphaltMaterial from "../Shaders/Thirdpart/AsphaltMaterial.js";
 import BlobMaterial from "../Shaders/Thirdpart/BlobMaterial.js";
 import BrickMaterial from "../Shaders/Thirdpart/BrickMaterial.js";
@@ -2268,6 +2270,23 @@ Material._materialCache.addMaterial(Material.CircleWaveType, {
 });
 
 /**
+ * CloudNoise
+ * @type {string}
+ * @readonly
+ */
+Material.CloudNoiseType = "CloudNoise";
+Material._materialCache.addMaterial(Material.CloudNoiseType, {
+  fabric: {
+    type: Material.CloudNoiseType,
+    uniforms: {
+      speed: 2,
+    },
+    source: CloudNoiseMaterial,
+  },
+  translucent: true,
+});
+
+/**
  * Gets the name of the cylinder wave material.
  * @type {string}
  * @readonly
@@ -2596,6 +2615,25 @@ Material._materialCache.addMaterial(Material.WaterMaskType, {
       waterColor: new Color(1.0, 1.0, 1.0, 1.0),
       landColor: new Color(0.0, 0.0, 0.0, 0.0),
     },
+  },
+  translucent: false,
+});
+
+/**
+ * WaterRipple
+ * @type {string}
+ * @readonly
+ */
+Material.WaterRippleType = "WaterRipple";
+Material._materialCache.addMaterial(Material.WaterRippleType, {
+  fabric: {
+    type: Material.WaterRippleType,
+    uniforms: {
+      image: Material.DefaultImageId,
+      dense: 1.0,
+      speed: 1.0,
+    },
+    source: WaterRipple,
   },
   translucent: false,
 });
