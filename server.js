@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { performance } from "perf_hooks";
-import { URL } from "url";
+import { fileURLToPath, URL } from "url";
 
 import chokidar from "chokidar";
 import compression from "compression";
@@ -18,6 +18,8 @@ import {
   glslToJavaScript,
   createIndexJs,
   buildCesium,
+  buildEngine,
+  buildWidgets,
 } from "./scripts/build.js";
 
 const argv = yargs(process.argv)
@@ -37,6 +39,10 @@ const argv = yargs(process.argv)
   })
   .help().argv;
 
+// These functions will not exist in the production zip file but they also won't be run
+const { getSandcastleConfig, buildSandcastleGallery, buildSandcastleApp } =
+  argv.production ? {} : await import("./scripts/buildSandcastle.js");
+
 const outputDirectory = path.join("Build", "CesiumDev");
 
 function formatTimeSinceInSeconds(start) {
@@ -53,11 +59,19 @@ async function generateDevelopmentBuild() {
 
   // Build @cesium/engine index.js
   console.log("[1/3] Building @cesium/engine...");
-  await createIndexJs("engine");
+  const engineContexts = await buildEngine({
+    incremental: true,
+    minify: false,
+    write: false,
+  });
 
   // Build @cesium/widgets index.js
   console.log("[2/3] Building @cesium/widgets...");
-  await createIndexJs("widgets");
+  const widgetContexts = await buildWidgets({
+    incremental: true,
+    minify: false,
+    write: false,
+  });
 
   // Build CesiumJS and save returned contexts for rebuilding upon request
   console.log("[3/3] Building CesiumJS...");
@@ -77,8 +91,24 @@ async function generateDevelopmentBuild() {
     `Cesium built in ${formatTimeSinceInSeconds(startTime)} seconds.`,
   );
 
-  return contexts;
+  return { ...contexts, engine: engineContexts, widgets: widgetContexts };
 }
+
+// Delay execution of the callback until a short time has elapsed since it was last invoked, preventing
+// calls to the same function in quick succession from triggering multiple builds.
+const throttleDelay = 500;
+const throttle = (callback) => {
+  let timeout;
+  return () =>
+    new Promise((resolve) => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(() => {
+        resolve(callback());
+      }, throttleDelay);
+    });
+};
 
 (async function () {
   const gzipHeader = Buffer.from("1F8B08", "hex");
@@ -87,6 +117,23 @@ async function generateDevelopmentBuild() {
   let contexts;
   if (!production) {
     contexts = await generateDevelopmentBuild();
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    if (
+      buildSandcastleApp &&
+      !fs.existsSync(path.join(__dirname, "/Apps/Sandcastle2/index.html"))
+    ) {
+      // Sandcastle takes a bit of time to build and is unlikely to change often
+      // Only build it when we detect it doesn't exist to save on dev time
+      console.log("Building Sandcastle...");
+      const startTime = performance.now();
+      await buildSandcastleApp({
+        outputToBuildDir: false,
+        includeDevelopment: true,
+      });
+      console.log(
+        `Sandcastle built in ${formatTimeSinceInSeconds(startTime)} seconds.`,
+      );
+    }
   }
 
   const app = express();
@@ -156,6 +203,7 @@ async function generateDevelopmentBuild() {
     /\.glb/,
     /\.geom/,
     /\.vctr/,
+    /\.subtree/,
     /tileset.*\.json$/,
   ];
   app.get(knownTilesetFormats, checkGzipAndNext);
@@ -164,22 +212,34 @@ async function generateDevelopmentBuild() {
     const iifeWorkersCache = new ContextCache(contexts.iifeWorkers);
     const iifeCache = createRoute(
       app,
-      "Cesium.js",
+      "Build/CesiumUnminified/Cesium.js",
       "/Build/CesiumUnminified/Cesium.js{.map}",
       contexts.iife,
       [iifeWorkersCache],
     );
     const esmCache = createRoute(
       app,
-      "index.js",
+      "Build/CesiumUnminified/index.js",
       "/Build/CesiumUnminified/index.js{.map}",
       contexts.esm,
     );
     const workersCache = createRoute(
       app,
-      "Workers/*",
+      "Build/CesiumUnminified/Workers/*",
       "/Build/CesiumUnminified/Workers/*file.js",
       contexts.workers,
+    );
+    const engineBundleCache = createRoute(
+      app,
+      "packages/engine/Build/Unminified/index.js",
+      "/packages/engine/Build/Unminified/index.js{.map}",
+      contexts.engine.esm,
+    );
+    const widgetsBundleCache = createRoute(
+      app,
+      "packages/widgets/Build/Unminified/index.js",
+      "/packages/widgets/Build/Unminified/index.js{.map}",
+      contexts.widgets.esm,
     );
 
     const glslWatcher = chokidar.watch("packages/engine/Source/Shaders", {
@@ -195,36 +255,47 @@ async function generateDevelopmentBuild() {
     });
 
     let jsHintOptionsCache;
-    const sourceCodeWatcher = chokidar.watch(
-      ["packages/engine/Source", "packages/widgets/Source"],
-      {
-        ignored: [
-          "packages/engine/Source/Shaders",
-          "packages/engine/Source/ThirdParty",
-          "packages/widgets/Source/ThirdParty",
-          (path, stats) => {
-            return !!stats?.isFile() && !path.endsWith(".js");
-          },
-        ],
-        ignoreInitial: true,
-      },
-    );
+    const engineSourceWatcher = chokidar.watch(["packages/engine/Source"], {
+      ignored: [
+        "packages/engine/Source/Shaders",
+        "packages/engine/Source/ThirdParty",
+        (path, stats) => {
+          return !!stats?.isFile() && !path.endsWith(".js");
+        },
+      ],
+      ignoreInitial: true,
+    });
+    const widgetsSourceWatcher = chokidar.watch(["packages/widgets/Source"], {
+      ignored: [
+        "packages/widgets/Source/ThirdParty",
+        (path, stats) => {
+          return !!stats?.isFile() && !path.endsWith(".js");
+        },
+      ],
+      ignoreInitial: true,
+    });
 
-    // eslint-disable-next-line no-unused-vars
-    sourceCodeWatcher.on("all", async (action, path) => {
+    function clearTopLevelCaches() {
       esmCache.clear();
       iifeCache.clear();
       workersCache.clear();
       iifeWorkersCache.clear();
       jsHintOptionsCache = undefined;
+    }
 
-      // Get the workspace token from the path, and rebuild that workspace's index.js
-      const workspaceRegex = /packages\/(.+?)\/.+\.js/;
-      const result = path.match(workspaceRegex);
-      if (result) {
-        await createIndexJs(result[1]);
-      }
+    engineSourceWatcher.on("all", async () => {
+      clearTopLevelCaches();
+      engineBundleCache.clear();
 
+      await createIndexJs("engine");
+      await createCesiumJs();
+    });
+
+    widgetsSourceWatcher.on("all", async () => {
+      clearTopLevelCaches();
+      widgetsBundleCache.clear();
+
+      await createIndexJs("widgets");
       await createCesiumJs();
     });
 
@@ -267,21 +338,30 @@ async function generateDevelopmentBuild() {
       specsCache.clear();
     });
 
-    const galleryDirectory = "packages/sandcastle/gallery";
-    const galleryWatcher = chokidar.watch([galleryDirectory], {
-      ignored: (file, stats) =>
-        !!stats?.isFile() && !file.endsWith(".yml") && !file.endsWith(".yaml"),
-      ignoreInitial: true,
-    });
-    if (!production) {
-      const { buildGalleryList } = await import(
-        "./packages/sandcastle/scripts/buildGallery.js"
+    if (!production && getSandcastleConfig && buildSandcastleGallery) {
+      const { configPath, root, gallery } = await getSandcastleConfig();
+      const baseDirectory = path.relative(root, path.dirname(configPath));
+      const galleryFiles = gallery.files.map((pattern) =>
+        path.join(baseDirectory, pattern),
       );
-      galleryWatcher.on("all", async (event) => {
-        if (event === "add" || event === "change" || event === "unlink") {
-          await buildGalleryList(galleryDirectory);
-        }
+      const galleryWatcher = chokidar.watch(galleryFiles, {
+        ignoreInitial: true,
       });
+
+      galleryWatcher.on(
+        "all",
+        throttle(async () => {
+          const startTime = performance.now();
+          try {
+            await buildSandcastleGallery({ includeDevelopment: true });
+            console.log(
+              `Gallery built in ${formatTimeSinceInSeconds(startTime)} seconds.`,
+            );
+          } catch (e) {
+            console.error(e);
+          }
+        }),
+      );
     }
 
     // Rebuild jsHintOptions as needed and serve as-is

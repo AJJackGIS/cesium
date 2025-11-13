@@ -51,9 +51,6 @@ self.MonacoEnvironment = {
 // open network access
 loader.config({ monaco });
 
-const TYPES_URL = `${__PAGE_BASE_URL__}Source/Cesium.d.ts`;
-const SANDCASTLE_TYPES_URL = `templates/Sandcastle.d.ts`;
-
 export type SandcastleEditorRef = {
   formatCode(): void;
 };
@@ -83,10 +80,28 @@ function SandcastleEditor({
   const {
     settings: { fontFamily, fontSize, fontLigatures },
   } = useContext(SettingsContext);
+  const documentRef = useRef(document);
   useEffect(() => {
-    internalEditorRef.current?.updateOptions({
-      fontFamily: availableFonts[fontFamily]?.cssValue ?? "Droid Sans Mono",
-    });
+    const cssName = availableFonts[fontFamily]?.cssValue ?? "Droid Sans Mono";
+    const fontFace = [...documentRef.current.fonts].find(
+      (font) => font.family === cssName && font.weight === "400",
+    );
+    if (fontFace?.status !== "loaded") {
+      // Monaco needs to check the size of the font for things like cursor position
+      // and variable highlighting. If it does this check before the font has loaded
+      // it will get the wrong size and may be horribly offset especially with ligatures
+      // https://github.com/microsoft/monaco-editor/issues/392
+      documentRef.current.fonts.load(`1rem ${cssName}`).then(() => {
+        internalEditorRef.current?.updateOptions({
+          fontFamily: cssName,
+        });
+        monaco.editor.remeasureFonts();
+      });
+    } else {
+      internalEditorRef.current?.updateOptions({
+        fontFamily: cssName,
+      });
+    }
   }, [fontFamily]);
   useEffect(() => {
     internalEditorRef.current?.updateOptions({
@@ -99,6 +114,10 @@ function SandcastleEditor({
     });
   }, [fontSize]);
 
+  function formatEditor() {
+    internalEditorRef.current?.getAction("editor.action.formatDocument")?.run();
+  }
+
   useImperativeHandle(ref, () => {
     return {
       formatCode() {
@@ -106,10 +125,6 @@ function SandcastleEditor({
       },
     };
   }, []);
-
-  function formatEditor() {
-    internalEditorRef.current?.getAction("editor.action.formatDocument")?.run();
-  }
 
   function handleEditorDidMount(
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -192,25 +207,63 @@ function SandcastleEditor({
   async function setTypes(monaco: Monaco) {
     // https://microsoft.github.io/monaco-editor/playground.html?source=v0.52.2#example-extending-language-services-configure-javascript-defaults
 
-    const cesiumTypes = await (await fetch(TYPES_URL)).text();
-    // define a "global" variable so types work even with out the import statement
-    const cesiumTypesWithGlobal = `${cesiumTypes}\nvar Cesium: typeof import('cesium');`;
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-      cesiumTypesWithGlobal,
-      "ts:cesium.d.ts",
+    const typeImportPaths = __VITE_TYPE_IMPORT_PATHS__ ?? {};
+
+    const typeImports: {
+      url: string;
+      filename: string;
+      transformTypes?: (typesContent: string) => string;
+    }[] = [
+      {
+        url: typeImportPaths["cesium"],
+        filename: "ts:cesium.d.ts",
+        transformTypes(typesContent: string) {
+          // define a "global" variable so types work even with out the import statement
+          return `${typesContent}\nvar Cesium: typeof import('cesium');`;
+        },
+      },
+      {
+        url: typeImportPaths["Sandcastle"],
+        filename: "ts:sandcastle.d.ts",
+        transformTypes(typesContent: string) {
+          return `declare module 'Sandcastle' {
+      ${typesContent}
+    }
+      var Sandcastle: typeof import('Sandcastle').default;`;
+        },
+      },
+    ];
+
+    const extraImportNames = Object.keys(typeImportPaths).filter(
+      (name) => !["cesium", "Sandcastle"].includes(name),
     );
+    for (const extraName of extraImportNames) {
+      typeImports.push({
+        url: typeImportPaths[extraName],
+        filename: `ts:${extraName.replace(/@\//, "-")}.d.ts`,
+      });
+    }
 
-    const sandcastleTypes = await (await fetch(SANDCASTLE_TYPES_URL)).text();
-    // surround in a module so the import statement works nicely
-    // also define a "global" so types show even if you don't have the import
-    const sandcastleModuleTypes = `declare module 'Sandcastle' {
-        ${sandcastleTypes}
-      }
-        var Sandcastle: typeof import('Sandcastle').default;`;
-
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-      sandcastleModuleTypes,
-      "ts:sandcastle.d.ts",
+    await Promise.allSettled(
+      typeImports.map(async (typeImport) => {
+        const { url, transformTypes, filename } = typeImport;
+        if (!url) {
+          return;
+        }
+        try {
+          const responseText = await (await fetch(url)).text();
+          const typesContent = transformTypes
+            ? transformTypes(responseText)
+            : responseText;
+          monaco.languages.typescript.javascriptDefaults.addExtraLib(
+            typesContent,
+            filename,
+          );
+        } catch (error) {
+          console.error(`Unable to load types for ${filename} at ${url}`);
+          console.error(error);
+        }
+      }),
     );
   }
 

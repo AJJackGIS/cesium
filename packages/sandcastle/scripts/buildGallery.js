@@ -15,7 +15,7 @@ import createGalleryRecord from "./createGalleryRecord.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const defaultRootDirectory = join(__dirname, "..");
 const defaultPublicDirectory = "./public";
-const defaultGalleryFiles = ["gallery/**/*"];
+const defaultGalleryFiles = ["gallery"];
 const defaultThumbnailPath = "images/placeholder-thumbnail.jpg";
 const requiredMetadataKeys = ["title", "description"];
 const galleryItemConfig = /sandcastle\.(yml|yaml)/;
@@ -51,7 +51,7 @@ async function exists(path) {
  */
 
 /**
- * @typedef {Object} BuildGalleryOptions
+ * @typedef {object} BuildGalleryOptions
  * @property {string} [rootDirectory = ".."] The root directory to which all other paths are relative.
  * @property {string} [publicDirectory = "./public"] The static directory where the gallery list and search index will be written.
  * @property {string[]} [galleryFiles] The glob pattern(s) to find gallery yaml files.
@@ -118,7 +118,7 @@ export async function buildGalleryList(options = {}) {
   };
 
   const galleryFiles = await globby(
-    galleryFilesPattern.map((pattern) => join(rootDirectory, pattern)),
+    galleryFilesPattern.map((pattern) => join(rootDirectory, pattern, "**/*")),
   );
   const yamlFiles = galleryFiles.filter((path) =>
     basename(path).match(galleryItemConfig),
@@ -174,7 +174,11 @@ export async function buildGalleryList(options = {}) {
     if (
       check(!/^[a-zA-Z0-9-.]+$/.test(slug), `"${slug}" is not a valid slug`) ||
       check(!title, `${slug} - Missing title`) ||
-      check(!description, `${slug} - Missing description`)
+      check(!description, `${slug} - Missing description`) ||
+      check(
+        !development && labels.includes("Development"),
+        `${slug} has Development label but not marked as development sandcastle`,
+      )
     ) {
       continue;
     }
@@ -261,7 +265,7 @@ export async function buildGalleryList(options = {}) {
   // regardless of if titles match the directory names
   output.entries.sort((a, b) => a.title.localeCompare(b.title));
 
-  const outputDirectory = join(publicDirectory, "gallery");
+  const outputDirectory = join(rootDirectory, publicDirectory, "gallery");
   await rimraf(outputDirectory);
   await mkdir(outputDirectory, { recursive: true });
 
@@ -299,8 +303,8 @@ if (import.meta.url.endsWith(`${pathToFileURL(process.argv[1])}`)) {
   let buildGalleryOptions;
 
   try {
-    const config = await import(configPath);
-    const { root, publicDir, gallery, sourceUrl } = config.default;
+    const config = await import(pathToFileURL(configPath).href);
+    const { root, publicDirectory, gallery, sourceUrl } = config.default;
 
     // Paths are specified relative to the config file
     const configDir = dirname(configPath);
@@ -316,7 +320,7 @@ if (import.meta.url.endsWith(`${pathToFileURL(process.argv[1])}`)) {
 
     buildGalleryOptions = {
       rootDirectory: configRoot,
-      publicDirectory: publicDir,
+      publicDirectory: publicDirectory,
       galleryFiles: files,
       sourceUrl,
       defaultThumbnail,
