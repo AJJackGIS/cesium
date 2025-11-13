@@ -3,7 +3,6 @@ import Check from "../Core/Check.js";
 /**
  * The state for a 3D Tiles update pass.
  *
- * @private
  * @constructor
  */
 function Cesium3DTilePassState(options) {

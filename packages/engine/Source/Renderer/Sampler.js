@@ -6,9 +6,6 @@ import TextureMagnificationFilter from "./TextureMagnificationFilter.js";
 import TextureMinificationFilter from "./TextureMinificationFilter.js";
 import TextureWrap from "./TextureWrap.js";
 
-/**
- * @private
- */
 function Sampler(options) {
   options = options ?? Frozen.EMPTY_OBJECT;
 

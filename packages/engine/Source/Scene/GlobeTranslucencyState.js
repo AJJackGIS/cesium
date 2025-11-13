@@ -43,7 +43,8 @@ const DerivedCommandNames = [
 ];
 
 /**
- * @private
+ * @alias GlobeTranslucencyState
+ * @constructor
  */
 function GlobeTranslucencyState() {
   this._frontFaceAlphaByDistance = new NearFarScalar(0.0, 1.0, 0.0, 1.0);

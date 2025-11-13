@@ -26,8 +26,6 @@ import VertexArray from "./VertexArray.js";
  * @property {TypedArray} arrayBufferView A view of a binary data buffer containing pixel values.
  * @property {number} width The width of one face of the cube map, in pixels. Must be equal to height.
  * @property {number} height The height of one face of the cube map, in pixels. Must be equal to width.
- *
- * @private
  */
 
 /**
@@ -54,8 +52,6 @@ import VertexArray from "./VertexArray.js";
  * @property {number} [width] The pixel width of the texture. If not supplied, must be available from the source. Must be equal to height.
  * @property {number} [height] The pixel height of the texture. If not supplied, must be available from the source. Must be equal to width.
  * @property {boolean} [preMultiplyAlpha] If true, the alpha channel will be multiplied into the other channels.
- *
- * @private
  */
 
 /**
@@ -66,7 +62,6 @@ import VertexArray from "./VertexArray.js";
  * @constructor
  *
  * @param {CubeMap.ConstructorOptions} options An object describing initialization options.
- * @private
  */
 function CubeMap(options) {
   options = options ?? Frozen.EMPTY_OBJECT;
@@ -277,7 +272,6 @@ CubeMap.prototype.copyFace = function (frameState, texture, face, mipLevel) {
  * An enum defining the names of the faces of a cube map.
  * @alias {CubeMap.FaceName}
  * @enum {string}
- * @private
  */
 CubeMap.FaceName = Object.freeze({
   POSITIVEX: "positiveX",

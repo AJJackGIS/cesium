@@ -171,7 +171,7 @@ class TransformUtils {
    * @param {Cartesian3} position
    * @param {HeadingPitchRoll} hpr
    * @param {number} viewDistance
-   * @returns
+   * @returns {Cartesian3}
    */
   static getPositionOffset(position, hpr, viewDistance) {
     if (viewDistance > 0) {

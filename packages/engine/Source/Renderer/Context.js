@@ -31,7 +31,6 @@ import UniformState from "./UniformState.js";
 import VertexArray from "./VertexArray.js";
 
 /**
- * @private
  * @constructor
  *
  * @param {HTMLCanvasElement} canvas The canvas element to which the context will be associated

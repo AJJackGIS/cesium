@@ -18,8 +18,6 @@ const Flags = {
  *
  * @alias DrawCommand
  * @constructor
- *
- * @private
  */
 function DrawCommand(options) {
   options = options ?? Frozen.EMPTY_OBJECT;

@@ -10,7 +10,8 @@ import Texture from "../Renderer/Texture.js";
 import BrdfLutGeneratorFS from "../Shaders/BrdfLutGeneratorFS.js";
 
 /**
- * @private
+ *
+ * @constructor
  */
 function BrdfLutGenerator() {
   this._colorTexture = undefined;

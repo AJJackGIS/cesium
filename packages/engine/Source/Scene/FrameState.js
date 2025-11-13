@@ -10,8 +10,6 @@ import SceneMode from "./SceneMode.js";
  *
  * @alias FrameState
  * @constructor
- *
- * @private
  */
 function FrameState(context, creditDisplay, jobScheduler) {
   /**

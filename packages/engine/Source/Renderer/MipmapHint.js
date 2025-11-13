@@ -1,8 +1,5 @@
 import WebGLConstants from "../Core/WebGLConstants.js";
 
-/**
- * @private
- */
 const MipmapHint = {
   DONT_CARE: WebGLConstants.DONT_CARE,
   FASTEST: WebGLConstants.FASTEST,

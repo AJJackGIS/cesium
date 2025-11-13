@@ -6,9 +6,6 @@ import DeveloperError from "../Core/DeveloperError.js";
 import ContextLimits from "./ContextLimits.js";
 import RenderbufferFormat from "./RenderbufferFormat.js";
 
-/**
- * @private
- */
 function Renderbuffer(options) {
   options = options ?? Frozen.EMPTY_OBJECT;
 

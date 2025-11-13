@@ -1,7 +1,5 @@
 /**
  * The pass in which a 3D Tileset is updated.
- *
- * @private
  */
 const Cesium3DTilePass = {
   RENDER: 0,
