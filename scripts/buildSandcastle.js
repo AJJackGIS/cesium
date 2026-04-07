@@ -1,3 +1,5 @@
+// @ts-check
+
 import { dirname, join } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import { getVersion } from "./build.js";
@@ -9,15 +11,6 @@ import { buildGalleryList } from "../packages/sandcastle/scripts/buildGallery.js
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = join(__dirname, "..");
-
-// async function importSandcastleBuildFunctions() {
-//   // Import asynchronously, for now, because this script is not included or run in the release zip;
-//   const buildGalleryScriptPath = join(
-//     __dirname,
-//     "../packages/sandcastle/index.js",
-//   );
-//   return await import(pathToFileURL(buildGalleryScriptPath).href);
-// }
 
 /**
  * Parses Sandcastle config file and returns its values.
@@ -47,15 +40,16 @@ export async function getSandcastleConfig() {
  * @param {object} options
  * @param {boolean} options.outputToBuildDir control whether sandcastle should be built and bundled together completely static into the Build directory
  * @param {boolean} options.includeDevelopment true if gallery items flagged as development should be included.
+ * @param {string} options.outerOrigin The origin of the surrounding application
+ * @param {string} options.innerOrigin The origin of the inner viewer iframe
  */
 export async function buildSandcastleApp({
   outputToBuildDir,
   includeDevelopment,
+  outerOrigin,
+  innerOrigin,
 }) {
-  // const { join, dirname } = path;
   const __dirname = dirname(fileURLToPath(import.meta.url));
-  // const { createSandcastleConfig, buildStatic } =
-  //   await importSandcastleBuildFunctions();
   const version = await getVersion();
   let config;
   if (outputToBuildDir) {
@@ -67,6 +61,8 @@ export async function buildSandcastleApp({
       basePath: "./",
       cesiumBaseUrl: "/Build/CesiumUnminified",
       cesiumVersion: version,
+      outerOrigin,
+      innerOrigin,
       imports: {
         cesium: {
           path: "/js/Cesium.js",
@@ -113,6 +109,8 @@ export async function buildSandcastleApp({
       outDir: join(__dirname, "../Apps/Sandcastle2"),
       basePath: "./",
       cesiumBaseUrl: "../../../Build/CesiumUnminified",
+      outerOrigin,
+      innerOrigin,
       cesiumVersion: version,
       commitSha: JSON.stringify(process.env.GITHUB_SHA ?? undefined),
       imports: {
@@ -167,8 +165,6 @@ export async function buildSandcastleGallery({
     defaultFilters,
     metadata,
   } = gallery ?? {};
-
-  // const { buildGalleryList } = await importSandcastleBuildFunctions();
 
   await buildGalleryList({
     rootDirectory,

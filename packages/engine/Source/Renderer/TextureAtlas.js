@@ -364,26 +364,17 @@ TextureAtlas.prototype._resize = function (context, queueOffset = 0) {
     toPack.push(queue[i]);
   }
 
-  // At minimum, the texture will need to scale to accommodate the largest width and height
-  width = Math.max(maxWidth, width);
-  height = Math.max(maxHeight, height);
+  // At minimum, atlas must fit its largest input images. Texture coordinates are
+  // compressed to 0–1 with 12-bit precision, so use power-of-two size to align pixels.
+  width = CesiumMath.nextPowerOfTwo(Math.max(maxWidth, width));
+  height = CesiumMath.nextPowerOfTwo(Math.max(maxHeight, height));
 
-  if (!context.webgl2) {
-    width = CesiumMath.nextPowerOfTwo(width);
-    height = CesiumMath.nextPowerOfTwo(height);
-  }
-
-  // Determine by what factor the texture need to be scaled by at minimum
-  const areaDifference = areaQueued;
-  let scalingFactor = 1.0;
-  while (areaDifference / width / height >= 1.0) {
-    scalingFactor *= 2.0;
-
-    // Resize by one dimension
+  // Iteratively double the smallest dimension until atlas area is (approximately) sufficient.
+  while (areaQueued >= width * height) {
     if (width > height) {
-      height *= scalingFactor;
+      height *= 2;
     } else {
-      width *= scalingFactor;
+      width *= 2;
     }
   }
 
@@ -648,9 +639,11 @@ async function resolveImage(image, id) {
  * @param {string} id An identifier to detect whether the image already exists in the atlas.
  * @param {HTMLImageElement|HTMLCanvasElement|string|Resource|Promise|TextureAtlas.CreateImageCallback} image An image or canvas to add to the texture atlas,
  *        or a URL to an Image, or a Promise for an image, or a function that creates an image.
- * @returns {Promise<number>} A Promise that resolves to the image region index, or -1 if resources are in the process of being destroyed.
+ * @param {number} width A number specifying the width of the texture. If undefined, the image width will be used.
+ * @param {number} height A number specifying the height of the texture. If undefined, the image height will be used.
+ * @returns {Promise<number> | number} The image region index or a promise that resolves to it. -1 is returned if resources are in the process of being destroyed.
  */
-TextureAtlas.prototype.addImage = function (id, image) {
+TextureAtlas.prototype.addImage = function (id, image, width, height) {
   //>>includeStart('debug', pragmas.debug);
   Check.typeOf.string("id", id);
   Check.defined("image", image);
@@ -664,24 +657,31 @@ TextureAtlas.prototype.addImage = function (id, image) {
   }
   if (defined(index)) {
     // This image has already been added and resolved
-    return Promise.resolve(index);
+    return index;
   }
 
   index = this._nextIndex++;
   this._indexById.set(id, index);
 
   const resolveAndAddImage = async () => {
-    image = await resolveImage(image, id);
+    const resolvedImage = await resolveImage(image, id);
     //>>includeStart('debug', pragmas.debug);
-    Check.defined("image", image);
+    Check.defined("image", resolvedImage);
     //>>includeEnd('debug');
 
-    if (this.isDestroyed() || !defined(image)) {
+    if (this.isDestroyed() || !defined(resolvedImage)) {
       this._indexPromiseById.delete(id);
       return -1;
     }
 
-    const imageIndex = await this._addImage(index, image);
+    if (defined(width)) {
+      resolvedImage.width = width;
+    }
+    if (defined(height)) {
+      resolvedImage.height = height;
+    }
+
+    const imageIndex = await this._addImage(index, resolvedImage);
     this._indexPromiseById.delete(id);
     return imageIndex;
   };

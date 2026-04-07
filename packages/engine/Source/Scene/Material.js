@@ -410,22 +410,22 @@ import WoodMaterial from "../Shaders/Thirdpart/WoodMaterial.js";
  * @exception {DeveloperError} strict: shader source does not use material.
  *
  * @see {@link https://github.com/CesiumGS/cesium/wiki/Fabric|Fabric wiki page} for a more detailed options of Fabric.
- * @demo {@link https://sandcastle.com/index.html?src=Materials.html|Cesium Sandcastle Materials Demo}
+ * @demo {@link https://sandcastle.cesium.com/index.html?id=materials|Cesium Sandcastle Materials Demo}
  *
  * @example
  * // Create a color material with fromType:
- * polygon.material = Material.fromType('Color');
- * polygon.material.uniforms.color = new Color(1.0, 1.0, 0.0, 1.0);
+ * polygon.material = Cesium.Material.fromType('Color');
+ * polygon.material.uniforms.color = new Cesium.Color(1.0, 1.0, 0.0, 1.0);
  *
  * // Create the default material:
- * polygon.material = new Material();
+ * polygon.material = new Cesium.Material();
  *
  * // Create a color material with full Fabric notation:
- * polygon.material = new Material({
+ * polygon.material = new Cesium.Material({
  *   fabric: {
  *     type: 'Color',
  *     uniforms: {
- *       color: new Color(1.0, 1.0, 0.0, 1.0)
+ *       color: new Cesium.Color(1.0, 1.0, 0.0, 1.0)
  *     }
  *   }
  * });
@@ -562,8 +562,8 @@ Material._uniformList = {};
  * @exception {DeveloperError} material with that type does not exist.
  *
  * @example
- * const material = Material.fromType('Color', {
- *   color: new Color(1.0, 0.0, 0.0, 1.0)
+ * const material = Cesium.Material.fromType('Color', {
+ *   color: new Cesium.Color(1.0, 0.0, 0.0, 1.0)
  * });
  */
 Material.fromType = function (type, uniforms) {
@@ -1552,7 +1552,6 @@ Material.DefaultImageId = "czm_defaultImage";
 /**
  * Gets or sets the default cube map texture uniform value.
  * @type {string}
- * @readonly
  */
 Material.DefaultCubeMapId = "czm_defaultCubeMap";
 
@@ -2770,7 +2769,7 @@ Material._materialCache.addMaterial(Material.ElevationBandType, {
 });
 
 /**
- * WaterMask
+ * Gets the name of the water mask material.
  * @type {string}
  * @readonly
  */

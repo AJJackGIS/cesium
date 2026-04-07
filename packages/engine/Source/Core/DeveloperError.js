@@ -64,6 +64,10 @@ DeveloperError.prototype.toString = function () {
   return str;
 };
 
+/**
+ * @returns {never}
+ * @ignore
+ */
 DeveloperError.throwInstantiationError = function () {
   throw new DeveloperError(
     "This function defines an interface and should not be called directly.",
